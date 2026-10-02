@@ -6,7 +6,9 @@ from database import (
     get_transactions,
     get_balance_summary,
     delete_transaction,
-    update_transaction
+    update_transaction,
+    get_transactions_by_month,
+    get_monthly_summary
 )
 
 
@@ -62,7 +64,8 @@ def show_menu():
     print("4. View Balance")
     print("5. Delete Transaction")
     print("6. Edit Transaction")
-    print("7. Exit")
+    print("7. Monthly Analytics")
+    print("8. Exit")
 
 
 def get_valid_date():
@@ -196,6 +199,43 @@ def view_balance():
     print(
         f"Balance        : Rs. {balance:.2f}"
     )
+
+
+def monthly_analytics():
+    print("\n--- Monthly Analytics ---")
+
+    try:
+        year = int(input("Enter year (e.g. 2026): "))
+        month = int(input("Enter month (1-12): "))
+
+        if month < 1 or month > 12:
+            print("Invalid month. Please enter a value between 1 and 12.")
+            return
+
+    except ValueError:
+        print("Invalid input. Please enter numbers only.")
+        return
+
+    transactions = get_transactions_by_month(year, month)
+
+    total_income, total_expense, balance = get_monthly_summary(
+        year,
+        month
+    )
+
+    print(f"\n--- Summary for {year}-{month:02d} ---")
+    print(f"Total Income   : Rs. {total_income:.2f}")
+    print(f"Total Expenses : Rs. {total_expense:.2f}")
+    print(f"Balance        : Rs. {balance:.2f}")
+
+    print("\n--- Transactions ---")
+
+    if len(transactions) == 0:
+        print("No transactions found for this month.")
+        return
+
+    for transaction in transactions:
+        display_transaction(transaction)    
 
 
 def delete_transaction_menu():
@@ -355,6 +395,9 @@ def main():
             edit_transaction_menu()
 
         elif choice == "7":
+             monthly_analytics()    
+
+        elif choice == "8":
             print(
                 "\nThank you for using SpendWise LK!"
             )

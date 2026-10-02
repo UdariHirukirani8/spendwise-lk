@@ -82,6 +82,73 @@ def get_transactions():
 
     return transactions
 
+def get_transactions_by_month(year, month):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    month_value = f"{year}-{month:02d}"
+
+    cursor.execute("""
+        SELECT
+            id,
+            type,
+            amount,
+            category,
+            description,
+            transaction_date,
+            created_at
+        FROM transactions
+        WHERE substr(transaction_date, 1, 7) = ?
+        ORDER BY transaction_date DESC, id DESC
+    """, (month_value,))
+
+    transactions = cursor.fetchall()
+
+    connection.close()
+
+    return transactions
+
+def get_monthly_summary(year, month):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    month_value = f"{year}-{month:02d}"
+
+    cursor.execute("""
+        SELECT
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN type = 'income'
+                        THEN amount
+                        ELSE 0
+                    END
+                ),
+                0
+            ),
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN type = 'expense'
+                        THEN amount
+                        ELSE 0
+                    END
+                ),
+                0
+            )
+        FROM transactions
+        WHERE substr(transaction_date, 1, 7) = ?
+    """, (month_value,))
+
+    result = cursor.fetchone()
+
+    connection.close()
+
+    total_income = result[0]
+    total_expense = result[1]
+    balance = total_income - total_expense
+
+    return total_income, total_expense, balance
 
 def delete_transaction(transaction_id):
     connection = get_connection()
