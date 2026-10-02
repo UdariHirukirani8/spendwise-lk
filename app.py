@@ -8,6 +8,47 @@ from database import (
 )
 
 
+INCOME_CATEGORIES = [
+    "Salary",
+    "Freelance",
+    "Business",
+    "Allowance",
+    "Investment",
+    "Other"
+]
+
+EXPENSE_CATEGORIES = [
+    "Food",
+    "Transport",
+    "Shopping",
+    "Bills",
+    "Education",
+    "Health",
+    "Entertainment",
+    "Rent",
+    "Other"
+]
+
+
+def select_category(categories):
+    print("\nSelect a category:")
+
+    for index, category in enumerate(categories, start=1):
+        print(f"{index}. {category}")
+
+    while True:
+        try:
+            choice = int(input("Choose category number: "))
+
+            if 1 <= choice <= len(categories):
+                return categories[choice - 1]
+
+            print("Invalid choice. Please select a valid number.")
+
+        except ValueError:
+            print("Please enter a number.")
+
+
 def show_menu():
     print("\n" + "=" * 40)
     print("          SPENDWISE LK")
@@ -47,11 +88,7 @@ def add_income():
         print("Amount must be greater than zero.")
         return
 
-    category = input("Enter income category: ").strip()
-
-    if category == "":
-        print("Category cannot be empty.")
-        return
+    category = select_category(INCOME_CATEGORIES)
 
     description = input("Enter description: ").strip()
 
@@ -81,11 +118,7 @@ def add_expense():
         print("Amount must be greater than zero.")
         return
 
-    category = input("Enter expense category: ").strip()
-
-    if category == "":
-        print("Category cannot be empty.")
-        return
+    category = select_category(EXPENSE_CATEGORIES)
 
     description = input("Enter description: ").strip()
 
