@@ -12,6 +12,7 @@ def create_tables():
     connection = get_connection()
     cursor = connection.cursor()
 
+    # Transactions table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,6 +22,19 @@ def create_tables():
             description TEXT,
             transaction_date TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Budgets table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS budgets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            year INTEGER NOT NULL,
+            month INTEGER NOT NULL,
+            category TEXT NOT NULL,
+            amount REAL NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(year, month, category)
         )
     """)
 
@@ -82,6 +96,7 @@ def get_transactions():
 
     return transactions
 
+
 def get_transactions_by_month(year, month):
     connection = get_connection()
     cursor = connection.cursor()
@@ -108,47 +123,6 @@ def get_transactions_by_month(year, month):
 
     return transactions
 
-def get_monthly_summary(year, month):
-    connection = get_connection()
-    cursor = connection.cursor()
-
-    month_value = f"{year}-{month:02d}"
-
-    cursor.execute("""
-        SELECT
-            COALESCE(
-                SUM(
-                    CASE
-                        WHEN type = 'income'
-                        THEN amount
-                        ELSE 0
-                    END
-                ),
-                0
-            ),
-            COALESCE(
-                SUM(
-                    CASE
-                        WHEN type = 'expense'
-                        THEN amount
-                        ELSE 0
-                    END
-                ),
-                0
-            )
-        FROM transactions
-        WHERE substr(transaction_date, 1, 7) = ?
-    """, (month_value,))
-
-    result = cursor.fetchone()
-
-    connection.close()
-
-    total_income = result[0]
-    total_expense = result[1]
-    balance = total_income - total_expense
-
-    return total_income, total_expense, balance
 
 def delete_transaction(transaction_id):
     connection = get_connection()
@@ -244,3 +218,125 @@ def get_balance_summary():
     balance = total_income - total_expense
 
     return total_income, total_expense, balance
+
+
+def get_monthly_summary(year, month):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    month_value = f"{year}-{month:02d}"
+
+    cursor.execute("""
+        SELECT
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN type = 'income'
+                        THEN amount
+                        ELSE 0
+                    END
+                ),
+                0
+            ),
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN type = 'expense'
+                        THEN amount
+                        ELSE 0
+                    END
+                ),
+                0
+            )
+        FROM transactions
+        WHERE substr(transaction_date, 1, 7) = ?
+    """, (month_value,))
+
+    result = cursor.fetchone()
+
+    connection.close()
+
+    total_income = result[0]
+    total_expense = result[1]
+    balance = total_income - total_expense
+
+    return total_income, total_expense, balance
+
+
+# =========================
+# BUDGET FUNCTIONS
+# =========================
+
+def set_budget(year, month, category, amount):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO budgets (
+            year,
+            month,
+            category,
+            amount
+        )
+        VALUES (?, ?, ?, ?)
+
+        ON CONFLICT(year, month, category)
+        DO UPDATE SET
+            amount = excluded.amount
+    """, (
+        year,
+        month,
+        category,
+        amount
+    ))
+
+    connection.commit()
+    connection.close()
+
+
+def get_budgets(year, month):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            category,
+            amount
+        FROM budgets
+        WHERE year = ?
+        AND month = ?
+        ORDER BY category
+    """, (
+        year,
+        month
+    ))
+
+    budgets = cursor.fetchall()
+
+    connection.close()
+
+    return budgets
+
+
+def get_category_expense(year, month, category):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    month_value = f"{year}-{month:02d}"
+
+    cursor.execute("""
+        SELECT COALESCE(SUM(amount), 0)
+        FROM transactions
+        WHERE type = 'expense'
+        AND category = ?
+        AND substr(transaction_date, 1, 7) = ?
+    """, (
+        category,
+        month_value
+    ))
+
+    result = cursor.fetchone()
+
+    connection.close()
+
+    return result[0]

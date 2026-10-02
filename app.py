@@ -8,7 +8,10 @@ from database import (
     delete_transaction,
     update_transaction,
     get_transactions_by_month,
-    get_monthly_summary
+    get_monthly_summary,
+    set_budget,
+    get_budgets,
+    get_category_expense
 )
 
 
@@ -65,7 +68,9 @@ def show_menu():
     print("5. Delete Transaction")
     print("6. Edit Transaction")
     print("7. Monthly Analytics")
-    print("8. Exit")
+    print("8. Set Monthly Budget")
+    print("9. View Budget Status")
+    print("10 Exit")
 
 
 def get_valid_date():
@@ -237,6 +242,91 @@ def monthly_analytics():
     for transaction in transactions:
         display_transaction(transaction)    
 
+def set_budget_menu():
+    print("\n--- Set Monthly Budget ---")
+
+    try:
+        year = int(input("Enter year: "))
+        month = int(input("Enter month (1-12): "))
+
+        if month < 1 or month > 12:
+            print("Invalid month.")
+            return
+
+    except ValueError:
+        print("Please enter valid numbers.")
+        return
+
+    category = select_category(EXPENSE_CATEGORIES)
+
+    amount = get_valid_amount(
+        "Enter budget amount: Rs. "
+    )
+
+    set_budget(
+        year,
+        month,
+        category,
+        amount
+    )
+
+    print("\nBudget saved successfully!")
+
+
+def view_budget_status():
+    print("\n--- Budget Status ---")
+
+    try:
+        year = int(input("Enter year: "))
+        month = int(input("Enter month (1-12): "))
+
+        if month < 1 or month > 12:
+            print("Invalid month.")
+            return
+
+    except ValueError:
+        print("Please enter valid numbers.")
+        return
+
+    budgets = get_budgets(year, month)
+
+    if len(budgets) == 0:
+        print("No budgets found for this month.")
+        return
+
+    print(f"\n--- Budget Status for {year}-{month:02d} ---")
+
+    for category, budget_amount in budgets:
+        spent = get_category_expense(
+            year,
+            month,
+            category
+        )
+
+        remaining = budget_amount - spent
+
+        if budget_amount > 0:
+            percentage = (spent / budget_amount) * 100
+        else:
+            percentage = 0
+
+        print(
+            f"\n{category}"
+            f"\nBudget    : Rs. {budget_amount:.2f}"
+            f"\nSpent     : Rs. {spent:.2f}"
+            f"\nRemaining : Rs. {remaining:.2f}"
+            f"\nUsed      : {percentage:.1f}%"
+        )
+
+        if spent > budget_amount:
+            print(
+                f"WARNING: Budget exceeded by "
+                f"Rs. {abs(remaining):.2f}"
+            )
+
+        elif percentage >= 80:
+            print("WARNING: You have used over 80% of this budget.")        
+
 
 def delete_transaction_menu():
     print("\n--- Delete Transaction ---")
@@ -398,6 +488,13 @@ def main():
              monthly_analytics()    
 
         elif choice == "8":
+            set_budget_menu()
+
+        elif choice == "9":
+            view_budget_status()
+     
+
+        elif choice == "10":
             print(
                 "\nThank you for using SpendWise LK!"
             )
