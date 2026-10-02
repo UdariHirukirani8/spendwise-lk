@@ -1,4 +1,9 @@
-transactions = []
+from database import (
+    create_tables,
+    add_transaction,
+    get_transactions,
+    get_balance_summary
+)
 
 
 def show_menu():
@@ -22,17 +27,23 @@ def add_income():
         print("Invalid amount. Please enter a number.")
         return
 
-    category = input("Enter income category: ")
-    description = input("Enter description: ")
+    if amount <= 0:
+        print("Amount must be greater than zero.")
+        return
 
-    transaction = {
-        "type": "income",
-        "amount": amount,
-        "category": category,
-        "description": description
-    }
+    category = input("Enter income category: ").strip()
+    description = input("Enter description: ").strip()
 
-    transactions.append(transaction)
+    if category == "":
+        print("Category cannot be empty.")
+        return
+
+    add_transaction(
+        "income",
+        amount,
+        category,
+        description
+    )
 
     print("\nIncome added successfully!")
 
@@ -46,17 +57,23 @@ def add_expense():
         print("Invalid amount. Please enter a number.")
         return
 
-    category = input("Enter expense category: ")
-    description = input("Enter description: ")
+    if amount <= 0:
+        print("Amount must be greater than zero.")
+        return
 
-    transaction = {
-        "type": "expense",
-        "amount": amount,
-        "category": category,
-        "description": description
-    }
+    category = input("Enter expense category: ").strip()
+    description = input("Enter description: ").strip()
 
-    transactions.append(transaction)
+    if category == "":
+        print("Category cannot be empty.")
+        return
+
+    add_transaction(
+        "expense",
+        amount,
+        category,
+        description
+    )
 
     print("\nExpense added successfully!")
 
@@ -64,33 +81,32 @@ def add_expense():
 def view_transactions():
     print("\n--- Transaction History ---")
 
+    transactions = get_transactions()
+
     if len(transactions) == 0:
         print("No transactions found.")
         return
 
-    for index, transaction in enumerate(transactions, start=1):
+    for transaction in transactions:
+        transaction_id = transaction[0]
+        transaction_type = transaction[1]
+        amount = transaction[2]
+        category = transaction[3]
+        description = transaction[4]
+        created_at = transaction[5]
+
         print(
-            f"{index}. "
-            f"{transaction['type'].title()} | "
-            f"Rs. {transaction['amount']:.2f} | "
-            f"{transaction['category']} | "
-            f"{transaction['description']}"
+            f"#{transaction_id} | "
+            f"{transaction_type.title()} | "
+            f"Rs. {amount:.2f} | "
+            f"{category} | "
+            f"{description} | "
+            f"{created_at}"
         )
 
 
 def view_balance():
-    total_income = 0
-    total_expense = 0
-
-    for transaction in transactions:
-
-        if transaction["type"] == "income":
-            total_income += transaction["amount"]
-
-        elif transaction["type"] == "expense":
-            total_expense += transaction["amount"]
-
-    balance = total_income - total_expense
+    total_income, total_expense, balance = get_balance_summary()
 
     print("\n--- Account Summary ---")
     print(f"Total Income   : Rs. {total_income:.2f}")
@@ -99,6 +115,8 @@ def view_balance():
 
 
 def main():
+    create_tables()
+
     while True:
         show_menu()
 
