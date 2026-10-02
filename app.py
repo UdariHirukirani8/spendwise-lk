@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from database import (
     create_tables,
     add_transaction,
@@ -18,6 +20,20 @@ def show_menu():
     print("5. Exit")
 
 
+def get_valid_date():
+    while True:
+        transaction_date = input(
+            "Enter transaction date (YYYY-MM-DD): "
+        ).strip()
+
+        try:
+            datetime.strptime(transaction_date, "%Y-%m-%d")
+            return transaction_date
+
+        except ValueError:
+            print("Invalid date. Please use YYYY-MM-DD format.")
+
+
 def add_income():
     print("\n--- Add Income ---")
 
@@ -32,17 +48,21 @@ def add_income():
         return
 
     category = input("Enter income category: ").strip()
-    description = input("Enter description: ").strip()
 
     if category == "":
         print("Category cannot be empty.")
         return
 
+    description = input("Enter description: ").strip()
+
+    transaction_date = get_valid_date()
+
     add_transaction(
         "income",
         amount,
         category,
-        description
+        description,
+        transaction_date
     )
 
     print("\nIncome added successfully!")
@@ -62,17 +82,21 @@ def add_expense():
         return
 
     category = input("Enter expense category: ").strip()
-    description = input("Enter description: ").strip()
 
     if category == "":
         print("Category cannot be empty.")
         return
 
+    description = input("Enter description: ").strip()
+
+    transaction_date = get_valid_date()
+
     add_transaction(
         "expense",
         amount,
         category,
-        description
+        description,
+        transaction_date
     )
 
     print("\nExpense added successfully!")
@@ -93,7 +117,8 @@ def view_transactions():
         amount = transaction[2]
         category = transaction[3]
         description = transaction[4]
-        created_at = transaction[5]
+        transaction_date = transaction[5]
+        created_at = transaction[6]
 
         print(
             f"#{transaction_id} | "
@@ -101,7 +126,8 @@ def view_transactions():
             f"Rs. {amount:.2f} | "
             f"{category} | "
             f"{description} | "
-            f"{created_at}"
+            f"Date: {transaction_date} | "
+            f"Created: {created_at}"
         )
 
 
@@ -120,7 +146,7 @@ def main():
     while True:
         show_menu()
 
-        choice = input("\nChoose an option: ")
+        choice = input("\nChoose an option: ").strip()
 
         if choice == "1":
             add_income()

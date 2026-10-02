@@ -19,6 +19,7 @@ def create_tables():
             amount REAL NOT NULL,
             category TEXT NOT NULL,
             description TEXT,
+            transaction_date TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -27,7 +28,13 @@ def create_tables():
     connection.close()
 
 
-def add_transaction(transaction_type, amount, category, description):
+def add_transaction(
+    transaction_type,
+    amount,
+    category,
+    description,
+    transaction_date
+):
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -36,14 +43,16 @@ def add_transaction(transaction_type, amount, category, description):
             type,
             amount,
             category,
-            description
+            description,
+            transaction_date
         )
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?)
     """, (
         transaction_type,
         amount,
         category,
-        description
+        description,
+        transaction_date
     ))
 
     connection.commit()
@@ -61,9 +70,10 @@ def get_transactions():
             amount,
             category,
             description,
+            transaction_date,
             created_at
         FROM transactions
-        ORDER BY id DESC
+        ORDER BY transaction_date DESC, id DESC
     """)
 
     transactions = cursor.fetchall()
