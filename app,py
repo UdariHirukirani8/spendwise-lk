@@ -1,0 +1,13 @@
+print("=" * 40)
+print("          SPENDWISE LK")
+print("=" * 40)
+
+print("1. Add Income")
+print("2. Add Expense")
+print("3. View Transactions")
+print("4. View Balance")
+print("5. Exit")
+
+choice = input("\nChoose an option: ")
+
+print("You selected:", choice)
