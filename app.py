@@ -4,7 +4,9 @@ from database import (
     create_tables,
     add_transaction,
     get_transactions,
-    get_balance_summary
+    get_balance_summary,
+    delete_transaction
+
 )
 
 
@@ -58,7 +60,8 @@ def show_menu():
     print("2. Add Expense")
     print("3. View Transactions")
     print("4. View Balance")
-    print("5. Exit")
+    print("5. Delete Transaction")
+    print("6. Exit")
 
 
 def get_valid_date():
@@ -173,6 +176,46 @@ def view_balance():
     print(f"Balance        : Rs. {balance:.2f}")
 
 
+def delete_transaction_menu():
+    print("\n--- Delete Transaction ---")
+
+    transactions = get_transactions()
+
+    if len(transactions) == 0:
+        print("No transactions found.")
+        return
+
+    for transaction in transactions:
+        print(
+            f"#{transaction[0]} | "
+            f"{transaction[1].title()} | "
+            f"Rs. {transaction[2]:.2f} | "
+            f"{transaction[3]} | "
+            f"{transaction[5]}"
+        )
+
+    try:
+        transaction_id = int(
+            input("\nEnter transaction ID to delete: ")
+        )
+    except ValueError:
+        print("Invalid ID. Please enter a number.")
+        return
+
+    confirm = input(
+        f"Are you sure you want to delete transaction #{transaction_id}? (y/n): "
+    ).strip().lower()
+
+    if confirm != "y":
+        print("Delete cancelled.")
+        return
+
+    if delete_transaction(transaction_id):
+        print("Transaction deleted successfully!")
+    else:
+        print("Transaction ID not found.")
+
+
 def main():
     create_tables()
 
@@ -194,12 +237,16 @@ def main():
             view_balance()
 
         elif choice == "5":
+            delete_transaction_menu()
+
+        elif choice == "6":
             print("\nThank you for using SpendWise LK!")
             print("Goodbye!")
             break
 
+
         else:
-            print("\nInvalid option. Please choose between 1 and 5.")
+            print("\nInvalid option. Please choose between 1 and 6.")
 
 
 if __name__ == "__main__":

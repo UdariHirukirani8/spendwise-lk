@@ -82,6 +82,22 @@ def get_transactions():
 
     return transactions
 
+def delete_transaction(transaction_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "DELETE FROM transactions WHERE id = ?",
+        (transaction_id,)
+    )
+
+    connection.commit()
+
+    deleted_rows = cursor.rowcount
+
+    connection.close()
+
+    return deleted_rows > 0
 
 def get_balance_summary():
     connection = get_connection()
