@@ -5,8 +5,8 @@ from database import (
     add_transaction,
     get_transactions,
     get_balance_summary,
-    delete_transaction
-
+    delete_transaction,
+    update_transaction
 )
 
 
@@ -52,16 +52,17 @@ def select_category(categories):
 
 
 def show_menu():
-    print("\n" + "=" * 40)
-    print("          SPENDWISE LK")
-    print("=" * 40)
+    print("\n" + "=" * 45)
+    print("              SPENDWISE LK")
+    print("=" * 45)
 
     print("1. Add Income")
     print("2. Add Expense")
     print("3. View Transactions")
     print("4. View Balance")
     print("5. Delete Transaction")
-    print("6. Exit")
+    print("6. Edit Transaction")
+    print("7. Exit")
 
 
 def get_valid_date():
@@ -78,22 +79,35 @@ def get_valid_date():
             print("Invalid date. Please use YYYY-MM-DD format.")
 
 
+def get_valid_amount(message):
+    while True:
+        try:
+            amount = float(input(message))
+
+            if amount <= 0:
+                print("Amount must be greater than zero.")
+                continue
+
+            return amount
+
+        except ValueError:
+            print("Invalid amount. Please enter a number.")
+
+
 def add_income():
     print("\n--- Add Income ---")
 
-    try:
-        amount = float(input("Enter income amount: Rs. "))
-    except ValueError:
-        print("Invalid amount. Please enter a number.")
-        return
+    amount = get_valid_amount(
+        "Enter income amount: Rs. "
+    )
 
-    if amount <= 0:
-        print("Amount must be greater than zero.")
-        return
+    category = select_category(
+        INCOME_CATEGORIES
+    )
 
-    category = select_category(INCOME_CATEGORIES)
-
-    description = input("Enter description: ").strip()
+    description = input(
+        "Enter description: "
+    ).strip()
 
     transaction_date = get_valid_date()
 
@@ -111,19 +125,17 @@ def add_income():
 def add_expense():
     print("\n--- Add Expense ---")
 
-    try:
-        amount = float(input("Enter expense amount: Rs. "))
-    except ValueError:
-        print("Invalid amount. Please enter a number.")
-        return
+    amount = get_valid_amount(
+        "Enter expense amount: Rs. "
+    )
 
-    if amount <= 0:
-        print("Amount must be greater than zero.")
-        return
+    category = select_category(
+        EXPENSE_CATEGORIES
+    )
 
-    category = select_category(EXPENSE_CATEGORIES)
-
-    description = input("Enter description: ").strip()
+    description = input(
+        "Enter description: "
+    ).strip()
 
     transaction_date = get_valid_date()
 
@@ -138,6 +150,24 @@ def add_expense():
     print("\nExpense added successfully!")
 
 
+def display_transaction(transaction):
+    transaction_id = transaction[0]
+    transaction_type = transaction[1]
+    amount = transaction[2]
+    category = transaction[3]
+    description = transaction[4]
+    transaction_date = transaction[5]
+
+    print(
+        f"#{transaction_id} | "
+        f"{transaction_type.title()} | "
+        f"Rs. {amount:.2f} | "
+        f"{category} | "
+        f"{description} | "
+        f"Date: {transaction_date}"
+    )
+
+
 def view_transactions():
     print("\n--- Transaction History ---")
 
@@ -148,32 +178,24 @@ def view_transactions():
         return
 
     for transaction in transactions:
-        transaction_id = transaction[0]
-        transaction_type = transaction[1]
-        amount = transaction[2]
-        category = transaction[3]
-        description = transaction[4]
-        transaction_date = transaction[5]
-        created_at = transaction[6]
-
-        print(
-            f"#{transaction_id} | "
-            f"{transaction_type.title()} | "
-            f"Rs. {amount:.2f} | "
-            f"{category} | "
-            f"{description} | "
-            f"Date: {transaction_date} | "
-            f"Created: {created_at}"
-        )
+        display_transaction(transaction)
 
 
 def view_balance():
-    total_income, total_expense, balance = get_balance_summary()
+    total_income, total_expense, balance = (
+        get_balance_summary()
+    )
 
     print("\n--- Account Summary ---")
-    print(f"Total Income   : Rs. {total_income:.2f}")
-    print(f"Total Expenses : Rs. {total_expense:.2f}")
-    print(f"Balance        : Rs. {balance:.2f}")
+    print(
+        f"Total Income   : Rs. {total_income:.2f}"
+    )
+    print(
+        f"Total Expenses : Rs. {total_expense:.2f}"
+    )
+    print(
+        f"Balance        : Rs. {balance:.2f}"
+    )
 
 
 def delete_transaction_menu():
@@ -186,24 +208,20 @@ def delete_transaction_menu():
         return
 
     for transaction in transactions:
-        print(
-            f"#{transaction[0]} | "
-            f"{transaction[1].title()} | "
-            f"Rs. {transaction[2]:.2f} | "
-            f"{transaction[3]} | "
-            f"{transaction[5]}"
-        )
+        display_transaction(transaction)
 
     try:
         transaction_id = int(
             input("\nEnter transaction ID to delete: ")
         )
+
     except ValueError:
         print("Invalid ID. Please enter a number.")
         return
 
     confirm = input(
-        f"Are you sure you want to delete transaction #{transaction_id}? (y/n): "
+        f"Are you sure you want to delete "
+        f"transaction #{transaction_id}? (y/n): "
     ).strip().lower()
 
     if confirm != "y":
@@ -212,8 +230,100 @@ def delete_transaction_menu():
 
     if delete_transaction(transaction_id):
         print("Transaction deleted successfully!")
+
     else:
         print("Transaction ID not found.")
+
+
+def edit_transaction_menu():
+    print("\n--- Edit Transaction ---")
+
+    transactions = get_transactions()
+
+    if len(transactions) == 0:
+        print("No transactions found.")
+        return
+
+    for transaction in transactions:
+        display_transaction(transaction)
+
+    try:
+        transaction_id = int(
+            input("\nEnter transaction ID to edit: ")
+        )
+
+    except ValueError:
+        print("Invalid ID. Please enter a number.")
+        return
+
+    selected_transaction = None
+
+    for transaction in transactions:
+        if transaction[0] == transaction_id:
+            selected_transaction = transaction
+            break
+
+    if selected_transaction is None:
+        print("Transaction ID not found.")
+        return
+
+    print("\nCurrent transaction:")
+    display_transaction(selected_transaction)
+
+    print("\nSelect new transaction type:")
+    print("1. Income")
+    print("2. Expense")
+
+    type_choice = input(
+        "Choose transaction type: "
+    ).strip()
+
+    if type_choice == "1":
+        transaction_type = "income"
+
+        category = select_category(
+            INCOME_CATEGORIES
+        )
+
+    elif type_choice == "2":
+        transaction_type = "expense"
+
+        category = select_category(
+            EXPENSE_CATEGORIES
+        )
+
+    else:
+        print("Invalid transaction type.")
+        return
+
+    amount = get_valid_amount(
+        "Enter new amount: Rs. "
+    )
+
+    description = input(
+        "Enter new description: "
+    ).strip()
+
+    transaction_date = get_valid_date()
+
+    updated = update_transaction(
+        transaction_id,
+        transaction_type,
+        amount,
+        category,
+        description,
+        transaction_date
+    )
+
+    if updated:
+        print(
+            "\nTransaction updated successfully!"
+        )
+
+    else:
+        print(
+            "\nTransaction could not be updated."
+        )
 
 
 def main():
@@ -222,7 +332,9 @@ def main():
     while True:
         show_menu()
 
-        choice = input("\nChoose an option: ").strip()
+        choice = input(
+            "\nChoose an option: "
+        ).strip()
 
         if choice == "1":
             add_income()
@@ -240,13 +352,20 @@ def main():
             delete_transaction_menu()
 
         elif choice == "6":
-            print("\nThank you for using SpendWise LK!")
+            edit_transaction_menu()
+
+        elif choice == "7":
+            print(
+                "\nThank you for using SpendWise LK!"
+            )
             print("Goodbye!")
             break
 
-
         else:
-            print("\nInvalid option. Please choose between 1 and 6.")
+            print(
+                "\nInvalid option. "
+                "Please choose between 1 and 7."
+            )
 
 
 if __name__ == "__main__":

@@ -82,6 +82,7 @@ def get_transactions():
 
     return transactions
 
+
 def delete_transaction(transaction_id):
     connection = get_connection()
     cursor = connection.cursor()
@@ -98,6 +99,45 @@ def delete_transaction(transaction_id):
     connection.close()
 
     return deleted_rows > 0
+
+
+def update_transaction(
+    transaction_id,
+    transaction_type,
+    amount,
+    category,
+    description,
+    transaction_date
+):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE transactions
+        SET
+            type = ?,
+            amount = ?,
+            category = ?,
+            description = ?,
+            transaction_date = ?
+        WHERE id = ?
+    """, (
+        transaction_type,
+        amount,
+        category,
+        description,
+        transaction_date,
+        transaction_id
+    ))
+
+    connection.commit()
+
+    updated_rows = cursor.rowcount
+
+    connection.close()
+
+    return updated_rows > 0
+
 
 def get_balance_summary():
     connection = get_connection()
