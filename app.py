@@ -16,10 +16,6 @@ from database import (
 )
 
 
-# =========================================================
-# CATEGORIES
-# =========================================================
-
 INCOME_CATEGORIES = [
     "Salary",
     "Freelance",
@@ -28,6 +24,7 @@ INCOME_CATEGORIES = [
     "Investment",
     "Other"
 ]
+
 
 EXPENSE_CATEGORIES = [
     "Food",
@@ -49,66 +46,90 @@ EXPENSE_CATEGORIES = [
 def select_category(categories):
     print("\nSelect a category:")
 
-    for index, category in enumerate(categories, start=1):
-        print(f"{index}. {category}")
+    for index, category in enumerate(
+        categories,
+        start=1
+    ):
+        print(
+            f"{index}. {category}"
+        )
 
     while True:
         try:
-            choice = int(input("Choose category number: "))
+            choice = int(
+                input(
+                    "Choose category number: "
+                )
+            )
 
             if 1 <= choice <= len(categories):
-                return categories[choice - 1]
+                return categories[
+                    choice - 1
+                ]
 
-            print("Invalid choice. Please select a valid number.")
-
-        except ValueError:
-            print("Please enter a number.")
-
-
-def get_valid_date():
-    while True:
-        transaction_date = input(
-            "Enter transaction date (YYYY-MM-DD): "
-        ).strip()
-
-        try:
-            datetime.strptime(transaction_date, "%Y-%m-%d")
-            return transaction_date
+            print(
+                "Invalid category."
+            )
 
         except ValueError:
-            print("Invalid date. Please use YYYY-MM-DD format.")
+            print(
+                "Please enter a number."
+            )
 
 
 def get_valid_amount(message):
     while True:
         try:
-            amount = float(input(message))
+            amount = float(
+                input(message)
+            )
 
             if amount <= 0:
-                print("Amount must be greater than zero.")
+                print(
+                    "Amount must be greater than zero."
+                )
                 continue
 
             return amount
 
         except ValueError:
-            print("Invalid amount. Please enter a number.")
+            print(
+                "Invalid amount."
+            )
 
 
-def display_transaction(transaction):
-    transaction_id = transaction[0]
-    transaction_type = transaction[1]
-    amount = transaction[2]
-    category = transaction[3]
-    description = transaction[4]
-    transaction_date = transaction[5]
+def get_valid_date():
+    while True:
+        transaction_date = input(
+            "Enter transaction date "
+            "(YYYY-MM-DD): "
+        ).strip()
 
+        try:
+            datetime.strptime(
+                transaction_date,
+                "%Y-%m-%d"
+            )
+
+            return transaction_date
+
+        except ValueError:
+            print(
+                "Invalid date. "
+                "Use YYYY-MM-DD."
+            )
+
+
+def display_transaction(
+    transaction
+):
     print(
-        f"#{transaction_id} | "
-        f"{transaction_type.title()} | "
-        f"Rs. {amount:.2f} | "
-        f"{category} | "
-        f"{description} | "
-        f"Date: {transaction_date}"
+        f"#{transaction[0]} | "
+        f"{transaction[1].title()} | "
+        f"Rs. {transaction[2]:.2f} | "
+        f"{transaction[3]} | "
+        f"{transaction[4]} | "
+        f"Date: {transaction[5]}"
     )
 
 
@@ -118,7 +139,9 @@ def display_transaction(transaction):
 
 def show_menu():
     print("\n" + "=" * 50)
-    print("                 SPENDWISE LK")
+    print(
+        "                 SPENDWISE LK"
+    )
     print("=" * 50)
 
     print("1. Add Income")
@@ -130,8 +153,12 @@ def show_menu():
     print("7. Monthly Analytics")
     print("8. Set Monthly Budget")
     print("9. View Budget Status")
-    print("10. Category Spending Analytics")
-    print("11. Smart Spending Insights")
+    print(
+        "10. Category Spending Analytics"
+    )
+    print(
+        "11. Smart Spending Insights"
+    )
     print("12. Exit")
 
 
@@ -154,7 +181,9 @@ def add_income():
         "Enter description: "
     ).strip()
 
-    transaction_date = get_valid_date()
+    transaction_date = (
+        get_valid_date()
+    )
 
     add_transaction(
         "income",
@@ -164,7 +193,9 @@ def add_income():
         transaction_date
     )
 
-    print("\nIncome added successfully!")
+    print(
+        "\nIncome added successfully!"
+    )
 
 
 # =========================================================
@@ -186,7 +217,9 @@ def add_expense():
         "Enter description: "
     ).strip()
 
-    transaction_date = get_valid_date()
+    transaction_date = (
+        get_valid_date()
+    )
 
     add_transaction(
         "expense",
@@ -196,7 +229,9 @@ def add_expense():
         transaction_date
     )
 
-    print("\nExpense added successfully!")
+    print(
+        "\nExpense added successfully!"
+    )
 
 
 # =========================================================
@@ -204,16 +239,22 @@ def add_expense():
 # =========================================================
 
 def view_transactions():
-    print("\n--- Transaction History ---")
+    print(
+        "\n--- Transaction History ---"
+    )
 
     transactions = get_transactions()
 
-    if len(transactions) == 0:
-        print("No transactions found.")
+    if not transactions:
+        print(
+            "No transactions found."
+        )
         return
 
     for transaction in transactions:
-        display_transaction(transaction)
+        display_transaction(
+            transaction
+        )
 
 
 # =========================================================
@@ -221,490 +262,26 @@ def view_transactions():
 # =========================================================
 
 def view_balance():
-    total_income, total_expense, balance = (
+    income, expense, balance = (
         get_balance_summary()
     )
 
     print("\n--- Account Summary ---")
-    print(f"Total Income   : Rs. {total_income:.2f}")
-    print(f"Total Expenses : Rs. {total_expense:.2f}")
-    print(f"Balance        : Rs. {balance:.2f}")
-
-
-# =========================================================
-# MONTHLY ANALYTICS
-# =========================================================
-
-def monthly_analytics():
-    print("\n--- Monthly Analytics ---")
-
-    try:
-        year = int(input("Enter year (e.g. 2026): "))
-        month = int(input("Enter month (1-12): "))
-
-        if month < 1 or month > 12:
-            print("Invalid month. Please enter a value between 1 and 12.")
-            return
-
-    except ValueError:
-        print("Invalid input. Please enter numbers only.")
-        return
-
-    transactions = get_transactions_by_month(
-        year,
-        month
-    )
-
-    total_income, total_expense, balance = (
-        get_monthly_summary(year, month)
-    )
-
-    print(f"\n--- Summary for {year}-{month:02d} ---")
-    print(f"Total Income   : Rs. {total_income:.2f}")
-    print(f"Total Expenses : Rs. {total_expense:.2f}")
-    print(f"Balance        : Rs. {balance:.2f}")
-
-    print("\n--- Transactions ---")
-
-    if len(transactions) == 0:
-        print("No transactions found for this month.")
-        return
-
-    for transaction in transactions:
-        display_transaction(transaction)
-
-
-# =========================================================
-# CATEGORY SPENDING ANALYTICS
-# =========================================================
-
-def category_spending_analytics():
-    print("\n--- Category Spending Analytics ---")
-
-    try:
-        year = int(input("Enter year: "))
-        month = int(input("Enter month (1-12): "))
-
-        if month < 1 or month > 12:
-            print("Invalid month. Please enter a value between 1 and 12.")
-            return
-
-    except ValueError:
-        print("Invalid input. Please enter numbers only.")
-        return
-
-    category_spending = get_category_spending(
-        year,
-        month
-    )
-
-    if len(category_spending) == 0:
-        print("No expense transactions found for this month.")
-        return
-
-    total_expense = sum(
-        amount
-        for category, amount in category_spending
-    )
-
-    print(f"\n--- Spending for {year}-{month:02d} ---")
-
-    for category, amount in category_spending:
-        percentage = (
-            amount / total_expense
-        ) * 100
-
-        print(
-            f"{category:<15} "
-            f"Rs. {amount:>10.2f} "
-            f"({percentage:.1f}%)"
-        )
-
-    highest_category = category_spending[0][0]
-    highest_amount = category_spending[0][1]
-
-    highest_percentage = (
-        highest_amount / total_expense
-    ) * 100
-
-    print("\n--- Smart Insights ---")
 
     print(
-        f"Highest spending category: "
-        f"{highest_category} "
-        f"(Rs. {highest_amount:.2f})"
+        f"Total Income   : "
+        f"Rs. {income:.2f}"
     )
 
     print(
-        f"{highest_category} represents "
-        f"{highest_percentage:.1f}% "
-        f"of total monthly expenses."
-    )
-
-    if highest_percentage >= 50:
-        print(
-            "Insight: More than half of your monthly "
-            "expenses are concentrated in one category."
-        )
-
-    elif highest_percentage >= 30:
-        print(
-            "Insight: A significant portion of your "
-            "monthly spending is concentrated in this category."
-        )
-
-    else:
-        print(
-            "Insight: Your spending is relatively "
-            "distributed across categories."
-        )
-
-
-# =========================================================
-# SMART SPENDING INSIGHTS
-# =========================================================
-
-def smart_spending_insights():
-    print("\n--- Smart Spending Insights ---")
-
-    try:
-        year = int(input("Enter year: "))
-        month = int(input("Enter month (1-12): "))
-
-        if month < 1 or month > 12:
-            print(
-                "Invalid month. "
-                "Please enter a value between 1 and 12."
-            )
-            return
-
-    except ValueError:
-        print("Invalid input. Please enter numbers only.")
-        return
-
-    current_spending = get_category_spending(
-        year,
-        month
-    )
-
-    if len(current_spending) == 0:
-        print("No expense data found for this month.")
-        return
-
-    # Previous month calculation
-    if month == 1:
-        previous_month = 12
-        previous_year = year - 1
-
-    else:
-        previous_month = month - 1
-        previous_year = year
-
-    previous_spending = get_category_spending(
-        previous_year,
-        previous_month
-    )
-
-    current_dict = dict(current_spending)
-    previous_dict = dict(previous_spending)
-
-    current_total = sum(
-        current_dict.values()
-    )
-
-    previous_total = sum(
-        previous_dict.values()
+        f"Total Expenses : "
+        f"Rs. {expense:.2f}"
     )
 
     print(
-        f"\nCurrent month total expenses : "
-        f"Rs. {current_total:.2f}"
+        f"Balance        : "
+        f"Rs. {balance:.2f}"
     )
-
-    print(
-        f"Previous month total expenses: "
-        f"Rs. {previous_total:.2f}"
-    )
-
-    # -----------------------------------------
-    # Overall monthly change
-    # -----------------------------------------
-
-    if previous_total > 0:
-        change = current_total - previous_total
-
-        change_percentage = (
-            change / previous_total
-        ) * 100
-
-        if change > 0:
-            print(
-                f"Overall spending increased by "
-                f"Rs. {change:.2f} "
-                f"({change_percentage:.1f}%)."
-            )
-
-        elif change < 0:
-            print(
-                f"Overall spending decreased by "
-                f"Rs. {abs(change):.2f} "
-                f"({abs(change_percentage):.1f}%)."
-            )
-
-        else:
-            print(
-                "Overall spending did not change."
-            )
-
-    else:
-        print(
-            "No previous-month expense data "
-            "available for comparison."
-        )
-
-    # -----------------------------------------
-    # Category comparison
-    # -----------------------------------------
-
-    print("\n--- Category Changes ---")
-
-    all_categories = (
-        set(current_dict)
-        | set(previous_dict)
-    )
-
-    changes = []
-
-    for category in sorted(all_categories):
-        current_amount = current_dict.get(
-            category,
-            0
-        )
-
-        previous_amount = previous_dict.get(
-            category,
-            0
-        )
-
-        difference = (
-            current_amount - previous_amount
-        )
-
-        changes.append(
-            (
-                category,
-                difference,
-                current_amount,
-                previous_amount
-            )
-        )
-
-        if previous_amount > 0:
-            percentage_change = (
-                difference / previous_amount
-            ) * 100
-
-            if difference > 0:
-                print(
-                    f"{category}: increased by "
-                    f"Rs. {difference:.2f} "
-                    f"({percentage_change:.1f}%)"
-                )
-
-            elif difference < 0:
-                print(
-                    f"{category}: decreased by "
-                    f"Rs. {abs(difference):.2f} "
-                    f"({abs(percentage_change):.1f}%)"
-                )
-
-            else:
-                print(
-                    f"{category}: no change"
-                )
-
-        elif current_amount > 0:
-            print(
-                f"{category}: new spending "
-                f"this month "
-                f"(Rs. {current_amount:.2f})"
-            )
-
-    # -----------------------------------------
-    # Biggest increase
-    # -----------------------------------------
-
-    highest_increase = max(
-        changes,
-        key=lambda item: item[1]
-    )
-
-    category = highest_increase[0]
-    increase = highest_increase[1]
-
-    print("\n--- Key Insights ---")
-
-    if increase > 0:
-        print(
-            f"Biggest spending increase: "
-            f"{category} "
-            f"(+Rs. {increase:.2f})"
-        )
-
-    else:
-        print(
-            "No category showed a spending increase."
-        )
-
-    # -----------------------------------------
-    # Spending concentration
-    # -----------------------------------------
-
-    highest_category = max(
-        current_dict,
-        key=current_dict.get
-    )
-
-    highest_amount = (
-        current_dict[highest_category]
-    )
-
-    concentration = (
-        highest_amount / current_total
-    ) * 100
-
-    if concentration >= 50:
-        print(
-            f"Warning: {highest_category} "
-            f"accounts for "
-            f"{concentration:.1f}% "
-            f"of this month's spending."
-        )
-
-    elif concentration >= 30:
-        print(
-            f"Notice: {highest_category} "
-            f"is a major expense category "
-            f"at {concentration:.1f}% "
-            f"of total spending."
-        )
-
-    else:
-        print(
-            "Insight: Spending is relatively "
-            "distributed across categories."
-        )
-
-
-# =========================================================
-# SET MONTHLY BUDGET
-# =========================================================
-
-def set_budget_menu():
-    print("\n--- Set Monthly Budget ---")
-
-    try:
-        year = int(input("Enter year: "))
-        month = int(input("Enter month (1-12): "))
-
-        if month < 1 or month > 12:
-            print("Invalid month.")
-            return
-
-    except ValueError:
-        print("Please enter valid numbers.")
-        return
-
-    category = select_category(
-        EXPENSE_CATEGORIES
-    )
-
-    amount = get_valid_amount(
-        "Enter budget amount: Rs. "
-    )
-
-    set_budget(
-        year,
-        month,
-        category,
-        amount
-    )
-
-    print("\nBudget saved successfully!")
-
-
-# =========================================================
-# VIEW BUDGET STATUS
-# =========================================================
-
-def view_budget_status():
-    print("\n--- Budget Status ---")
-
-    try:
-        year = int(input("Enter year: "))
-        month = int(input("Enter month (1-12): "))
-
-        if month < 1 or month > 12:
-            print("Invalid month.")
-            return
-
-    except ValueError:
-        print("Please enter valid numbers.")
-        return
-
-    budgets = get_budgets(
-        year,
-        month
-    )
-
-    if len(budgets) == 0:
-        print(
-            "No budgets found for this month."
-        )
-        return
-
-    print(
-        f"\n--- Budget Status for "
-        f"{year}-{month:02d} ---"
-    )
-
-    for category, budget_amount in budgets:
-        spent = get_category_expense(
-            year,
-            month,
-            category
-        )
-
-        remaining = (
-            budget_amount - spent
-        )
-
-        if budget_amount > 0:
-            percentage = (
-                spent / budget_amount
-            ) * 100
-        else:
-            percentage = 0
-
-        print(
-            f"\n{category}"
-            f"\nBudget    : Rs. {budget_amount:.2f}"
-            f"\nSpent     : Rs. {spent:.2f}"
-            f"\nRemaining : Rs. {remaining:.2f}"
-            f"\nUsed      : {percentage:.1f}%"
-        )
-
-        if spent > budget_amount:
-            print(
-                f"WARNING: Budget exceeded by "
-                f"Rs. {abs(remaining):.2f}"
-            )
-
-        elif percentage >= 80:
-            print(
-                "WARNING: You have used over "
-                "80% of this budget."
-            )
 
 
 # =========================================================
@@ -712,34 +289,33 @@ def view_budget_status():
 # =========================================================
 
 def delete_transaction_menu():
-    print("\n--- Delete Transaction ---")
-
     transactions = get_transactions()
 
-    if len(transactions) == 0:
-        print("No transactions found.")
+    if not transactions:
+        print(
+            "No transactions found."
+        )
         return
 
     for transaction in transactions:
-        display_transaction(transaction)
+        display_transaction(
+            transaction
+        )
 
     try:
         transaction_id = int(
             input(
-                "\nEnter transaction ID to delete: "
+                "\nEnter transaction ID "
+                "to delete: "
             )
         )
 
     except ValueError:
-        print(
-            "Invalid ID. Please enter a number."
-        )
+        print("Invalid ID.")
         return
 
     confirm = input(
-        f"Are you sure you want to delete "
-        f"transaction #{transaction_id}? "
-        f"(y/n): "
+        "Are you sure? (y/n): "
     ).strip().lower()
 
     if confirm != "y":
@@ -764,55 +340,57 @@ def delete_transaction_menu():
 # =========================================================
 
 def edit_transaction_menu():
-    print("\n--- Edit Transaction ---")
-
     transactions = get_transactions()
 
-    if len(transactions) == 0:
-        print("No transactions found.")
+    if not transactions:
+        print(
+            "No transactions found."
+        )
         return
 
     for transaction in transactions:
-        display_transaction(transaction)
+        display_transaction(
+            transaction
+        )
 
     try:
         transaction_id = int(
             input(
-                "\nEnter transaction ID to edit: "
+                "\nEnter transaction ID "
+                "to edit: "
             )
         )
 
     except ValueError:
+        print("Invalid ID.")
+        return
+
+    selected = None
+
+    for transaction in transactions:
+
+        if (
+            transaction[0]
+            == transaction_id
+        ):
+            selected = transaction
+            break
+
+    if selected is None:
         print(
-            "Invalid ID. Please enter a number."
+            "Transaction not found."
         )
         return
 
-    selected_transaction = None
-
-    for transaction in transactions:
-        if transaction[0] == transaction_id:
-            selected_transaction = transaction
-            break
-
-    if selected_transaction is None:
-        print("Transaction ID not found.")
-        return
-
-    print("\nCurrent transaction:")
-    display_transaction(
-        selected_transaction
-    )
-
-    print("\nSelect new transaction type:")
-    print("1. Income")
+    print("\n1. Income")
     print("2. Expense")
 
     type_choice = input(
-        "Choose transaction type: "
+        "Choose type: "
     ).strip()
 
     if type_choice == "1":
+
         transaction_type = "income"
 
         category = select_category(
@@ -820,6 +398,7 @@ def edit_transaction_menu():
         )
 
     elif type_choice == "2":
+
         transaction_type = "expense"
 
         category = select_category(
@@ -827,9 +406,7 @@ def edit_transaction_menu():
         )
 
     else:
-        print(
-            "Invalid transaction type."
-        )
+        print("Invalid type.")
         return
 
     amount = get_valid_amount(
@@ -837,12 +414,14 @@ def edit_transaction_menu():
     )
 
     description = input(
-        "Enter new description: "
+        "Enter description: "
     ).strip()
 
-    transaction_date = get_valid_date()
+    transaction_date = (
+        get_valid_date()
+    )
 
-    updated = update_transaction(
+    success = update_transaction(
         transaction_id,
         transaction_type,
         amount,
@@ -851,25 +430,411 @@ def edit_transaction_menu():
         transaction_date
     )
 
-    if updated:
+    if success:
         print(
-            "\nTransaction updated successfully!"
+            "Transaction updated successfully!"
         )
 
     else:
         print(
-            "\nTransaction could not be updated."
+            "Could not update transaction."
         )
 
 
 # =========================================================
-# MAIN APPLICATION
+# MONTHLY ANALYTICS
+# =========================================================
+
+def monthly_analytics():
+    try:
+        year = int(
+            input("Enter year: ")
+        )
+
+        month = int(
+            input(
+                "Enter month (1-12): "
+            )
+        )
+
+    except ValueError:
+        print("Invalid input.")
+        return
+
+    if month < 1 or month > 12:
+        print("Invalid month.")
+        return
+
+    transactions = (
+        get_transactions_by_month(
+            year,
+            month
+        )
+    )
+
+    income, expense, balance = (
+        get_monthly_summary(
+            year,
+            month
+        )
+    )
+
+    print(
+        f"\n--- {year}-{month:02d} ---"
+    )
+
+    print(
+        f"Income  : Rs. {income:.2f}"
+    )
+
+    print(
+        f"Expense : Rs. {expense:.2f}"
+    )
+
+    print(
+        f"Balance : Rs. {balance:.2f}"
+    )
+
+    print("\nTransactions:")
+
+    if not transactions:
+        print(
+            "No transactions found."
+        )
+        return
+
+    for transaction in transactions:
+        display_transaction(
+            transaction
+        )
+
+
+# =========================================================
+# SET BUDGET
+# =========================================================
+
+def set_budget_menu():
+    try:
+        year = int(
+            input("Enter year: ")
+        )
+
+        month = int(
+            input(
+                "Enter month (1-12): "
+            )
+        )
+
+    except ValueError:
+        print("Invalid input.")
+        return
+
+    if not 1 <= month <= 12:
+        print("Invalid month.")
+        return
+
+    category = select_category(
+        EXPENSE_CATEGORIES
+    )
+
+    amount = get_valid_amount(
+        "Enter budget: Rs. "
+    )
+
+    set_budget(
+        year,
+        month,
+        category,
+        amount
+    )
+
+    print(
+        "Budget saved successfully!"
+    )
+
+
+# =========================================================
+# BUDGET STATUS
+# =========================================================
+
+def view_budget_status():
+    try:
+        year = int(
+            input("Enter year: ")
+        )
+
+        month = int(
+            input(
+                "Enter month (1-12): "
+            )
+        )
+
+    except ValueError:
+        print("Invalid input.")
+        return
+
+    budgets = get_budgets(
+        year,
+        month
+    )
+
+    if not budgets:
+        print(
+            "No budgets found."
+        )
+        return
+
+    for category, budget in budgets:
+
+        spent = get_category_expense(
+            year,
+            month,
+            category
+        )
+
+        remaining = (
+            budget - spent
+        )
+
+        percentage = (
+            spent / budget
+        ) * 100
+
+        print(
+            f"\n{category}"
+        )
+
+        print(
+            f"Budget    : Rs. {budget:.2f}"
+        )
+
+        print(
+            f"Spent     : Rs. {spent:.2f}"
+        )
+
+        print(
+            f"Remaining : Rs. {remaining:.2f}"
+        )
+
+        print(
+            f"Used      : {percentage:.1f}%"
+        )
+
+        if spent > budget:
+            print(
+                "WARNING: Budget exceeded!"
+            )
+
+        elif percentage >= 80:
+            print(
+                "WARNING: More than "
+                "80% budget used."
+            )
+
+
+# =========================================================
+# CATEGORY ANALYTICS
+# =========================================================
+
+def category_spending_analytics():
+    try:
+        year = int(
+            input("Enter year: ")
+        )
+
+        month = int(
+            input(
+                "Enter month (1-12): "
+            )
+        )
+
+    except ValueError:
+        print("Invalid input.")
+        return
+
+    spending = get_category_spending(
+        year,
+        month
+    )
+
+    if not spending:
+        print(
+            "No expense data found."
+        )
+        return
+
+    total = sum(
+        amount
+        for category, amount
+        in spending
+    )
+
+    print(
+        f"\n--- Spending "
+        f"{year}-{month:02d} ---"
+    )
+
+    for category, amount in spending:
+
+        percentage = (
+            amount / total
+        ) * 100
+
+        print(
+            f"{category:<15} "
+            f"Rs. {amount:>10.2f} "
+            f"({percentage:.1f}%)"
+        )
+
+
+# =========================================================
+# SMART SPENDING INSIGHTS
+# =========================================================
+
+def smart_spending_insights():
+    try:
+        year = int(
+            input("Enter year: ")
+        )
+
+        month = int(
+            input(
+                "Enter month (1-12): "
+            )
+        )
+
+    except ValueError:
+        print("Invalid input.")
+        return
+
+    if not 1 <= month <= 12:
+        print("Invalid month.")
+        return
+
+    current = dict(
+        get_category_spending(
+            year,
+            month
+        )
+    )
+
+    if not current:
+        print(
+            "No expense data found."
+        )
+        return
+
+    if month == 1:
+        previous_year = year - 1
+        previous_month = 12
+
+    else:
+        previous_year = year
+        previous_month = month - 1
+
+    previous = dict(
+        get_category_spending(
+            previous_year,
+            previous_month
+        )
+    )
+
+    current_total = sum(
+        current.values()
+    )
+
+    previous_total = sum(
+        previous.values()
+    )
+
+    print(
+        f"\nCurrent expenses : "
+        f"Rs. {current_total:.2f}"
+    )
+
+    print(
+        f"Previous expenses: "
+        f"Rs. {previous_total:.2f}"
+    )
+
+    if previous_total > 0:
+
+        difference = (
+            current_total
+            - previous_total
+        )
+
+        percentage = (
+            difference
+            / previous_total
+        ) * 100
+
+        if difference > 0:
+
+            print(
+                f"Spending increased by "
+                f"Rs. {difference:.2f} "
+                f"({percentage:.1f}%)."
+            )
+
+        elif difference < 0:
+
+            print(
+                f"Spending decreased by "
+                f"Rs. {abs(difference):.2f} "
+                f"({abs(percentage):.1f}%)."
+            )
+
+        else:
+            print(
+                "Spending did not change."
+            )
+
+    else:
+        print(
+            "No previous-month "
+            "data available."
+        )
+
+    highest_category = max(
+        current,
+        key=current.get
+    )
+
+    highest_amount = (
+        current[highest_category]
+    )
+
+    percentage = (
+        highest_amount
+        / current_total
+    ) * 100
+
+    print(
+        f"\nHighest category: "
+        f"{highest_category}"
+    )
+
+    print(
+        f"Amount: Rs. "
+        f"{highest_amount:.2f}"
+    )
+
+    print(
+        f"Share: "
+        f"{percentage:.1f}%"
+    )
+
+
+# =========================================================
+# MAIN
 # =========================================================
 
 def main():
     create_tables()
 
     while True:
+
         show_menu()
 
         choice = input(
@@ -911,23 +876,17 @@ def main():
 
         elif choice == "12":
             print(
-                "\nThank you for using "
-                "SpendWise LK!"
+                "\nThank you for using SpendWise LK!"
             )
             print("Goodbye!")
             break
 
         else:
             print(
-                "\nInvalid option. "
-                "Please choose between "
-                "1 and 12."
+                "Invalid option. "
+                "Choose between 1 and 12."
             )
 
-
-# =========================================================
-# PROGRAM ENTRY POINT
-# =========================================================
 
 if __name__ == "__main__":
     main()
