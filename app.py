@@ -11,7 +11,8 @@ from database import (
     get_monthly_summary,
     set_budget,
     get_budgets,
-    get_category_expense
+    get_category_expense,
+    get_category_spending
 )
 
 
@@ -70,7 +71,8 @@ def show_menu():
     print("7. Monthly Analytics")
     print("8. Set Monthly Budget")
     print("9. View Budget Status")
-    print("10 Exit")
+    print("10. Category Spending Analytics")
+    print("11. Exit")
 
 
 def get_valid_date():
@@ -241,6 +243,79 @@ def monthly_analytics():
 
     for transaction in transactions:
         display_transaction(transaction)    
+
+
+def category_spending_analytics():
+    print("\n--- Category Spending Analytics ---")
+
+    try:
+        year = int(input("Enter year: "))
+        month = int(input("Enter month (1-12): "))
+
+        if month < 1 or month > 12:
+            print("Invalid month. Please enter a value between 1 and 12.")
+            return
+
+    except ValueError:
+        print("Invalid input. Please enter numbers only.")
+        return
+
+    category_spending = get_category_spending(year, month)
+
+    if len(category_spending) == 0:
+        print("No expense transactions found for this month.")
+        return
+
+    total_expense = sum(amount for category, amount in category_spending)
+
+    print(f"\n--- Spending for {year}-{month:02d} ---")
+
+    for category, amount in category_spending:
+        percentage = (amount / total_expense) * 100
+
+        print(
+            f"{category:<15} "
+            f"Rs. {amount:>10.2f} "
+            f"({percentage:.1f}%)"
+        )
+
+    highest_category = category_spending[0][0]
+    highest_amount = category_spending[0][1]
+
+    print("\n--- Smart Insights ---")
+    print(
+        f"Highest spending category: "
+        f"{highest_category} "
+        f"(Rs. {highest_amount:.2f})"
+    )
+
+    highest_percentage = (
+        highest_amount / total_expense
+    ) * 100
+
+    print(
+        f"{highest_category} represents "
+        f"{highest_percentage:.1f}% "
+        f"of total monthly expenses."
+    )
+
+    if highest_percentage >= 50:
+        print(
+            "Insight: More than half of your monthly "
+            "expenses are concentrated in one category."
+        )
+
+    elif highest_percentage >= 30:
+        print(
+            "Insight: A significant portion of your "
+            "monthly spending is concentrated in this category."
+        )
+
+    else:
+        print(
+            "Insight: Your spending is relatively "
+            "distributed across categories."
+        )
 
 def set_budget_menu():
     print("\n--- Set Monthly Budget ---")
@@ -495,6 +570,10 @@ def main():
      
 
         elif choice == "10":
+                category_spending_analytics()
+
+        elif choice == "11":
+
             print(
                 "\nThank you for using SpendWise LK!"
             )
@@ -504,7 +583,7 @@ def main():
         else:
             print(
                 "\nInvalid option. "
-                "Please choose between 1 and 7."
+                "Please choose between 1 and 11."
             )
 
 

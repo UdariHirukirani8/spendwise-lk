@@ -340,3 +340,27 @@ def get_category_expense(year, month, category):
     connection.close()
 
     return result[0]
+
+
+def get_category_spending(year, month):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    month_value = f"{year}-{month:02d}"
+
+    cursor.execute("""
+        SELECT
+            category,
+            SUM(amount) AS total_spent
+        FROM transactions
+        WHERE type = 'expense'
+        AND substr(transaction_date, 1, 7) = ?
+        GROUP BY category
+        ORDER BY total_spent DESC
+    """, (month_value,))
+
+    results = cursor.fetchall()
+
+    connection.close()
+
+    return results  
