@@ -1,7 +1,3 @@
-// =========================================================
-// CATEGORY DATA
-// =========================================================
-
 const incomeCategories = [
     "Salary",
     "Freelance",
@@ -27,24 +23,21 @@ const expenseCategories = [
 
 let editingTransactionId = null;
 
+let categoryChart = null;
+let monthlyChart = null;
+
 
 // =========================================================
-// UPDATE CATEGORY DROPDOWN
+// CATEGORY OPTIONS
 // =========================================================
 
 function updateCategoryOptions() {
 
     const type =
-        document.getElementById(
-            "type"
-        ).value;
+        document.getElementById("type").value;
 
-
-    const categorySelect =
-        document.getElementById(
-            "category"
-        );
-
+    const select =
+        document.getElementById("category");
 
     const categories =
         type === "income"
@@ -52,234 +45,164 @@ function updateCategoryOptions() {
             : expenseCategories;
 
 
-    categorySelect.innerHTML =
+    select.innerHTML =
         '<option value="">Select category</option>';
 
 
-    categories.forEach(
-        category => {
+    categories.forEach(category => {
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+        const option =
+            document.createElement("option");
 
-            option.value =
-                category;
+        option.value = category;
+        option.textContent = category;
 
-            option.textContent =
-                category;
+        select.appendChild(option);
+    });
+}
 
-            categorySelect.appendChild(
-                option
-            );
+
+// =========================================================
+// BALANCE
+// =========================================================
+
+async function loadBalance() {
+
+    const response =
+        await fetch("/balance");
+
+    const data =
+        await response.json();
+
+
+    document.getElementById(
+        "totalIncome"
+    ).textContent =
+        `Rs. ${Number(
+            data.total_income
+        ).toFixed(2)}`;
+
+
+    document.getElementById(
+        "totalExpense"
+    ).textContent =
+        `Rs. ${Number(
+            data.total_expense
+        ).toFixed(2)}`;
+
+
+    document.getElementById(
+        "balance"
+    ).textContent =
+        `Rs. ${Number(
+            data.balance
+        ).toFixed(2)}`;
+}
+
+
+// =========================================================
+// TRANSACTIONS
+// =========================================================
+
+async function loadTransactions() {
+
+    const response =
+        await fetch("/transactions");
+
+    const data =
+        await response.json();
+
+
+    const body =
+        document.getElementById(
+            "transactionTableBody"
+        );
+
+
+    body.innerHTML = "";
+
+
+    if (!data.transactions.length) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    No transactions found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    data.transactions.forEach(
+        transaction => {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+                <td>${transaction.id}</td>
+
+                <td>
+                    ${transaction.transaction_date}
+                </td>
+
+                <td>
+                    ${transaction.type}
+                </td>
+
+                <td>
+                    ${transaction.category}
+                </td>
+
+                <td>
+                    ${transaction.description || ""}
+                </td>
+
+                <td>
+                    Rs. ${Number(
+                        transaction.amount
+                    ).toFixed(2)}
+                </td>
+
+                <td>
+
+                    <button
+                        class="secondary-button"
+                        onclick="startEditTransaction(
+                            ${transaction.id}
+                        )"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        class="delete-button"
+                        onclick="deleteTransaction(
+                            ${transaction.id}
+                        )"
+                    >
+                        Delete
+                    </button>
+
+                </td>
+            `;
+
+
+            body.appendChild(row);
         }
     );
 }
 
 
 // =========================================================
-// LOAD BALANCE
+// SAVE TRANSACTION
 // =========================================================
 
-async function loadBalance() {
-
-    try {
-
-        const response =
-            await fetch(
-                "/balance"
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Could not load balance."
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        document.getElementById(
-            "totalIncome"
-        ).textContent =
-            `Rs. ${Number(
-                data.total_income
-            ).toFixed(2)}`;
-
-
-        document.getElementById(
-            "totalExpense"
-        ).textContent =
-            `Rs. ${Number(
-                data.total_expense
-            ).toFixed(2)}`;
-
-
-        document.getElementById(
-            "balance"
-        ).textContent =
-            `Rs. ${Number(
-                data.balance
-            ).toFixed(2)}`;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not load balance:",
-            error
-        );
-    }
-}
-
-
-// =========================================================
-// LOAD TRANSACTIONS
-// =========================================================
-
-async function loadTransactions() {
-
-    try {
-
-        const response =
-            await fetch(
-                "/transactions"
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Could not load transactions."
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        const tableBody =
-            document.getElementById(
-                "transactionTableBody"
-            );
-
-
-        tableBody.innerHTML =
-            "";
-
-
-        if (
-            !data.transactions
-            ||
-            data.transactions.length === 0
-        ) {
-
-            tableBody.innerHTML = `
-                <tr>
-
-                    <td colspan="7">
-                        No transactions found.
-                    </td>
-
-                </tr>
-            `;
-
-            return;
-        }
-
-
-        data.transactions.forEach(
-            transaction => {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-                    <td>
-                        ${transaction.id}
-                    </td>
-
-                    <td>
-                        ${transaction.transaction_date}
-                    </td>
-
-                    <td>
-                        ${transaction.type}
-                    </td>
-
-                    <td>
-                        ${transaction.category}
-                    </td>
-
-                    <td>
-                        ${transaction.description || ""}
-                    </td>
-
-                    <td>
-                        Rs. ${Number(
-                            transaction.amount
-                        ).toFixed(2)}
-                    </td>
-
-                    <td>
-
-                        <button
-                            class="secondary-button"
-                            onclick="startEditTransaction(
-                                ${transaction.id}
-                            )"
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            class="delete-button"
-                            onclick="deleteTransaction(
-                                ${transaction.id}
-                            )"
-                        >
-                            Delete
-                        </button>
-
-                    </td>
-                `;
-
-
-                tableBody.appendChild(
-                    row
-                );
-            }
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not load transactions:",
-            error
-        );
-    }
-}
-
-
-// =========================================================
-// CREATE OR UPDATE TRANSACTION
-// =========================================================
-
-async function saveTransaction(
-    event
-) {
+async function saveTransaction(event) {
 
     event.preventDefault();
 
@@ -291,7 +214,6 @@ async function saveTransaction(
                 "type"
             ).value,
 
-
         amount:
             Number(
                 document.getElementById(
@@ -299,20 +221,15 @@ async function saveTransaction(
                 ).value
             ),
 
-
         category:
             document.getElementById(
                 "category"
             ).value,
 
-
         description:
             document.getElementById(
                 "description"
-            )
-            .value
-            .trim(),
-
+            ).value.trim(),
 
         transaction_date:
             document.getElementById(
@@ -327,249 +244,232 @@ async function saveTransaction(
         );
 
 
-    if (
-        !transaction.category
-    ) {
+    let url = "/transactions";
+    let method = "POST";
 
-        message.textContent =
-            "Please select a category.";
 
-        return;
+    if (editingTransactionId !== null) {
+
+        url =
+            `/transactions/${editingTransactionId}`;
+
+        method = "PUT";
     }
 
 
-    if (
-        !transaction.amount
-        ||
-        transaction.amount <= 0
-    ) {
+    const response =
+        await fetch(
+            url,
+            {
+                method: method,
 
-        message.textContent =
-            "Please enter a valid amount.";
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
 
-        return;
-    }
-
-
-    if (
-        !transaction.transaction_date
-    ) {
-
-        message.textContent =
-            "Please select a date.";
-
-        return;
-    }
-
-
-    try {
-
-        let url =
-            "/transactions";
-
-
-        let method =
-            "POST";
-
-
-        const isEditing =
-            editingTransactionId !== null;
-
-
-        if (isEditing) {
-
-            url =
-                `/transactions/${editingTransactionId}`;
-
-            method =
-                "PUT";
-        }
-
-
-        const response =
-            await fetch(
-                url,
-                {
-                    method: method,
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            transaction
-                        )
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            if (
-                typeof data.detail
-                === "string"
-            ) {
-
-                message.textContent =
-                    data.detail;
+                body:
+                    JSON.stringify(
+                        transaction
+                    )
             }
-
-            else {
-
-                message.textContent =
-                    "Could not save transaction.";
-            }
-
-            console.error(
-                data
-            );
-
-            return;
-        }
-
-
-        if (isEditing) {
-
-            message.textContent =
-                "Transaction updated successfully.";
-        }
-
-        else {
-
-            message.textContent =
-                "Transaction added successfully.";
-        }
-
-
-        resetTransactionForm();
-
-
-        await refreshDashboard();
-
-    }
-
-    catch (error) {
-
-        message.textContent =
-            "Server connection failed.";
-
-
-        console.error(
-            error
         );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        message.textContent =
+            data.detail
+            || "Could not save transaction.";
+
+        return;
     }
+
+
+    message.textContent =
+        editingTransactionId === null
+            ? "Transaction added successfully."
+            : "Transaction updated successfully.";
+
+
+    resetTransactionForm();
+
+    await refreshDashboard();
 }
 
 
 // =========================================================
-// START EDITING TRANSACTION
+// EDIT
 // =========================================================
 
 async function startEditTransaction(
     transactionId
 ) {
 
-    try {
-
-        const response =
-            await fetch(
-                `/transactions/${transactionId}`
-            );
-
-
-        if (!response.ok) {
-
-            alert(
-                "Could not load transaction."
-            );
-
-            return;
-        }
-
-
-        const transaction =
-            await response.json();
-
-
-        editingTransactionId =
-            transaction.id;
-
-
-        document.getElementById(
-            "type"
-        ).value =
-            transaction.type;
-
-
-        updateCategoryOptions();
-
-
-        document.getElementById(
-            "category"
-        ).value =
-            transaction.category;
-
-
-        document.getElementById(
-            "amount"
-        ).value =
-            transaction.amount;
-
-
-        document.getElementById(
-            "description"
-        ).value =
-            transaction.description || "";
-
-
-        document.getElementById(
-            "transactionDate"
-        ).value =
-            transaction.transaction_date;
-
-
-        document.getElementById(
-            "submitButton"
-        ).textContent =
-            "Update Transaction";
-
-
-        document.getElementById(
-            "cancelEditButton"
-        ).style.display =
-            "inline-block";
-
-
-        document.getElementById(
-            "formMessage"
-        ).textContent =
-            `Editing transaction #${transaction.id}`;
-
-
-        document
-            .getElementById(
-                "transactionForm"
-            )
-            .scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Edit transaction failed:",
-            error
+    const response =
+        await fetch(
+            `/transactions/${transactionId}`
         );
+
+
+    if (!response.ok) {
+
+        alert(
+            "Could not load transaction."
+        );
+
+        return;
     }
+
+
+    const transaction =
+        await response.json();
+
+
+    editingTransactionId =
+        transaction.id;
+
+
+    document.getElementById(
+        "type"
+    ).value =
+        transaction.type;
+
+
+    updateCategoryOptions();
+
+
+    document.getElementById(
+        "category"
+    ).value =
+        transaction.category;
+
+
+    document.getElementById(
+        "amount"
+    ).value =
+        transaction.amount;
+
+
+    document.getElementById(
+        "description"
+    ).value =
+        transaction.description || "";
+
+
+    document.getElementById(
+        "transactionDate"
+    ).value =
+        transaction.transaction_date;
+
+
+    document.getElementById(
+        "submitButton"
+    ).textContent =
+        "Update Transaction";
+
+
+    document.getElementById(
+        "cancelEditButton"
+    ).style.display =
+        "inline-block";
+
+
+    document.getElementById(
+        "formMessage"
+    ).textContent =
+        `Editing transaction #${transaction.id}`;
+
+
+    document
+        .getElementById(
+            "transactionForm"
+        )
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+}
+
+
+// =========================================================
+// DELETE
+// =========================================================
+
+async function deleteTransaction(
+    transactionId
+) {
+
+    if (
+        !confirm(
+            `Delete transaction #${transactionId}?`
+        )
+    ) {
+        return;
+    }
+
+
+    const response =
+        await fetch(
+            `/transactions/${transactionId}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+
+    if (!response.ok) {
+
+        alert(
+            "Could not delete transaction."
+        );
+
+        return;
+    }
+
+
+    await refreshDashboard();
+}
+
+
+// =========================================================
+// RESET FORM
+// =========================================================
+
+function resetTransactionForm() {
+
+    editingTransactionId = null;
+
+
+    document.getElementById(
+        "transactionForm"
+    ).reset();
+
+
+    document.getElementById(
+        "type"
+    ).value =
+        "expense";
+
+
+    updateCategoryOptions();
+
+    setTodayDate();
+
+
+    document.getElementById(
+        "submitButton"
+    ).textContent =
+        "Add Transaction";
+
+
+    document.getElementById(
+        "cancelEditButton"
+    ).style.display =
+        "none";
 }
 
 
@@ -590,126 +490,10 @@ function cancelEdit() {
 
 
 // =========================================================
-// RESET TRANSACTION FORM
+// ANALYTICS
 // =========================================================
 
-function resetTransactionForm() {
-
-    editingTransactionId =
-        null;
-
-
-    document.getElementById(
-        "transactionForm"
-    ).reset();
-
-
-    document.getElementById(
-        "type"
-    ).value =
-        "expense";
-
-
-    updateCategoryOptions();
-
-
-    setTodayDate();
-
-
-    document.getElementById(
-        "submitButton"
-    ).textContent =
-        "Add Transaction";
-
-
-    document.getElementById(
-        "cancelEditButton"
-    ).style.display =
-        "none";
-}
-
-
-// =========================================================
-// DELETE TRANSACTION
-// =========================================================
-
-async function deleteTransaction(
-    transactionId
-) {
-
-    const confirmed =
-        confirm(
-            `Are you sure you want to delete transaction #${transactionId}?`
-        );
-
-
-    if (!confirmed) {
-
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                `/transactions/${transactionId}`,
-                {
-                    method:
-                        "DELETE"
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            alert(
-                data.detail
-                ||
-                "Could not delete transaction."
-            );
-
-            return;
-        }
-
-
-        if (
-            editingTransactionId
-            === transactionId
-        ) {
-
-            resetTransactionForm();
-        }
-
-
-        await refreshDashboard();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Delete failed:",
-            error
-        );
-
-
-        alert(
-            "Server connection failed."
-        );
-    }
-}
-
-
-// =========================================================
-// CATEGORY ANALYTICS
-// =========================================================
-
-async function loadCategoryAnalytics() {
+async function loadAnalytics() {
 
     const year =
         document.getElementById(
@@ -723,131 +507,440 @@ async function loadCategoryAnalytics() {
         ).value;
 
 
+    if (!year || !month) {
+
+        alert(
+            "Please enter year and month."
+        );
+
+        return;
+    }
+
+
+    await Promise.all([
+        loadCategoryAnalytics(
+            year,
+            month
+        ),
+
+        loadMonthlyAnalytics(
+            year,
+            month
+        ),
+
+        loadBudgets(
+            year,
+            month
+        )
+    ]);
+}
+
+
+// =========================================================
+// CATEGORY ANALYTICS
+// =========================================================
+
+async function loadCategoryAnalytics(
+    year,
+    month
+) {
+
+    const response =
+        await fetch(
+            `/analytics/categories?year=${year}&month=${month}`
+        );
+
+
+    const data =
+        await response.json();
+
+
     const output =
         document.getElementById(
             "categoryAnalytics"
         );
 
 
-    if (
-        !year
-        ||
-        !month
-    ) {
+    if (!data.categories.length) {
 
         output.innerHTML =
+            "<p>No spending data found.</p>";
+
+        if (categoryChart) {
+            categoryChart.destroy();
+            categoryChart = null;
+        }
+
+        return;
+    }
+
+
+    output.innerHTML = `
+        <p>
+            Total Expenses:
+            <strong>
+                Rs.
+                ${Number(
+                    data.total_expense
+                ).toFixed(2)}
+            </strong>
+        </p>
+        <br>
+    `;
+
+
+    data.categories.forEach(
+        item => {
+
+            output.innerHTML += `
+                <div class="analytics-row">
+
+                    <span>
+                        ${item.category}
+                    </span>
+
+                    <span>
+                        Rs.
+                        ${Number(
+                            item.amount
+                        ).toFixed(2)}
+
+                        (${item.percentage}%)
+                    </span>
+
+                </div>
+            `;
+        }
+    );
+
+
+    drawCategoryChart(
+        data.categories
+    );
+}
+
+
+// =========================================================
+// CATEGORY CHART
+// =========================================================
+
+function drawCategoryChart(
+    categories
+) {
+
+    const ctx =
+        document.getElementById(
+            "categoryChart"
+        );
+
+
+    if (categoryChart) {
+
+        categoryChart.destroy();
+    }
+
+
+    categoryChart =
+        new Chart(
+            ctx,
+            {
+                type: "doughnut",
+
+                data: {
+
+                    labels:
+                        categories.map(
+                            item =>
+                                item.category
+                        ),
+
+                    datasets: [{
+                        data:
+                            categories.map(
+                                item =>
+                                    item.amount
+                            )
+                    }]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false
+                }
+            }
+        );
+}
+
+
+// =========================================================
+// MONTHLY ANALYTICS
+// =========================================================
+
+async function loadMonthlyAnalytics(
+    year,
+    month
+) {
+
+    const response =
+        await fetch(
+            `/analytics/monthly?year=${year}&month=${month}`
+        );
+
+
+    const data =
+        await response.json();
+
+
+    drawMonthlyChart(
+        data.total_income,
+        data.total_expense
+    );
+}
+
+
+// =========================================================
+// MONTHLY CHART
+// =========================================================
+
+function drawMonthlyChart(
+    income,
+    expense
+) {
+
+    const ctx =
+        document.getElementById(
+            "monthlyChart"
+        );
+
+
+    if (monthlyChart) {
+
+        monthlyChart.destroy();
+    }
+
+
+    monthlyChart =
+        new Chart(
+            ctx,
+            {
+                type: "bar",
+
+                data: {
+
+                    labels: [
+                        "Income",
+                        "Expenses"
+                    ],
+
+                    datasets: [{
+                        label:
+                            "Amount (Rs.)",
+
+                        data: [
+                            income,
+                            expense
+                        ]
+                    }]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+        );
+}
+
+
+// =========================================================
+// BUDGETS
+// =========================================================
+
+async function loadBudgets(
+    yearValue = null,
+    monthValue = null
+) {
+
+    const year =
+        yearValue
+        ||
+        document.getElementById(
+            "analyticsYear"
+        ).value;
+
+
+    const month =
+        monthValue
+        ||
+        document.getElementById(
+            "analyticsMonth"
+        ).value;
+
+
+    const container =
+        document.getElementById(
+            "budgetContainer"
+        );
+
+
+    if (!year || !month) {
+
+        container.innerHTML =
             "<p>Please enter year and month.</p>";
 
         return;
     }
 
 
-    if (
-        Number(month) < 1
-        ||
-        Number(month) > 12
-    ) {
+    const response =
+        await fetch(
+            `/budgets?year=${year}&month=${month}`
+        );
 
-        output.innerHTML =
-            "<p>Month must be between 1 and 12.</p>";
+
+    const data =
+        await response.json();
+
+
+    if (!data.budgets.length) {
+
+        container.innerHTML =
+            "<p>No budgets found for this month.</p>";
 
         return;
     }
 
 
-    try {
-
-        const response =
-            await fetch(
-                `/analytics/categories?year=${year}&month=${month}`
-            );
+    container.innerHTML = "";
 
 
-        const data =
-            await response.json();
+    data.budgets.forEach(
+        budget => {
+
+            let percentage =
+                Number(
+                    budget.percentage_used
+                );
 
 
-        if (!response.ok) {
-
-            output.innerHTML =
-                "<p>Could not load analytics.</p>";
-
-            return;
-        }
+            const displayPercentage =
+                Math.min(
+                    percentage,
+                    100
+                );
 
 
-        if (
-            !data.categories
-            ||
-            data.categories.length === 0
-        ) {
-
-            output.innerHTML =
-                "<p>No spending data found for this month.</p>";
-
-            return;
-        }
+            let warning = "";
 
 
-        output.innerHTML = `
-            <p>
-                Total Expenses:
-                <strong>
-                    Rs.
-                    ${Number(
-                        data.total_expense
-                    ).toFixed(2)}
-                </strong>
-            </p>
+            if (budget.exceeded) {
 
-            <br>
-        `;
+                warning = `
+                    <p class="budget-danger">
+                        Budget exceeded by
+                        Rs.
+                        ${Math.abs(
+                            Number(
+                                budget.remaining
+                            )
+                        ).toFixed(2)}
+                    </p>
+                `;
+            }
+
+            else if (
+                percentage >= 80
+            ) {
+
+                warning = `
+                    <p class="budget-warning">
+                        Warning:
+                        ${percentage.toFixed(1)}%
+                        of this budget has been used.
+                    </p>
+                `;
+            }
 
 
-        data.categories.forEach(
-            item => {
+            container.innerHTML += `
+                <div class="budget-card">
 
-                output.innerHTML += `
-                    <div class="analytics-row">
+                    <div class="budget-header">
+
+                        <strong>
+                            ${budget.category}
+                        </strong>
 
                         <span>
-                            ${item.category}
-                        </span>
-
-                        <span>
-                            Rs.
-                            ${Number(
-                                item.amount
-                            ).toFixed(2)}
-
-                            (${Number(
-                                item.percentage
-                            ).toFixed(1)}%)
+                            ${percentage.toFixed(1)}%
                         </span>
 
                     </div>
-                `;
-            }
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Analytics failed:",
-            error
-        );
 
 
-        output.innerHTML =
-            "<p>Server connection failed.</p>";
-    }
+                    <p>
+                        Budget:
+                        Rs.
+                        ${Number(
+                            budget.budget
+                        ).toFixed(2)}
+                    </p>
+
+
+                    <p>
+                        Spent:
+                        Rs.
+                        ${Number(
+                            budget.spent
+                        ).toFixed(2)}
+                    </p>
+
+
+                    <p>
+                        Remaining:
+                        Rs.
+                        ${Number(
+                            budget.remaining
+                        ).toFixed(2)}
+                    </p>
+
+
+                    <div class="progress-container">
+
+                        <div
+                            class="progress-bar"
+                            style="
+                                width:
+                                ${displayPercentage}%;
+                            "
+                        >
+                        </div>
+
+                    </div>
+
+
+                    ${warning}
+
+                </div>
+            `;
+        }
+    );
 }
 
 
 // =========================================================
-// REFRESH DASHBOARD
+// REFRESH
 // =========================================================
 
 async function refreshDashboard() {
@@ -906,9 +999,7 @@ function setDefaultAnalyticsDate() {
 // =========================================================
 
 document
-    .getElementById(
-        "type"
-    )
+    .getElementById("type")
     .addEventListener(
         "change",
         updateCategoryOptions
@@ -951,12 +1042,22 @@ document
     )
     .addEventListener(
         "click",
-        loadCategoryAnalytics
+        loadAnalytics
+    );
+
+
+document
+    .getElementById(
+        "loadBudgetsButton"
+    )
+    .addEventListener(
+        "click",
+        () => loadBudgets()
     );
 
 
 // =========================================================
-// INITIALIZE DASHBOARD
+// INITIAL LOAD
 // =========================================================
 
 updateCategoryOptions();

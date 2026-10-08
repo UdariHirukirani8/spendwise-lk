@@ -15,8 +15,9 @@
         rel="stylesheet"
         href="/static/style.css"
     >
-</head>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
 <body>
 
@@ -24,10 +25,7 @@
 
         <div>
             <h1>SpendWise LK</h1>
-
-            <p>
-                Personal Finance Dashboard
-            </p>
+            <p>Personal Finance Dashboard</p>
         </div>
 
         <button
@@ -42,33 +40,26 @@
 
     <main class="container">
 
-        <!-- ================================= -->
-        <!-- SUMMARY CARDS -->
-        <!-- ================================= -->
+        <!-- SUMMARY -->
 
         <section class="summary-grid">
 
             <div class="summary-card">
                 <p>Total Income</p>
-
                 <h2 id="totalIncome">
                     Rs. 0.00
                 </h2>
             </div>
 
-
             <div class="summary-card">
                 <p>Total Expenses</p>
-
                 <h2 id="totalExpense">
                     Rs. 0.00
                 </h2>
             </div>
 
-
             <div class="summary-card">
                 <p>Current Balance</p>
-
                 <h2 id="balance">
                     Rs. 0.00
                 </h2>
@@ -77,30 +68,22 @@
         </section>
 
 
-        <!-- ================================= -->
         <!-- ADD / EDIT TRANSACTION -->
-        <!-- ================================= -->
 
         <section class="panel">
 
-            <h2>
-                Add / Edit Transaction
-            </h2>
+            <h2>Add / Edit Transaction</h2>
 
             <form id="transactionForm">
 
                 <div class="form-grid">
 
                     <div class="form-group">
-
                         <label for="type">
                             Type
                         </label>
 
-                        <select
-                            id="type"
-                            required
-                        >
+                        <select id="type" required>
                             <option value="expense">
                                 Expense
                             </option>
@@ -109,12 +92,10 @@
                                 Income
                             </option>
                         </select>
-
                     </div>
 
 
                     <div class="form-group">
-
                         <label for="amount">
                             Amount
                         </label>
@@ -126,32 +107,25 @@
                             step="0.01"
                             required
                         >
-
                     </div>
 
 
                     <div class="form-group">
-
                         <label for="category">
                             Category
                         </label>
 
-                        <select
-                            id="category"
-                            required
-                        >
+                        <select id="category" required>
                             <option value="">
                                 Select category
                             </option>
                         </select>
-
                     </div>
 
 
                     <div class="form-group">
-
                         <label for="transactionDate">
-                            Transaction Date
+                            Date
                         </label>
 
                         <input
@@ -159,14 +133,12 @@
                             id="transactionDate"
                             required
                         >
-
                     </div>
 
                 </div>
 
 
                 <div class="form-group">
-
                     <label for="description">
                         Description
                     </label>
@@ -176,7 +148,6 @@
                         id="description"
                         placeholder="Optional description"
                     >
-
                 </div>
 
 
@@ -204,39 +175,22 @@
 
             </form>
 
-
             <p id="formMessage"></p>
 
         </section>
 
 
-        <!-- ================================= -->
         <!-- TRANSACTION HISTORY -->
-        <!-- ================================= -->
 
         <section class="panel">
 
-            <div class="section-header">
-
-                <div>
-                    <h2>
-                        Transaction History
-                    </h2>
-
-                    <p>
-                        Manage your income and expenses
-                    </p>
-                </div>
-
-            </div>
-
+            <h2>Transaction History</h2>
 
             <div class="table-wrapper">
 
                 <table>
 
                     <thead>
-
                         <tr>
                             <th>ID</th>
                             <th>Date</th>
@@ -246,12 +200,9 @@
                             <th>Amount</th>
                             <th>Actions</th>
                         </tr>
-
                     </thead>
 
-
                     <tbody id="transactionTableBody">
-
                     </tbody>
 
                 </table>
@@ -261,16 +212,11 @@
         </section>
 
 
-        <!-- ================================= -->
-        <!-- CATEGORY ANALYTICS -->
-        <!-- ================================= -->
+        <!-- ANALYTICS CONTROLS -->
 
         <section class="panel">
 
-            <h2>
-                Monthly Category Analysis
-            </h2>
-
+            <h2>Monthly Analytics</h2>
 
             <div class="analytics-controls">
 
@@ -297,11 +243,78 @@
 
             </div>
 
+        </section>
+
+
+        <!-- CHARTS -->
+
+        <section class="chart-grid">
+
+            <div class="panel chart-panel">
+                <h2>
+                    Spending by Category
+                </h2>
+
+                <canvas id="categoryChart"></canvas>
+            </div>
+
+
+            <div class="panel chart-panel">
+                <h2>
+                    Income vs Expense
+                </h2>
+
+                <canvas id="monthlyChart"></canvas>
+            </div>
+
+        </section>
+
+
+        <!-- CATEGORY SUMMARY -->
+
+        <section class="panel">
+
+            <h2>
+                Category Breakdown
+            </h2>
 
             <div id="categoryAnalytics">
-
                 <p>
                     Select a year and month to analyze spending.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- BUDGET SECTION -->
+
+        <section class="panel">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Monthly Budgets</h2>
+                    <p>
+                        Monitor budget usage by category
+                    </p>
+                </div>
+
+                <button
+                    id="loadBudgetsButton"
+                    class="secondary-button"
+                >
+                    Load Budgets
+                </button>
+
+            </div>
+
+
+            <div id="budgetContainer">
+
+                <p>
+                    Select a year and month above,
+                    then load budgets.
                 </p>
 
             </div>
