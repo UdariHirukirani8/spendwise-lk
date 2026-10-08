@@ -21,310 +21,438 @@
 
 <body>
 
-    <header class="topbar">
+<header class="topbar">
 
-        <div>
-            <h1>SpendWise LK</h1>
-            <p>Personal Finance Dashboard</p>
+    <div>
+        <h1>SpendWise LK</h1>
+        <p>Personal Finance Dashboard</p>
+    </div>
+
+    <button
+        id="refreshButton"
+        class="secondary-button"
+    >
+        Refresh
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <!-- ================================= -->
+    <!-- SUMMARY -->
+    <!-- ================================= -->
+
+    <section class="summary-grid">
+
+        <div class="summary-card">
+            <p>Total Income</p>
+            <h2 id="totalIncome">
+                Rs. 0.00
+            </h2>
         </div>
 
-        <button
-            id="refreshButton"
-            class="secondary-button"
-        >
-            Refresh
-        </button>
+        <div class="summary-card">
+            <p>Total Expenses</p>
+            <h2 id="totalExpense">
+                Rs. 0.00
+            </h2>
+        </div>
 
-    </header>
+        <div class="summary-card">
+            <p>Current Balance</p>
+            <h2 id="balance">
+                Rs. 0.00
+            </h2>
+        </div>
 
-
-    <main class="container">
-
-        <!-- SUMMARY -->
-
-        <section class="summary-grid">
-
-            <div class="summary-card">
-                <p>Total Income</p>
-                <h2 id="totalIncome">
-                    Rs. 0.00
-                </h2>
-            </div>
-
-            <div class="summary-card">
-                <p>Total Expenses</p>
-                <h2 id="totalExpense">
-                    Rs. 0.00
-                </h2>
-            </div>
-
-            <div class="summary-card">
-                <p>Current Balance</p>
-                <h2 id="balance">
-                    Rs. 0.00
-                </h2>
-            </div>
-
-        </section>
+    </section>
 
 
-        <!-- ADD / EDIT TRANSACTION -->
+    <!-- ================================= -->
+    <!-- TRANSACTION FORM -->
+    <!-- ================================= -->
 
-        <section class="panel">
+    <section class="panel">
 
-            <h2>Add / Edit Transaction</h2>
+        <h2>Add / Edit Transaction</h2>
 
-            <form id="transactionForm">
+        <form id="transactionForm">
 
-                <div class="form-grid">
+            <div class="form-grid">
 
-                    <div class="form-group">
-                        <label for="type">
-                            Type
-                        </label>
+                <div class="form-group">
 
-                        <select id="type" required>
-                            <option value="expense">
-                                Expense
-                            </option>
+                    <label for="type">
+                        Type
+                    </label>
 
-                            <option value="income">
-                                Income
-                            </option>
-                        </select>
-                    </div>
+                    <select id="type" required>
 
+                        <option value="expense">
+                            Expense
+                        </option>
 
-                    <div class="form-group">
-                        <label for="amount">
-                            Amount
-                        </label>
+                        <option value="income">
+                            Income
+                        </option>
 
-                        <input
-                            type="number"
-                            id="amount"
-                            min="0.01"
-                            step="0.01"
-                            required
-                        >
-                    </div>
-
-
-                    <div class="form-group">
-                        <label for="category">
-                            Category
-                        </label>
-
-                        <select id="category" required>
-                            <option value="">
-                                Select category
-                            </option>
-                        </select>
-                    </div>
-
-
-                    <div class="form-group">
-                        <label for="transactionDate">
-                            Date
-                        </label>
-
-                        <input
-                            type="date"
-                            id="transactionDate"
-                            required
-                        >
-                    </div>
+                    </select>
 
                 </div>
 
 
                 <div class="form-group">
-                    <label for="description">
-                        Description
+
+                    <label for="amount">
+                        Amount
                     </label>
 
                     <input
-                        type="text"
-                        id="description"
-                        placeholder="Optional description"
+                        type="number"
+                        id="amount"
+                        min="0.01"
+                        step="0.01"
+                        required
                     >
+
                 </div>
 
 
-                <div class="form-actions">
+                <div class="form-group">
 
-                    <button
-                        type="submit"
-                        class="primary-button"
-                        id="submitButton"
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <select
+                        id="category"
+                        required
                     >
-                        Add Transaction
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        id="cancelEditButton"
-                        style="display: none;"
-                    >
-                        Cancel Edit
-                    </button>
+                    </select>
 
                 </div>
 
-            </form>
 
-            <p id="formMessage"></p>
+                <div class="form-group">
 
-        </section>
+                    <label for="transactionDate">
+                        Date
+                    </label>
 
+                    <input
+                        type="date"
+                        id="transactionDate"
+                        required
+                    >
 
-        <!-- TRANSACTION HISTORY -->
-
-        <section class="panel">
-
-            <h2>Transaction History</h2>
-
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Amount</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="transactionTableBody">
-                    </tbody>
-
-                </table>
+                </div>
 
             </div>
 
-        </section>
 
+            <div class="form-group">
 
-        <!-- ANALYTICS CONTROLS -->
-
-        <section class="panel">
-
-            <h2>Monthly Analytics</h2>
-
-            <div class="analytics-controls">
+                <label for="description">
+                    Description
+                </label>
 
                 <input
-                    type="number"
-                    id="analyticsYear"
-                    placeholder="Year"
+                    type="text"
+                    id="description"
+                    placeholder="Optional description"
                 >
 
-                <input
-                    type="number"
-                    id="analyticsMonth"
-                    min="1"
-                    max="12"
-                    placeholder="Month"
-                >
+            </div>
+
+
+            <div class="form-actions">
 
                 <button
-                    id="analyticsButton"
+                    type="submit"
+                    id="submitButton"
                     class="primary-button"
                 >
-                    Analyze
+                    Add Transaction
                 </button>
 
-            </div>
-
-        </section>
-
-
-        <!-- CHARTS -->
-
-        <section class="chart-grid">
-
-            <div class="panel chart-panel">
-                <h2>
-                    Spending by Category
-                </h2>
-
-                <canvas id="categoryChart"></canvas>
-            </div>
-
-
-            <div class="panel chart-panel">
-                <h2>
-                    Income vs Expense
-                </h2>
-
-                <canvas id="monthlyChart"></canvas>
-            </div>
-
-        </section>
-
-
-        <!-- CATEGORY SUMMARY -->
-
-        <section class="panel">
-
-            <h2>
-                Category Breakdown
-            </h2>
-
-            <div id="categoryAnalytics">
-                <p>
-                    Select a year and month to analyze spending.
-                </p>
-            </div>
-
-        </section>
-
-
-        <!-- BUDGET SECTION -->
-
-        <section class="panel">
-
-            <div class="section-header">
-
-                <div>
-                    <h2>Monthly Budgets</h2>
-                    <p>
-                        Monitor budget usage by category
-                    </p>
-                </div>
 
                 <button
-                    id="loadBudgetsButton"
+                    type="button"
+                    id="cancelEditButton"
                     class="secondary-button"
+                    style="display: none;"
                 >
-                    Load Budgets
+                    Cancel Edit
                 </button>
 
             </div>
 
+        </form>
 
-            <div id="budgetContainer">
 
-                <p>
-                    Select a year and month above,
-                    then load budgets.
-                </p>
+        <p id="formMessage"></p>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- TRANSACTION HISTORY -->
+    <!-- ================================= -->
+
+    <section class="panel">
+
+        <h2>Transaction History</h2>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="transactionTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- MONTHLY ANALYTICS -->
+    <!-- ================================= -->
+
+    <section class="panel">
+
+        <h2>Monthly Analytics</h2>
+
+        <div class="analytics-controls">
+
+            <input
+                type="number"
+                id="analyticsYear"
+                placeholder="Year"
+            >
+
+            <input
+                type="number"
+                id="analyticsMonth"
+                min="1"
+                max="12"
+                placeholder="Month"
+            >
+
+            <button
+                id="analyticsButton"
+                class="primary-button"
+            >
+                Analyze
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- CHARTS -->
+    <!-- ================================= -->
+
+    <section class="chart-grid">
+
+        <div class="panel chart-panel">
+
+            <h2>Spending by Category</h2>
+
+            <canvas id="categoryChart"></canvas>
+
+        </div>
+
+
+        <div class="panel chart-panel">
+
+            <h2>Income vs Expense</h2>
+
+            <canvas id="monthlyChart"></canvas>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- CATEGORY BREAKDOWN -->
+    <!-- ================================= -->
+
+    <section class="panel">
+
+        <h2>Category Breakdown</h2>
+
+        <div id="categoryAnalytics">
+
+            <p>
+                Select a year and month to analyze spending.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- SET MONTHLY BUDGET -->
+    <!-- ================================= -->
+
+    <section class="panel">
+
+        <h2>Set Monthly Budget</h2>
+
+        <p class="section-description">
+            Create or update a spending limit for an expense category.
+        </p>
+
+        <form id="budgetForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="budgetYear">
+                        Year
+                    </label>
+
+                    <input
+                        type="number"
+                        id="budgetYear"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="budgetMonth">
+                        Month
+                    </label>
+
+                    <input
+                        type="number"
+                        id="budgetMonth"
+                        min="1"
+                        max="12"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="budgetCategory">
+                        Expense Category
+                    </label>
+
+                    <select
+                        id="budgetCategory"
+                        required
+                    >
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="budgetAmount">
+                        Budget Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="budgetAmount"
+                        min="0.01"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
 
             </div>
 
-        </section>
 
-    </main>
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                Save Budget
+            </button>
+
+        </form>
 
 
-    <script src="/static/script.js"></script>
+        <p id="budgetMessage"></p>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- BUDGET STATUS -->
+    <!-- ================================= -->
+
+    <section class="panel">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Monthly Budgets</h2>
+
+                <p>
+                    Monitor spending limits and budget usage.
+                </p>
+            </div>
+
+
+            <button
+                id="loadBudgetsButton"
+                class="secondary-button"
+            >
+                Load Budgets
+            </button>
+
+        </div>
+
+
+        <div id="budgetContainer">
+
+            <p>
+                Select a year and month above,
+                then load budgets.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script src="/static/script.js"></script>
 
 </body>
 

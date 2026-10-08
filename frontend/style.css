@@ -30,7 +30,8 @@ body {
 }
 
 
-.topbar p {
+.topbar p,
+.section-description {
     margin-top: 5px;
     color: #6b7280;
 }
@@ -47,9 +48,7 @@ body {
 
 .summary-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
 
     gap: 20px;
 
@@ -83,7 +82,7 @@ body {
 }
 
 
-/* PANELS */
+/* PANEL */
 
 .panel {
     background: #ffffff;
@@ -103,7 +102,12 @@ body {
 
 
 .panel h2 {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+}
+
+
+.section-description {
+    margin-bottom: 22px;
 }
 
 
@@ -111,9 +115,7 @@ body {
 
 .form-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
 
     gap: 20px;
 }
@@ -129,6 +131,7 @@ body {
 
 .form-group label {
     margin-bottom: 7px;
+
     font-weight: 600;
 }
 
@@ -184,15 +187,30 @@ select:focus {
 }
 
 
+.primary-button:hover {
+    background: #1d4ed8;
+}
+
+
 .secondary-button {
     background: #111827;
     color: #ffffff;
 }
 
 
+.secondary-button:hover {
+    background: #374151;
+}
+
+
 .delete-button {
     background: #fee2e2;
     color: #b91c1c;
+}
+
+
+.delete-button:hover {
+    background: #fecaca;
 }
 
 
@@ -304,13 +322,25 @@ td .delete-button {
     display: flex;
     justify-content: space-between;
 
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+}
+
+
+.budget-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+
+    margin-bottom: 15px;
 }
 
 
 .progress-container {
     width: 100%;
-    height: 12px;
+    height: 13px;
 
     background: #e5e7eb;
 
@@ -347,7 +377,8 @@ td .delete-button {
 }
 
 
-#formMessage {
+#formMessage,
+#budgetMessage {
     margin-top: 15px;
 
     font-weight: 600;
@@ -384,7 +415,14 @@ td .delete-button {
 
     .section-header {
         flex-direction: column;
+
         align-items: flex-start;
+
         gap: 12px;
+    }
+
+
+    .budget-details {
+        grid-template-columns: 1fr;
     }
 }

@@ -28,16 +28,22 @@ let monthlyChart = null;
 
 
 // =========================================================
-// CATEGORY OPTIONS
+// CATEGORY DROPDOWNS
 // =========================================================
 
 function updateCategoryOptions() {
 
     const type =
-        document.getElementById("type").value;
+        document.getElementById(
+            "type"
+        ).value;
 
-    const select =
-        document.getElementById("category");
+
+    const categorySelect =
+        document.getElementById(
+            "category"
+        );
+
 
     const categories =
         type === "income"
@@ -45,58 +51,112 @@ function updateCategoryOptions() {
             : expenseCategories;
 
 
-    select.innerHTML =
+    categorySelect.innerHTML =
         '<option value="">Select category</option>';
 
 
     categories.forEach(category => {
 
         const option =
-            document.createElement("option");
+            document.createElement(
+                "option"
+            );
 
-        option.value = category;
-        option.textContent = category;
+        option.value =
+            category;
 
-        select.appendChild(option);
+        option.textContent =
+            category;
+
+        categorySelect.appendChild(
+            option
+        );
     });
 }
 
 
+function loadBudgetCategories() {
+
+    const select =
+        document.getElementById(
+            "budgetCategory"
+        );
+
+
+    select.innerHTML =
+        '<option value="">Select category</option>';
+
+
+    expenseCategories.forEach(
+        category => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                category;
+
+            option.textContent =
+                category;
+
+            select.appendChild(
+                option
+            );
+        }
+    );
+}
+
+
 // =========================================================
-// BALANCE
+// LOAD BALANCE
 // =========================================================
 
 async function loadBalance() {
 
-    const response =
-        await fetch("/balance");
+    try {
 
-    const data =
-        await response.json();
-
-
-    document.getElementById(
-        "totalIncome"
-    ).textContent =
-        `Rs. ${Number(
-            data.total_income
-        ).toFixed(2)}`;
+        const response =
+            await fetch("/balance");
 
 
-    document.getElementById(
-        "totalExpense"
-    ).textContent =
-        `Rs. ${Number(
-            data.total_expense
-        ).toFixed(2)}`;
+        const data =
+            await response.json();
 
 
-    document.getElementById(
-        "balance"
-    ).textContent =
-        `Rs. ${Number(
-            data.balance
-        ).toFixed(2)}`;
+        document.getElementById(
+            "totalIncome"
+        ).textContent =
+            `Rs. ${Number(
+                data.total_income
+            ).toFixed(2)}`;
+
+
+        document.getElementById(
+            "totalExpense"
+        ).textContent =
+            `Rs. ${Number(
+                data.total_expense
+            ).toFixed(2)}`;
+
+
+        document.getElementById(
+            "balance"
+        ).textContent =
+            `Rs. ${Number(
+                data.balance
+            ).toFixed(2)}`;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Balance error:",
+            error
+        );
+    }
 }
 
 
@@ -106,100 +166,128 @@ async function loadBalance() {
 
 async function loadTransactions() {
 
-    const response =
-        await fetch("/transactions");
+    try {
 
-    const data =
-        await response.json();
-
-
-    const body =
-        document.getElementById(
-            "transactionTableBody"
-        );
+        const response =
+            await fetch(
+                "/transactions"
+            );
 
 
-    body.innerHTML = "";
+        const data =
+            await response.json();
 
 
-    if (!data.transactions.length) {
-
-        body.innerHTML = `
-            <tr>
-                <td colspan="7">
-                    No transactions found.
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
+        const body =
+            document.getElementById(
+                "transactionTableBody"
+            );
 
 
-    data.transactions.forEach(
-        transaction => {
-
-            const row =
-                document.createElement("tr");
+        body.innerHTML = "";
 
 
-            row.innerHTML = `
-                <td>${transaction.id}</td>
+        if (
+            !data.transactions
+            ||
+            data.transactions.length === 0
+        ) {
 
-                <td>
-                    ${transaction.transaction_date}
-                </td>
-
-                <td>
-                    ${transaction.type}
-                </td>
-
-                <td>
-                    ${transaction.category}
-                </td>
-
-                <td>
-                    ${transaction.description || ""}
-                </td>
-
-                <td>
-                    Rs. ${Number(
-                        transaction.amount
-                    ).toFixed(2)}
-                </td>
-
-                <td>
-
-                    <button
-                        class="secondary-button"
-                        onclick="startEditTransaction(
-                            ${transaction.id}
-                        )"
-                    >
-                        Edit
-                    </button>
-
-                    <button
-                        class="delete-button"
-                        onclick="deleteTransaction(
-                            ${transaction.id}
-                        )"
-                    >
-                        Delete
-                    </button>
-
-                </td>
+            body.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        No transactions found.
+                    </td>
+                </tr>
             `;
 
-
-            body.appendChild(row);
+            return;
         }
-    );
+
+
+        data.transactions.forEach(
+            transaction => {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+                    <td>
+                        ${transaction.id}
+                    </td>
+
+                    <td>
+                        ${transaction.transaction_date}
+                    </td>
+
+                    <td>
+                        ${transaction.type}
+                    </td>
+
+                    <td>
+                        ${transaction.category}
+                    </td>
+
+                    <td>
+                        ${transaction.description || ""}
+                    </td>
+
+                    <td>
+                        Rs.
+                        ${Number(
+                            transaction.amount
+                        ).toFixed(2)}
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="secondary-button"
+                            onclick="
+                                startEditTransaction(
+                                    ${transaction.id}
+                                )
+                            "
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            class="delete-button"
+                            onclick="
+                                deleteTransaction(
+                                    ${transaction.id}
+                                )
+                            "
+                        >
+                            Delete
+                        </button>
+
+                    </td>
+                `;
+
+
+                body.appendChild(row);
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Transactions error:",
+            error
+        );
+    }
 }
 
 
 // =========================================================
-// SAVE TRANSACTION
+// CREATE / UPDATE TRANSACTION
 // =========================================================
 
 async function saveTransaction(event) {
@@ -244,204 +332,261 @@ async function saveTransaction(event) {
         );
 
 
-    let url = "/transactions";
-    let method = "POST";
-
-
-    if (editingTransactionId !== null) {
-
-        url =
-            `/transactions/${editingTransactionId}`;
-
-        method = "PUT";
-    }
-
-
-    const response =
-        await fetch(
-            url,
-            {
-                method: method,
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(
-                        transaction
-                    )
-            }
-        );
-
-
-    const data =
-        await response.json();
-
-
-    if (!response.ok) {
+    if (
+        !transaction.category
+        ||
+        transaction.amount <= 0
+        ||
+        !transaction.transaction_date
+    ) {
 
         message.textContent =
-            data.detail
-            || "Could not save transaction.";
+            "Please complete all required fields.";
 
         return;
     }
 
 
-    message.textContent =
-        editingTransactionId === null
-            ? "Transaction added successfully."
-            : "Transaction updated successfully.";
+    let url =
+        "/transactions";
 
 
-    resetTransactionForm();
+    let method =
+        "POST";
 
-    await refreshDashboard();
+
+    const isEditing =
+        editingTransactionId !== null;
+
+
+    if (isEditing) {
+
+        url =
+            `/transactions/${editingTransactionId}`;
+
+        method =
+            "PUT";
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method: method,
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            transaction
+                        )
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            message.textContent =
+                typeof data.detail === "string"
+                    ? data.detail
+                    : "Could not save transaction.";
+
+            return;
+        }
+
+
+        message.textContent =
+            isEditing
+                ? "Transaction updated successfully."
+                : "Transaction added successfully.";
+
+
+        resetTransactionForm();
+
+
+        await refreshDashboard();
+
+    }
+
+    catch (error) {
+
+        message.textContent =
+            "Server connection failed.";
+
+        console.error(error);
+    }
 }
 
 
 // =========================================================
-// EDIT
+// EDIT TRANSACTION
 // =========================================================
 
 async function startEditTransaction(
     transactionId
 ) {
 
-    const response =
-        await fetch(
-            `/transactions/${transactionId}`
-        );
+    try {
+
+        const response =
+            await fetch(
+                `/transactions/${transactionId}`
+            );
 
 
-    if (!response.ok) {
+        if (!response.ok) {
 
-        alert(
-            "Could not load transaction."
-        );
+            alert(
+                "Could not load transaction."
+            );
 
-        return;
-    }
-
-
-    const transaction =
-        await response.json();
+            return;
+        }
 
 
-    editingTransactionId =
-        transaction.id;
+        const transaction =
+            await response.json();
 
 
-    document.getElementById(
-        "type"
-    ).value =
-        transaction.type;
+        editingTransactionId =
+            transaction.id;
 
 
-    updateCategoryOptions();
+        document.getElementById(
+            "type"
+        ).value =
+            transaction.type;
 
 
-    document.getElementById(
-        "category"
-    ).value =
-        transaction.category;
+        updateCategoryOptions();
 
 
-    document.getElementById(
-        "amount"
-    ).value =
-        transaction.amount;
+        document.getElementById(
+            "category"
+        ).value =
+            transaction.category;
 
 
-    document.getElementById(
-        "description"
-    ).value =
-        transaction.description || "";
+        document.getElementById(
+            "amount"
+        ).value =
+            transaction.amount;
 
 
-    document.getElementById(
-        "transactionDate"
-    ).value =
-        transaction.transaction_date;
+        document.getElementById(
+            "description"
+        ).value =
+            transaction.description || "";
 
 
-    document.getElementById(
-        "submitButton"
-    ).textContent =
-        "Update Transaction";
+        document.getElementById(
+            "transactionDate"
+        ).value =
+            transaction.transaction_date;
 
 
-    document.getElementById(
-        "cancelEditButton"
-    ).style.display =
-        "inline-block";
+        document.getElementById(
+            "submitButton"
+        ).textContent =
+            "Update Transaction";
 
 
-    document.getElementById(
-        "formMessage"
-    ).textContent =
-        `Editing transaction #${transaction.id}`;
+        document.getElementById(
+            "cancelEditButton"
+        ).style.display =
+            "inline-block";
 
 
-    document
-        .getElementById(
+        document.getElementById(
+            "formMessage"
+        ).textContent =
+            `Editing transaction #${transaction.id}`;
+
+
+        document.getElementById(
             "transactionForm"
-        )
-        .scrollIntoView({
+        ).scrollIntoView({
             behavior: "smooth"
         });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+    }
 }
 
 
 // =========================================================
-// DELETE
+// DELETE TRANSACTION
 // =========================================================
 
 async function deleteTransaction(
     transactionId
 ) {
 
-    if (
-        !confirm(
+    const confirmed =
+        confirm(
             `Delete transaction #${transactionId}?`
-        )
-    ) {
+        );
+
+
+    if (!confirmed) {
         return;
     }
 
 
-    const response =
-        await fetch(
-            `/transactions/${transactionId}`,
-            {
-                method: "DELETE"
-            }
-        );
+    try {
+
+        const response =
+            await fetch(
+                `/transactions/${transactionId}`,
+                {
+                    method: "DELETE"
+                }
+            );
 
 
-    if (!response.ok) {
+        if (!response.ok) {
 
-        alert(
-            "Could not delete transaction."
-        );
+            alert(
+                "Could not delete transaction."
+            );
 
-        return;
+            return;
+        }
+
+
+        await refreshDashboard();
+
     }
 
+    catch (error) {
 
-    await refreshDashboard();
+        console.error(error);
+    }
 }
 
 
 // =========================================================
-// RESET FORM
+// RESET TRANSACTION FORM
 // =========================================================
 
 function resetTransactionForm() {
 
-    editingTransactionId = null;
+    editingTransactionId =
+        null;
 
 
     document.getElementById(
@@ -456,6 +601,7 @@ function resetTransactionForm() {
 
 
     updateCategoryOptions();
+
 
     setTodayDate();
 
@@ -473,10 +619,6 @@ function resetTransactionForm() {
 }
 
 
-// =========================================================
-// CANCEL EDIT
-// =========================================================
-
 function cancelEdit() {
 
     resetTransactionForm();
@@ -490,7 +632,7 @@ function cancelEdit() {
 
 
 // =========================================================
-// ANALYTICS
+// MONTHLY ANALYTICS
 // =========================================================
 
 async function loadAnalytics() {
@@ -515,6 +657,12 @@ async function loadAnalytics() {
 
         return;
     }
+
+
+    syncBudgetDate(
+        year,
+        month
+    );
 
 
     await Promise.all([
@@ -561,13 +709,20 @@ async function loadCategoryAnalytics(
         );
 
 
-    if (!data.categories.length) {
+    if (
+        !data.categories
+        ||
+        data.categories.length === 0
+    ) {
 
         output.innerHTML =
             "<p>No spending data found.</p>";
 
+
         if (categoryChart) {
+
             categoryChart.destroy();
+
             categoryChart = null;
         }
 
@@ -585,6 +740,7 @@ async function loadCategoryAnalytics(
                 ).toFixed(2)}
             </strong>
         </p>
+
         <br>
     `;
 
@@ -605,7 +761,9 @@ async function loadCategoryAnalytics(
                             item.amount
                         ).toFixed(2)}
 
-                        (${item.percentage}%)
+                        (${Number(
+                            item.percentage
+                        ).toFixed(1)}%)
                     </span>
 
                 </div>
@@ -628,7 +786,7 @@ function drawCategoryChart(
     categories
 ) {
 
-    const ctx =
+    const canvas =
         document.getElementById(
             "categoryChart"
         );
@@ -642,7 +800,7 @@ function drawCategoryChart(
 
     categoryChart =
         new Chart(
-            ctx,
+            canvas,
             {
                 type: "doughnut",
 
@@ -667,7 +825,8 @@ function drawCategoryChart(
 
                     responsive: true,
 
-                    maintainAspectRatio: false
+                    maintainAspectRatio:
+                        false
                 }
             }
         );
@@ -675,7 +834,7 @@ function drawCategoryChart(
 
 
 // =========================================================
-// MONTHLY ANALYTICS
+// INCOME VS EXPENSE
 // =========================================================
 
 async function loadMonthlyAnalytics(
@@ -700,16 +859,12 @@ async function loadMonthlyAnalytics(
 }
 
 
-// =========================================================
-// MONTHLY CHART
-// =========================================================
-
 function drawMonthlyChart(
     income,
     expense
 ) {
 
-    const ctx =
+    const canvas =
         document.getElementById(
             "monthlyChart"
         );
@@ -723,7 +878,7 @@ function drawMonthlyChart(
 
     monthlyChart =
         new Chart(
-            ctx,
+            canvas,
             {
                 type: "bar",
 
@@ -749,12 +904,14 @@ function drawMonthlyChart(
 
                     responsive: true,
 
-                    maintainAspectRatio: false,
+                    maintainAspectRatio:
+                        false,
 
                     scales: {
 
                         y: {
-                            beginAtZero: true
+                            beginAtZero:
+                                true
                         }
                     }
                 }
@@ -764,7 +921,149 @@ function drawMonthlyChart(
 
 
 // =========================================================
-// BUDGETS
+// SAVE BUDGET
+// =========================================================
+
+async function saveBudget(event) {
+
+    event.preventDefault();
+
+
+    const year =
+        Number(
+            document.getElementById(
+                "budgetYear"
+            ).value
+        );
+
+
+    const month =
+        Number(
+            document.getElementById(
+                "budgetMonth"
+            ).value
+        );
+
+
+    const category =
+        document.getElementById(
+            "budgetCategory"
+        ).value;
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "budgetAmount"
+            ).value
+        );
+
+
+    const message =
+        document.getElementById(
+            "budgetMessage"
+        );
+
+
+    if (
+        !year
+        ||
+        month < 1
+        ||
+        month > 12
+        ||
+        !category
+        ||
+        amount <= 0
+    ) {
+
+        message.textContent =
+            "Please enter valid budget details.";
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/budgets",
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            year: year,
+                            month: month,
+                            category: category,
+                            amount: amount
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            message.textContent =
+                typeof data.detail === "string"
+                    ? data.detail
+                    : "Could not save budget.";
+
+            return;
+        }
+
+
+        message.textContent =
+            "Budget saved successfully.";
+
+
+        document.getElementById(
+            "budgetAmount"
+        ).value = "";
+
+
+        document.getElementById(
+            "analyticsYear"
+        ).value =
+            year;
+
+
+        document.getElementById(
+            "analyticsMonth"
+        ).value =
+            month;
+
+
+        await loadBudgets(
+            year,
+            month
+        );
+
+    }
+
+    catch (error) {
+
+        message.textContent =
+            "Server connection failed.";
+
+        console.error(error);
+    }
+}
+
+
+// =========================================================
+// LOAD BUDGETS
 // =========================================================
 
 async function loadBudgets(
@@ -797,145 +1096,257 @@ async function loadBudgets(
     if (!year || !month) {
 
         container.innerHTML =
-            "<p>Please enter year and month.</p>";
+            "<p>Please select year and month.</p>";
 
         return;
     }
 
 
-    const response =
-        await fetch(
-            `/budgets?year=${year}&month=${month}`
-        );
+    syncBudgetDate(
+        year,
+        month
+    );
 
 
-    const data =
-        await response.json();
+    try {
+
+        const response =
+            await fetch(
+                `/budgets?year=${year}&month=${month}`
+            );
 
 
-    if (!data.budgets.length) {
-
-        container.innerHTML =
-            "<p>No budgets found for this month.</p>";
-
-        return;
-    }
+        const data =
+            await response.json();
 
 
-    container.innerHTML = "";
+        if (
+            !data.budgets
+            ||
+            data.budgets.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>No budgets found for this month.</p>";
+
+            return;
+        }
 
 
-    data.budgets.forEach(
-        budget => {
-
-            let percentage =
-                Number(
-                    budget.percentage_used
-                );
+        container.innerHTML = "";
 
 
-            const displayPercentage =
-                Math.min(
-                    percentage,
-                    100
-                );
+        data.budgets.forEach(
+            budget => {
+
+                const percentage =
+                    Number(
+                        budget.percentage_used
+                    );
 
 
-            let warning = "";
+                const progress =
+                    Math.min(
+                        percentage,
+                        100
+                    );
 
 
-            if (budget.exceeded) {
-
-                warning = `
-                    <p class="budget-danger">
-                        Budget exceeded by
-                        Rs.
-                        ${Math.abs(
-                            Number(
-                                budget.remaining
-                            )
-                        ).toFixed(2)}
-                    </p>
-                `;
-            }
-
-            else if (
-                percentage >= 80
-            ) {
-
-                warning = `
-                    <p class="budget-warning">
-                        Warning:
-                        ${percentage.toFixed(1)}%
-                        of this budget has been used.
-                    </p>
-                `;
-            }
+                let warning = "";
 
 
-            container.innerHTML += `
-                <div class="budget-card">
+                if (budget.exceeded) {
 
-                    <div class="budget-header">
+                    warning = `
+                        <p class="budget-danger">
+                            Budget exceeded by
+                            Rs.
+                            ${Math.abs(
+                                Number(
+                                    budget.remaining
+                                )
+                            ).toFixed(2)}
+                        </p>
+                    `;
+                }
 
-                        <strong>
-                            ${budget.category}
-                        </strong>
+                else if (
+                    percentage >= 80
+                ) {
 
-                        <span>
+                    warning = `
+                        <p class="budget-warning">
+                            Warning:
                             ${percentage.toFixed(1)}%
-                        </span>
-
-                    </div>
-
-
-                    <p>
-                        Budget:
-                        Rs.
-                        ${Number(
-                            budget.budget
-                        ).toFixed(2)}
-                    </p>
+                            of this budget has been used.
+                        </p>
+                    `;
+                }
 
 
-                    <p>
-                        Spent:
-                        Rs.
-                        ${Number(
-                            budget.spent
-                        ).toFixed(2)}
-                    </p>
+                container.innerHTML += `
+                    <div class="budget-card">
 
+                        <div class="budget-header">
 
-                    <p>
-                        Remaining:
-                        Rs.
-                        ${Number(
-                            budget.remaining
-                        ).toFixed(2)}
-                    </p>
+                            <strong>
+                                ${budget.category}
+                            </strong>
 
+                            <span>
+                                ${percentage.toFixed(1)}%
+                            </span>
 
-                    <div class="progress-container">
-
-                        <div
-                            class="progress-bar"
-                            style="
-                                width:
-                                ${displayPercentage}%;
-                            "
-                        >
                         </div>
 
+
+                        <div class="budget-details">
+
+                            <p>
+                                Budget:
+                                <strong>
+                                    Rs.
+                                    ${Number(
+                                        budget.budget
+                                    ).toFixed(2)}
+                                </strong>
+                            </p>
+
+
+                            <p>
+                                Spent:
+                                <strong>
+                                    Rs.
+                                    ${Number(
+                                        budget.spent
+                                    ).toFixed(2)}
+                                </strong>
+                            </p>
+
+
+                            <p>
+                                Remaining:
+                                <strong>
+                                    Rs.
+                                    ${Number(
+                                        budget.remaining
+                                    ).toFixed(2)}
+                                </strong>
+                            </p>
+
+                        </div>
+
+
+                        <div class="progress-container">
+
+                            <div
+                                class="progress-bar"
+                                style="
+                                    width:
+                                    ${progress}%;
+                                "
+                            >
+                            </div>
+
+                        </div>
+
+
+                        ${warning}
+
                     </div>
+                `;
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        container.innerHTML =
+            "<p>Could not load budgets.</p>";
+
+        console.error(error);
+    }
+}
 
 
-                    ${warning}
+// =========================================================
+// SYNC YEAR / MONTH
+// =========================================================
 
-                </div>
-            `;
-        }
-    );
+function syncBudgetDate(
+    year,
+    month
+) {
+
+    document.getElementById(
+        "budgetYear"
+    ).value =
+        year;
+
+
+    document.getElementById(
+        "budgetMonth"
+    ).value =
+        month;
+}
+
+
+// =========================================================
+// DEFAULT DATES
+// =========================================================
+
+function setTodayDate() {
+
+    const today =
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+
+    document.getElementById(
+        "transactionDate"
+    ).value =
+        today;
+}
+
+
+function setDefaultDates() {
+
+    const now =
+        new Date();
+
+
+    const year =
+        now.getFullYear();
+
+
+    const month =
+        now.getMonth() + 1;
+
+
+    document.getElementById(
+        "analyticsYear"
+    ).value =
+        year;
+
+
+    document.getElementById(
+        "analyticsMonth"
+    ).value =
+        month;
+
+
+    document.getElementById(
+        "budgetYear"
+    ).value =
+        year;
+
+
+    document.getElementById(
+        "budgetMonth"
+    ).value =
+        month;
 }
 
 
@@ -953,53 +1364,13 @@ async function refreshDashboard() {
 
 
 // =========================================================
-// DEFAULT DATE
-// =========================================================
-
-function setTodayDate() {
-
-    const today =
-        new Date()
-        .toISOString()
-        .split("T")[0];
-
-
-    document.getElementById(
-        "transactionDate"
-    ).value =
-        today;
-}
-
-
-// =========================================================
-// DEFAULT ANALYTICS DATE
-// =========================================================
-
-function setDefaultAnalyticsDate() {
-
-    const now =
-        new Date();
-
-
-    document.getElementById(
-        "analyticsYear"
-    ).value =
-        now.getFullYear();
-
-
-    document.getElementById(
-        "analyticsMonth"
-    ).value =
-        now.getMonth() + 1;
-}
-
-
-// =========================================================
-// EVENT LISTENERS
+// EVENTS
 // =========================================================
 
 document
-    .getElementById("type")
+    .getElementById(
+        "type"
+    )
     .addEventListener(
         "change",
         updateCategoryOptions
@@ -1048,6 +1419,16 @@ document
 
 document
     .getElementById(
+        "budgetForm"
+    )
+    .addEventListener(
+        "submit",
+        saveBudget
+    );
+
+
+document
+    .getElementById(
         "loadBudgetsButton"
     )
     .addEventListener(
@@ -1057,13 +1438,15 @@ document
 
 
 // =========================================================
-// INITIAL LOAD
+// INITIALIZE
 // =========================================================
 
 updateCategoryOptions();
 
+loadBudgetCategories();
+
 setTodayDate();
 
-setDefaultAnalyticsDate();
+setDefaultDates();
 
 refreshDashboard();
