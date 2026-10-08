@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
 from database import (
@@ -30,6 +32,21 @@ app = FastAPI(
     version="1.0.0"
 )
 
+
+# =========================================================
+# FRONTEND STATIC FILES
+# =========================================================
+
+app.mount(
+    "/static",
+    StaticFiles(directory="frontend"),
+    name="static"
+)
+
+
+# =========================================================
+# DATABASE SETUP
+# =========================================================
 
 create_tables()
 
@@ -74,7 +91,9 @@ class TransactionCreate(BaseModel):
 class TransactionUpdate(BaseModel):
     type: Literal["income", "expense"]
 
-    amount: float = Field(gt=0)
+    amount: float = Field(
+        gt=0
+    )
 
     category: str = Field(
         min_length=1
@@ -119,7 +138,7 @@ class BudgetCreate(BaseModel):
 
 
 # =========================================================
-# HELPER
+# HELPER FUNCTION
 # =========================================================
 
 def transaction_to_dict(transaction):
@@ -145,6 +164,17 @@ def root():
         "version": "1.0.0",
         "message": "Welcome to SpendWise LK API"
     }
+
+
+# =========================================================
+# DASHBOARD
+# =========================================================
+
+@app.get("/dashboard")
+def dashboard():
+    return FileResponse(
+        "frontend/index.html"
+    )
 
 
 # =========================================================
@@ -183,7 +213,9 @@ def read_transactions():
 # =========================================================
 
 @app.get("/transactions/{transaction_id}")
-def read_transaction(transaction_id: int):
+def read_transaction(
+    transaction_id: int
+):
     transaction = get_transaction_by_id(
         transaction_id
     )
@@ -218,10 +250,8 @@ def create_transaction(
         transaction.transaction_date
     )
 
-    created_transaction = (
-        get_transaction_by_id(
-            transaction_id
-        )
+    created_transaction = get_transaction_by_id(
+        transaction_id
     )
 
     return {
@@ -266,10 +296,8 @@ def edit_transaction(
             detail="Transaction could not be updated"
         )
 
-    updated_transaction = (
-        get_transaction_by_id(
-            transaction_id
-        )
+    updated_transaction = get_transaction_by_id(
+        transaction_id
     )
 
     return {
@@ -365,11 +393,9 @@ def read_category_analytics(
         le=12
     )
 ):
-    category_spending = (
-        get_category_spending(
-            year,
-            month
-        )
+    category_spending = get_category_spending(
+        year,
+        month
     )
 
     total_expense = sum(
