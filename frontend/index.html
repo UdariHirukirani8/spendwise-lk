@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -16,8 +17,12 @@
         href="/static/style.css"
     >
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+    ></script>
+
 </head>
+
 
 <body>
 
@@ -40,9 +45,7 @@
 
 <main class="container">
 
-    <!-- ================================= -->
     <!-- SUMMARY -->
-    <!-- ================================= -->
 
     <section class="summary-grid">
 
@@ -70,13 +73,13 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- TRANSACTION FORM -->
-    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>Add / Edit Transaction</h2>
+        <h2>
+            Add / Edit Transaction
+        </h2>
 
         <form id="transactionForm">
 
@@ -88,7 +91,10 @@
                         Type
                     </label>
 
-                    <select id="type" required>
+                    <select
+                        id="type"
+                        required
+                    >
 
                         <option value="expense">
                             Expense
@@ -110,8 +116,8 @@
                     </label>
 
                     <input
-                        type="number"
                         id="amount"
+                        type="number"
                         min="0.01"
                         step="0.01"
                         required
@@ -142,8 +148,8 @@
                     </label>
 
                     <input
-                        type="date"
                         id="transactionDate"
+                        type="date"
                         required
                     >
 
@@ -159,8 +165,8 @@
                 </label>
 
                 <input
-                    type="text"
                     id="description"
+                    type="text"
                     placeholder="Optional description"
                 >
 
@@ -170,19 +176,18 @@
             <div class="form-actions">
 
                 <button
-                    type="submit"
                     id="submitButton"
+                    type="submit"
                     class="primary-button"
                 >
                     Add Transaction
                 </button>
 
-
                 <button
-                    type="button"
                     id="cancelEditButton"
+                    type="button"
                     class="secondary-button"
-                    style="display: none;"
+                    style="display:none;"
                 >
                     Cancel Edit
                 </button>
@@ -191,19 +196,18 @@
 
         </form>
 
-
         <p id="formMessage"></p>
 
     </section>
 
 
-    <!-- ================================= -->
-    <!-- TRANSACTION HISTORY -->
-    <!-- ================================= -->
+    <!-- TRANSACTIONS -->
 
     <section class="panel">
 
-        <h2>Transaction History</h2>
+        <h2>
+            Transaction History
+        </h2>
 
         <div class="table-wrapper">
 
@@ -211,19 +215,21 @@
 
                 <thead>
 
-                    <tr>
-                        <th>ID</th>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Category</th>
-                        <th>Description</th>
-                        <th>Amount</th>
-                        <th>Actions</th>
-                    </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                </tr>
 
                 </thead>
 
-                <tbody id="transactionTableBody">
+                <tbody
+                    id="transactionTableBody"
+                >
                 </tbody>
 
             </table>
@@ -233,25 +239,25 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- MONTHLY ANALYTICS -->
-    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>Monthly Analytics</h2>
+        <h2>
+            Monthly Analytics
+        </h2>
 
         <div class="analytics-controls">
 
             <input
-                type="number"
                 id="analyticsYear"
+                type="number"
                 placeholder="Year"
             >
 
             <input
-                type="number"
                 id="analyticsMonth"
+                type="number"
                 min="1"
                 max="12"
                 placeholder="Month"
@@ -269,44 +275,51 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- CHARTS -->
-    <!-- ================================= -->
 
     <section class="chart-grid">
 
         <div class="panel chart-panel">
 
-            <h2>Spending by Category</h2>
+            <h2>
+                Spending by Category
+            </h2>
 
-            <canvas id="categoryChart"></canvas>
+            <canvas
+                id="categoryChart"
+            ></canvas>
 
         </div>
 
 
         <div class="panel chart-panel">
 
-            <h2>Income vs Expense</h2>
+            <h2>
+                Income vs Expense
+            </h2>
 
-            <canvas id="monthlyChart"></canvas>
+            <canvas
+                id="monthlyChart"
+            ></canvas>
 
         </div>
 
     </section>
 
 
-    <!-- ================================= -->
     <!-- CATEGORY BREAKDOWN -->
-    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>Category Breakdown</h2>
+        <h2>
+            Category Breakdown
+        </h2>
 
         <div id="categoryAnalytics">
 
             <p>
-                Select a year and month to analyze spending.
+                Select a year and month
+                to analyze spending.
             </p>
 
         </div>
@@ -314,17 +327,65 @@
     </section>
 
 
-    <!-- ================================= -->
-    <!-- SET MONTHLY BUDGET -->
-    <!-- ================================= -->
+    <!-- TREND -->
+
+    <section class="panel trend-panel">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Financial Trend
+                </h2>
+
+                <p>
+                    Income, expenses
+                    and savings over time.
+                </p>
+
+            </div>
+
+            <select id="trendMonths">
+
+                <option value="3">
+                    3 Months
+                </option>
+
+                <option
+                    value="6"
+                    selected
+                >
+                    6 Months
+                </option>
+
+                <option value="12">
+                    12 Months
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="trend-chart-wrapper">
+
+            <canvas
+                id="trendChart"
+            ></canvas>
+
+        </div>
+
+    </section>
+
+
+    <!-- BUDGET FORM -->
 
     <section class="panel">
 
-        <h2>Set Monthly Budget</h2>
-
-        <p class="section-description">
-            Create or update a spending limit for an expense category.
-        </p>
+        <h2>
+            Set Monthly Budget
+        </h2>
 
         <form id="budgetForm">
 
@@ -332,13 +393,13 @@
 
                 <div class="form-group">
 
-                    <label for="budgetYear">
+                    <label>
                         Year
                     </label>
 
                     <input
-                        type="number"
                         id="budgetYear"
+                        type="number"
                         required
                     >
 
@@ -347,13 +408,13 @@
 
                 <div class="form-group">
 
-                    <label for="budgetMonth">
+                    <label>
                         Month
                     </label>
 
                     <input
-                        type="number"
                         id="budgetMonth"
+                        type="number"
                         min="1"
                         max="12"
                         required
@@ -364,8 +425,8 @@
 
                 <div class="form-group">
 
-                    <label for="budgetCategory">
-                        Expense Category
+                    <label>
+                        Category
                     </label>
 
                     <select
@@ -379,13 +440,13 @@
 
                 <div class="form-group">
 
-                    <label for="budgetAmount">
+                    <label>
                         Budget Amount
                     </label>
 
                     <input
-                        type="number"
                         id="budgetAmount"
+                        type="number"
                         min="0.01"
                         step="0.01"
                         required
@@ -397,36 +458,34 @@
 
 
             <button
-                type="submit"
                 class="primary-button"
+                type="submit"
             >
                 Save Budget
             </button>
 
         </form>
 
-
         <p id="budgetMessage"></p>
 
     </section>
 
 
-    <!-- ================================= -->
     <!-- BUDGET STATUS -->
-    <!-- ================================= -->
 
     <section class="panel">
 
         <div class="section-header">
 
             <div>
-                <h2>Monthly Budgets</h2>
+                <h2>
+                    Monthly Budgets
+                </h2>
 
                 <p>
-                    Monitor spending limits and budget usage.
+                    Monitor spending limits.
                 </p>
             </div>
-
 
             <button
                 id="loadBudgetsButton"
@@ -437,14 +496,148 @@
 
         </div>
 
-
         <div id="budgetContainer">
+        </div>
 
-            <p>
-                Select a year and month above,
-                then load budgets.
-            </p>
+    </section>
 
+
+    <!-- SAVINGS GOAL FORM -->
+
+    <section class="panel">
+
+        <h2>
+            Savings Goals
+        </h2>
+
+        <p class="section-description">
+            Create a financial target
+            and track your progress.
+        </p>
+
+
+        <form id="savingsGoalForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>
+                        Goal Name
+                    </label>
+
+                    <input
+                        id="goalName"
+                        type="text"
+                        placeholder="Example: New Laptop"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Target Amount
+                    </label>
+
+                    <input
+                        id="goalTarget"
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Saved Amount
+                    </label>
+
+                    <input
+                        id="goalSaved"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Deadline
+                    </label>
+
+                    <input
+                        id="goalDeadline"
+                        type="date"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    id="goalSubmitButton"
+                    type="submit"
+                    class="primary-button"
+                >
+                    Create Goal
+                </button>
+
+
+                <button
+                    id="cancelGoalEditButton"
+                    type="button"
+                    class="secondary-button"
+                    style="display:none;"
+                >
+                    Cancel Edit
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <p id="goalMessage"></p>
+
+    </section>
+
+
+    <!-- SAVINGS GOAL CARDS -->
+
+    <section class="panel">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Goal Progress
+                </h2>
+
+                <p>
+                    Track all your savings targets.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div id="savingsGoalsContainer">
         </div>
 
     </section>

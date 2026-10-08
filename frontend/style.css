@@ -426,3 +426,132 @@ td .delete-button {
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================
+   SAVINGS GOALS
+========================================= */
+
+.savings-goal-card {
+    padding: 20px;
+
+    margin-bottom: 18px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    background: #f9fafb;
+}
+
+
+.goal-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 16px;
+}
+
+
+.goal-header h3 {
+    font-size: 18px;
+}
+
+
+.goal-status {
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.goal-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    margin-bottom: 15px;
+}
+
+
+.goal-details p {
+    color: #4b5563;
+}
+
+
+.goal-progress-container {
+    width: 100%;
+
+    height: 14px;
+
+    background: #e5e7eb;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    margin-top: 12px;
+}
+
+
+.goal-progress-bar {
+    height: 100%;
+
+    background: #2563eb;
+
+    border-radius: 20px;
+}
+
+
+.goal-progress-text {
+    margin-top: 10px;
+
+    font-weight: 600;
+}
+
+
+.goal-actions {
+    margin-top: 16px;
+}
+
+
+.goal-actions button {
+    margin-right: 6px;
+}
+
+
+.goal-completed {
+    font-weight: 700;
+
+    margin-top: 10px;
+}
+
+
+#goalMessage {
+    margin-top: 15px;
+
+    font-weight: 600;
+
+    color: #2563eb;
+}
+
+
+@media (max-width: 850px) {
+
+    .goal-details {
+        grid-template-columns: 1fr;
+    }
+
+    .goal-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+}

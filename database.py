@@ -5,7 +5,7 @@ DATABASE_NAME = "spendwise.db"
 
 
 # =========================================================
-# DATABASE CONNECTION
+# CONNECTION
 # =========================================================
 
 def get_connection():
@@ -41,6 +41,17 @@ def create_tables():
             amount REAL NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(year, month, category)
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS savings_goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            target_amount REAL NOT NULL,
+            saved_amount REAL NOT NULL DEFAULT 0,
+            deadline TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -108,11 +119,11 @@ def get_transactions():
         ORDER BY transaction_date DESC, id DESC
     """)
 
-    transactions = cursor.fetchall()
+    results = cursor.fetchall()
 
     connection.close()
 
-    return transactions
+    return results
 
 
 # =========================================================
@@ -136,42 +147,11 @@ def get_transaction_by_id(transaction_id):
         WHERE id = ?
     """, (transaction_id,))
 
-    transaction = cursor.fetchone()
+    result = cursor.fetchone()
 
     connection.close()
 
-    return transaction
-
-
-# =========================================================
-# GET TRANSACTIONS BY MONTH
-# =========================================================
-
-def get_transactions_by_month(year, month):
-    connection = get_connection()
-    cursor = connection.cursor()
-
-    month_value = f"{year}-{month:02d}"
-
-    cursor.execute("""
-        SELECT
-            id,
-            type,
-            amount,
-            category,
-            description,
-            transaction_date,
-            created_at
-        FROM transactions
-        WHERE substr(transaction_date, 1, 7) = ?
-        ORDER BY transaction_date DESC, id DESC
-    """, (month_value,))
-
-    transactions = cursor.fetchall()
-
-    connection.close()
-
-    return transactions
+    return result
 
 
 # =========================================================
@@ -239,6 +219,37 @@ def delete_transaction(transaction_id):
 
 
 # =========================================================
+# TRANSACTIONS BY MONTH
+# =========================================================
+
+def get_transactions_by_month(year, month):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    month_value = f"{year}-{month:02d}"
+
+    cursor.execute("""
+        SELECT
+            id,
+            type,
+            amount,
+            category,
+            description,
+            transaction_date,
+            created_at
+        FROM transactions
+        WHERE substr(transaction_date, 1, 7) = ?
+        ORDER BY transaction_date DESC, id DESC
+    """, (month_value,))
+
+    results = cursor.fetchall()
+
+    connection.close()
+
+    return results
+
+
+# =========================================================
 # OVERALL BALANCE
 # =========================================================
 
@@ -277,9 +288,14 @@ def get_balance_summary():
 
     total_income = result[0]
     total_expense = result[1]
+
     balance = total_income - total_expense
 
-    return total_income, total_expense, balance
+    return (
+        total_income,
+        total_expense,
+        balance
+    )
 
 
 # =========================================================
@@ -324,9 +340,14 @@ def get_monthly_summary(year, month):
 
     total_income = result[0]
     total_expense = result[1]
+
     balance = total_income - total_expense
 
-    return total_income, total_expense, balance
+    return (
+        total_income,
+        total_expense,
+        balance
+    )
 
 
 # =========================================================
@@ -361,7 +382,12 @@ def get_category_spending(year, month):
 # SET BUDGET
 # =========================================================
 
-def set_budget(year, month, category, amount):
+def set_budget(
+    year,
+    month,
+    category,
+    amount
+):
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -409,25 +435,32 @@ def get_budgets(year, month):
         month
     ))
 
-    budgets = cursor.fetchall()
+    results = cursor.fetchall()
 
     connection.close()
 
-    return budgets
+    return results
 
 
 # =========================================================
 # CATEGORY EXPENSE
 # =========================================================
 
-def get_category_expense(year, month, category):
+def get_category_expense(
+    year,
+    month,
+    category
+):
     connection = get_connection()
     cursor = connection.cursor()
 
     month_value = f"{year}-{month:02d}"
 
     cursor.execute("""
-        SELECT COALESCE(SUM(amount), 0)
+        SELECT COALESCE(
+            SUM(amount),
+            0
+        )
         FROM transactions
         WHERE type = 'expense'
         AND category = ?
@@ -443,13 +476,23 @@ def get_category_expense(year, month, category):
 
     return result[0]
 
+
+# =========================================================
+# MONTHLY TRENDS
+# =========================================================
+
 def get_monthly_trends(months=6):
     connection = get_connection()
     cursor = connection.cursor()
 
     cursor.execute("""
         SELECT
-            substr(transaction_date, 1, 7) AS month,
+            substr(
+                transaction_date,
+                1,
+                7
+            ) AS month,
+
             COALESCE(
                 SUM(
                     CASE
@@ -460,6 +503,7 @@ def get_monthly_trends(months=6):
                 ),
                 0
             ) AS income,
+
             COALESCE(
                 SUM(
                     CASE
@@ -470,9 +514,18 @@ def get_monthly_trends(months=6):
                 ),
                 0
             ) AS expense
+
         FROM transactions
-        GROUP BY substr(transaction_date, 1, 7)
+
+        GROUP BY
+            substr(
+                transaction_date,
+                1,
+                7
+            )
+
         ORDER BY month DESC
+
         LIMIT ?
     """, (months,))
 
@@ -484,12 +537,173 @@ def get_monthly_trends(months=6):
 
     results = []
 
-    for month_value, income, expense in rows:
+    for (
+        month_value,
+        income,
+        expense
+    ) in rows:
+
         results.append({
             "month": month_value,
             "income": income,
             "expense": expense,
-            "savings": income - expense
+            "savings": (
+                income - expense
+            )
         })
 
     return results
+
+
+# =========================================================
+# ADD SAVINGS GOAL
+# =========================================================
+
+def add_savings_goal(
+    name,
+    target_amount,
+    saved_amount,
+    deadline
+):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO savings_goals (
+            name,
+            target_amount,
+            saved_amount,
+            deadline
+        )
+        VALUES (?, ?, ?, ?)
+    """, (
+        name,
+        target_amount,
+        saved_amount,
+        deadline
+    ))
+
+    goal_id = cursor.lastrowid
+
+    connection.commit()
+    connection.close()
+
+    return goal_id
+
+
+# =========================================================
+# GET SAVINGS GOALS
+# =========================================================
+
+def get_savings_goals():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            name,
+            target_amount,
+            saved_amount,
+            deadline,
+            created_at
+        FROM savings_goals
+        ORDER BY id DESC
+    """)
+
+    results = cursor.fetchall()
+
+    connection.close()
+
+    return results
+
+
+# =========================================================
+# GET ONE SAVINGS GOAL
+# =========================================================
+
+def get_savings_goal_by_id(goal_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            name,
+            target_amount,
+            saved_amount,
+            deadline,
+            created_at
+        FROM savings_goals
+        WHERE id = ?
+    """, (goal_id,))
+
+    result = cursor.fetchone()
+
+    connection.close()
+
+    return result
+
+
+# =========================================================
+# UPDATE SAVINGS GOAL
+# =========================================================
+
+def update_savings_goal(
+    goal_id,
+    name,
+    target_amount,
+    saved_amount,
+    deadline
+):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE savings_goals
+        SET
+            name = ?,
+            target_amount = ?,
+            saved_amount = ?,
+            deadline = ?
+        WHERE id = ?
+    """, (
+        name,
+        target_amount,
+        saved_amount,
+        deadline,
+        goal_id
+    ))
+
+    connection.commit()
+
+    updated_rows = cursor.rowcount
+
+    connection.close()
+
+    return updated_rows > 0
+
+
+# =========================================================
+# DELETE SAVINGS GOAL
+# =========================================================
+
+def delete_savings_goal(goal_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        DELETE FROM savings_goals
+        WHERE id = ?
+        """,
+        (goal_id,)
+    )
+
+    connection.commit()
+
+    deleted_rows = cursor.rowcount
+
+    connection.close()
+
+    return deleted_rows > 0

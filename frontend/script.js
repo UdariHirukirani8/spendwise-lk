@@ -1,3 +1,7 @@
+// =========================================================
+// CATEGORY DATA
+// =========================================================
+
 const incomeCategories = [
     "Salary",
     "Freelance",
@@ -21,14 +25,23 @@ const expenseCategories = [
 ];
 
 
+// =========================================================
+// GLOBAL STATE
+// =========================================================
+
 let editingTransactionId = null;
 
+let editingGoalId = null;
+
 let categoryChart = null;
+
 let monthlyChart = null;
+
+let trendChart = null;
 
 
 // =========================================================
-// CATEGORY DROPDOWNS
+// TRANSACTION CATEGORY DROPDOWN
 // =========================================================
 
 function updateCategoryOptions() {
@@ -55,25 +68,34 @@ function updateCategoryOptions() {
         '<option value="">Select category</option>';
 
 
-    categories.forEach(category => {
+    categories.forEach(
+        category => {
 
-        const option =
-            document.createElement(
-                "option"
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                category;
+
+
+            option.textContent =
+                category;
+
+
+            categorySelect.appendChild(
+                option
             );
-
-        option.value =
-            category;
-
-        option.textContent =
-            category;
-
-        categorySelect.appendChild(
-            option
-        );
-    });
+        }
+    );
 }
 
+
+// =========================================================
+// BUDGET CATEGORY DROPDOWN
+// =========================================================
 
 function loadBudgetCategories() {
 
@@ -95,11 +117,14 @@ function loadBudgetCategories() {
                     "option"
                 );
 
+
             option.value =
                 category;
 
+
             option.textContent =
                 category;
+
 
             select.appendChild(
                 option
@@ -118,7 +143,17 @@ async function loadBalance() {
     try {
 
         const response =
-            await fetch("/balance");
+            await fetch(
+                "/balance"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load balance."
+            );
+        }
 
 
         const data =
@@ -161,7 +196,7 @@ async function loadBalance() {
 
 
 // =========================================================
-// TRANSACTIONS
+// LOAD TRANSACTIONS
 // =========================================================
 
 async function loadTransactions() {
@@ -174,17 +209,25 @@ async function loadTransactions() {
             );
 
 
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load transactions."
+            );
+        }
+
+
         const data =
             await response.json();
 
 
-        const body =
+        const tableBody =
             document.getElementById(
                 "transactionTableBody"
             );
 
 
-        body.innerHTML = "";
+        tableBody.innerHTML = "";
 
 
         if (
@@ -193,7 +236,7 @@ async function loadTransactions() {
             data.transactions.length === 0
         ) {
 
-            body.innerHTML = `
+            tableBody.innerHTML = `
                 <tr>
                     <td colspan="7">
                         No transactions found.
@@ -236,8 +279,7 @@ async function loadTransactions() {
                     </td>
 
                     <td>
-                        Rs.
-                        ${Number(
+                        Rs. ${Number(
                             transaction.amount
                         ).toFixed(2)}
                     </td>
@@ -246,22 +288,18 @@ async function loadTransactions() {
 
                         <button
                             class="secondary-button"
-                            onclick="
-                                startEditTransaction(
-                                    ${transaction.id}
-                                )
-                            "
+                            onclick="startEditTransaction(
+                                ${transaction.id}
+                            )"
                         >
                             Edit
                         </button>
 
                         <button
                             class="delete-button"
-                            onclick="
-                                deleteTransaction(
-                                    ${transaction.id}
-                                )
-                            "
+                            onclick="deleteTransaction(
+                                ${transaction.id}
+                            )"
                         >
                             Delete
                         </button>
@@ -270,7 +308,9 @@ async function loadTransactions() {
                 `;
 
 
-                body.appendChild(row);
+                tableBody.appendChild(
+                    row
+                );
             }
         );
 
@@ -279,7 +319,7 @@ async function loadTransactions() {
     catch (error) {
 
         console.error(
-            "Transactions error:",
+            "Transaction loading error:",
             error
         );
     }
@@ -287,10 +327,13 @@ async function loadTransactions() {
 
 
 // =========================================================
-// CREATE / UPDATE TRANSACTION
+// SAVE TRANSACTION
+// CREATE OR UPDATE
 // =========================================================
 
-async function saveTransaction(event) {
+async function saveTransaction(
+    event
+) {
 
     event.preventDefault();
 
@@ -302,6 +345,7 @@ async function saveTransaction(event) {
                 "type"
             ).value,
 
+
         amount:
             Number(
                 document.getElementById(
@@ -309,15 +353,20 @@ async function saveTransaction(event) {
                 ).value
             ),
 
+
         category:
             document.getElementById(
                 "category"
             ).value,
 
+
         description:
             document.getElementById(
                 "description"
-            ).value.trim(),
+            )
+            .value
+            .trim(),
+
 
         transaction_date:
             document.getElementById(
@@ -363,6 +412,7 @@ async function saveTransaction(event) {
 
         url =
             `/transactions/${editingTransactionId}`;
+
 
         method =
             "PUT";
@@ -416,20 +466,27 @@ async function saveTransaction(event) {
 
         await refreshDashboard();
 
+
+        await loadTrendAnalytics();
+
     }
 
     catch (error) {
 
+        console.error(
+            "Transaction save error:",
+            error
+        );
+
+
         message.textContent =
             "Server connection failed.";
-
-        console.error(error);
     }
 }
 
 
 // =========================================================
-// EDIT TRANSACTION
+// START EDIT TRANSACTION
 // =========================================================
 
 async function startEditTransaction(
@@ -523,7 +580,10 @@ async function startEditTransaction(
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "Edit transaction error:",
+            error
+        );
     }
 }
 
@@ -543,6 +603,7 @@ async function deleteTransaction(
 
 
     if (!confirmed) {
+
         return;
     }
 
@@ -553,7 +614,8 @@ async function deleteTransaction(
             await fetch(
                 `/transactions/${transactionId}`,
                 {
-                    method: "DELETE"
+                    method:
+                        "DELETE"
                 }
             );
 
@@ -568,13 +630,28 @@ async function deleteTransaction(
         }
 
 
+        if (
+            editingTransactionId
+            === transactionId
+        ) {
+
+            resetTransactionForm();
+        }
+
+
         await refreshDashboard();
+
+
+        await loadTrendAnalytics();
 
     }
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "Delete transaction error:",
+            error
+        );
     }
 }
 
@@ -619,6 +696,10 @@ function resetTransactionForm() {
 }
 
 
+// =========================================================
+// CANCEL TRANSACTION EDIT
+// =========================================================
+
 function cancelEdit() {
 
     resetTransactionForm();
@@ -659,6 +740,20 @@ async function loadAnalytics() {
     }
 
 
+    if (
+        Number(month) < 1
+        ||
+        Number(month) > 12
+    ) {
+
+        alert(
+            "Month must be between 1 and 12."
+        );
+
+        return;
+    }
+
+
     syncBudgetDate(
         year,
         month
@@ -693,88 +788,115 @@ async function loadCategoryAnalytics(
     month
 ) {
 
-    const response =
-        await fetch(
-            `/analytics/categories?year=${year}&month=${month}`
-        );
-
-
-    const data =
-        await response.json();
-
-
     const output =
         document.getElementById(
             "categoryAnalytics"
         );
 
 
-    if (
-        !data.categories
-        ||
-        data.categories.length === 0
-    ) {
+    try {
 
-        output.innerHTML =
-            "<p>No spending data found.</p>";
+        const response =
+            await fetch(
+                `/analytics/categories?year=${year}&month=${month}`
+            );
 
 
-        if (categoryChart) {
+        const data =
+            await response.json();
 
-            categoryChart.destroy();
 
-            categoryChart = null;
+        if (!response.ok) {
+
+            output.innerHTML =
+                "<p>Could not load category analytics.</p>";
+
+            return;
         }
 
-        return;
+
+        if (
+            !data.categories
+            ||
+            data.categories.length === 0
+        ) {
+
+            output.innerHTML =
+                "<p>No spending data found.</p>";
+
+
+            if (categoryChart) {
+
+                categoryChart.destroy();
+
+                categoryChart =
+                    null;
+            }
+
+
+            return;
+        }
+
+
+        output.innerHTML = `
+            <p>
+                Total Expenses:
+                <strong>
+                    Rs.
+                    ${Number(
+                        data.total_expense
+                    ).toFixed(2)}
+                </strong>
+            </p>
+
+            <br>
+        `;
+
+
+        data.categories.forEach(
+            item => {
+
+                output.innerHTML += `
+                    <div class="analytics-row">
+
+                        <span>
+                            ${item.category}
+                        </span>
+
+                        <span>
+                            Rs.
+                            ${Number(
+                                item.amount
+                            ).toFixed(2)}
+
+                            (${Number(
+                                item.percentage
+                            ).toFixed(1)}%)
+                        </span>
+
+                    </div>
+                `;
+            }
+        );
+
+
+        drawCategoryChart(
+            data.categories
+        );
+
     }
 
+    catch (error) {
 
-    output.innerHTML = `
-        <p>
-            Total Expenses:
-            <strong>
-                Rs.
-                ${Number(
-                    data.total_expense
-                ).toFixed(2)}
-            </strong>
-        </p>
-
-        <br>
-    `;
+        console.error(
+            "Category analytics error:",
+            error
+        );
 
 
-    data.categories.forEach(
-        item => {
-
-            output.innerHTML += `
-                <div class="analytics-row">
-
-                    <span>
-                        ${item.category}
-                    </span>
-
-                    <span>
-                        Rs.
-                        ${Number(
-                            item.amount
-                        ).toFixed(2)}
-
-                        (${Number(
-                            item.percentage
-                        ).toFixed(1)}%)
-                    </span>
-
-                </div>
-            `;
-        }
-    );
-
-
-    drawCategoryChart(
-        data.categories
-    );
+        output.innerHTML =
+            "<p>Server connection failed.</p>";
+    }
 }
 
 
@@ -792,6 +914,12 @@ function drawCategoryChart(
         );
 
 
+    if (!canvas) {
+
+        return;
+    }
+
+
     if (categoryChart) {
 
         categoryChart.destroy();
@@ -802,7 +930,8 @@ function drawCategoryChart(
         new Chart(
             canvas,
             {
-                type: "doughnut",
+                type:
+                    "doughnut",
 
                 data: {
 
@@ -812,18 +941,21 @@ function drawCategoryChart(
                                 item.category
                         ),
 
-                    datasets: [{
-                        data:
-                            categories.map(
-                                item =>
-                                    item.amount
-                            )
-                    }]
+                    datasets: [
+                        {
+                            data:
+                                categories.map(
+                                    item =>
+                                        item.amount
+                                )
+                        }
+                    ]
                 },
 
                 options: {
 
-                    responsive: true,
+                    responsive:
+                        true,
 
                     maintainAspectRatio:
                         false
@@ -834,7 +966,7 @@ function drawCategoryChart(
 
 
 // =========================================================
-// INCOME VS EXPENSE
+// MONTHLY INCOME VS EXPENSE
 // =========================================================
 
 async function loadMonthlyAnalytics(
@@ -842,22 +974,44 @@ async function loadMonthlyAnalytics(
     month
 ) {
 
-    const response =
-        await fetch(
-            `/analytics/monthly?year=${year}&month=${month}`
+    try {
+
+        const response =
+            await fetch(
+                `/analytics/monthly?year=${year}&month=${month}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            return;
+        }
+
+
+        drawMonthlyChart(
+            data.total_income,
+            data.total_expense
         );
 
+    }
 
-    const data =
-        await response.json();
+    catch (error) {
 
-
-    drawMonthlyChart(
-        data.total_income,
-        data.total_expense
-    );
+        console.error(
+            "Monthly analytics error:",
+            error
+        );
+    }
 }
 
+
+// =========================================================
+// MONTHLY CHART
+// =========================================================
 
 function drawMonthlyChart(
     income,
@@ -870,6 +1024,12 @@ function drawMonthlyChart(
         );
 
 
+    if (!canvas) {
+
+        return;
+    }
+
+
     if (monthlyChart) {
 
         monthlyChart.destroy();
@@ -880,7 +1040,8 @@ function drawMonthlyChart(
         new Chart(
             canvas,
             {
-                type: "bar",
+                type:
+                    "bar",
 
                 data: {
 
@@ -889,20 +1050,23 @@ function drawMonthlyChart(
                         "Expenses"
                     ],
 
-                    datasets: [{
-                        label:
-                            "Amount (Rs.)",
+                    datasets: [
+                        {
+                            label:
+                                "Amount (Rs.)",
 
-                        data: [
-                            income,
-                            expense
-                        ]
-                    }]
+                            data: [
+                                income,
+                                expense
+                            ]
+                        }
+                    ]
                 },
 
                 options: {
 
-                    responsive: true,
+                    responsive:
+                        true,
 
                     maintainAspectRatio:
                         false,
@@ -921,10 +1085,203 @@ function drawMonthlyChart(
 
 
 // =========================================================
+// FINANCIAL TREND
+// =========================================================
+
+async function loadTrendAnalytics() {
+
+    const trendSelect =
+        document.getElementById(
+            "trendMonths"
+        );
+
+
+    if (!trendSelect) {
+
+        return;
+    }
+
+
+    const months =
+        trendSelect.value;
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/analytics/trends?months=${months}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Trend endpoint error:",
+                data
+            );
+
+            return;
+        }
+
+
+        drawTrendChart(
+            data.trends
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Trend analytics error:",
+            error
+        );
+    }
+}
+
+
+// =========================================================
+// TREND CHART
+// =========================================================
+
+function drawTrendChart(
+    trends
+) {
+
+    const canvas =
+        document.getElementById(
+            "trendChart"
+        );
+
+
+    if (!canvas) {
+
+        return;
+    }
+
+
+    if (trendChart) {
+
+        trendChart.destroy();
+    }
+
+
+    if (
+        !trends
+        ||
+        trends.length === 0
+    ) {
+
+        return;
+    }
+
+
+    trendChart =
+        new Chart(
+            canvas,
+            {
+                type:
+                    "line",
+
+                data: {
+
+                    labels:
+                        trends.map(
+                            item =>
+                                item.month
+                        ),
+
+                    datasets: [
+
+                        {
+                            label:
+                                "Income",
+
+                            data:
+                                trends.map(
+                                    item =>
+                                        item.income
+                                ),
+
+                            tension:
+                                0.3
+                        },
+
+
+                        {
+                            label:
+                                "Expenses",
+
+                            data:
+                                trends.map(
+                                    item =>
+                                        item.expense
+                                ),
+
+                            tension:
+                                0.3
+                        },
+
+
+                        {
+                            label:
+                                "Savings",
+
+                            data:
+                                trends.map(
+                                    item =>
+                                        item.savings
+                                ),
+
+                            tension:
+                                0.3
+                        }
+
+                    ]
+                },
+
+                options: {
+
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
+
+                    interaction: {
+
+                        mode:
+                            "index",
+
+                        intersect:
+                            false
+                    },
+
+                    scales: {
+
+                        y: {
+                            beginAtZero:
+                                true
+                        }
+                    }
+                }
+            }
+        );
+}
+
+
+// =========================================================
 // SAVE BUDGET
 // =========================================================
 
-async function saveBudget(event) {
+async function saveBudget(
+    event
+) {
 
     event.preventDefault();
 
@@ -1000,10 +1357,17 @@ async function saveBudget(event) {
 
                     body:
                         JSON.stringify({
-                            year: year,
-                            month: month,
-                            category: category,
-                            amount: amount
+                            year:
+                                year,
+
+                            month:
+                                month,
+
+                            category:
+                                category,
+
+                            amount:
+                                amount
                         })
                 }
             );
@@ -1030,7 +1394,8 @@ async function saveBudget(event) {
 
         document.getElementById(
             "budgetAmount"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
@@ -1054,10 +1419,14 @@ async function saveBudget(event) {
 
     catch (error) {
 
+        console.error(
+            "Save budget error:",
+            error
+        );
+
+
         message.textContent =
             "Server connection failed.";
-
-        console.error(error);
     }
 }
 
@@ -1120,6 +1489,15 @@ async function loadBudgets(
             await response.json();
 
 
+        if (!response.ok) {
+
+            container.innerHTML =
+                "<p>Could not load budgets.</p>";
+
+            return;
+        }
+
+
         if (
             !data.budgets
             ||
@@ -1152,10 +1530,13 @@ async function loadBudgets(
                     );
 
 
-                let warning = "";
+                let warning =
+                    "";
 
 
-                if (budget.exceeded) {
+                if (
+                    budget.exceeded
+                ) {
 
                     warning = `
                         <p class="budget-danger">
@@ -1169,6 +1550,7 @@ async function loadBudgets(
                         </p>
                     `;
                 }
+
 
                 else if (
                     percentage >= 80
@@ -1262,16 +1644,20 @@ async function loadBudgets(
 
     catch (error) {
 
-        container.innerHTML =
-            "<p>Could not load budgets.</p>";
+        console.error(
+            "Load budgets error:",
+            error
+        );
 
-        console.error(error);
+
+        container.innerHTML =
+            "<p>Server connection failed.</p>";
     }
 }
 
 
 // =========================================================
-// SYNC YEAR / MONTH
+// SYNC BUDGET DATE
 // =========================================================
 
 function syncBudgetDate(
@@ -1293,15 +1679,595 @@ function syncBudgetDate(
 
 
 // =========================================================
-// DEFAULT DATES
+// LOAD SAVINGS GOALS
+// =========================================================
+
+async function loadSavingsGoals() {
+
+    const container =
+        document.getElementById(
+            "savingsGoalsContainer"
+        );
+
+
+    if (!container) {
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/savings-goals"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            container.innerHTML =
+                "<p>Could not load savings goals.</p>";
+
+            return;
+        }
+
+
+        if (
+            !data.goals
+            ||
+            data.goals.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>No savings goals yet.</p>";
+
+            return;
+        }
+
+
+        container.innerHTML =
+            "";
+
+
+        data.goals.forEach(
+            goal => {
+
+                const percentage =
+                    Number(
+                        goal.progress_percentage
+                    );
+
+
+                const progress =
+                    Math.min(
+                        percentage,
+                        100
+                    );
+
+
+                const deadline =
+                    goal.deadline
+                    ||
+                    "No deadline";
+
+
+                const completedMessage =
+                    goal.completed
+                    ? `
+                        <p class="goal-completed">
+                            Goal completed!
+                        </p>
+                    `
+                    : "";
+
+
+                container.innerHTML += `
+                    <div class="savings-goal-card">
+
+                        <div class="goal-header">
+
+                            <h3>
+                                ${goal.name}
+                            </h3>
+
+                            <span class="goal-status">
+                                ${percentage.toFixed(1)}%
+                            </span>
+
+                        </div>
+
+
+                        <div class="goal-details">
+
+                            <p>
+                                Target:
+                                <strong>
+                                    Rs.
+                                    ${Number(
+                                        goal.target_amount
+                                    ).toFixed(2)}
+                                </strong>
+                            </p>
+
+
+                            <p>
+                                Saved:
+                                <strong>
+                                    Rs.
+                                    ${Number(
+                                        goal.saved_amount
+                                    ).toFixed(2)}
+                                </strong>
+                            </p>
+
+
+                            <p>
+                                Remaining:
+                                <strong>
+                                    Rs.
+                                    ${Number(
+                                        goal.remaining_amount
+                                    ).toFixed(2)}
+                                </strong>
+                            </p>
+
+                        </div>
+
+
+                        <p>
+                            Deadline:
+                            <strong>
+                                ${deadline}
+                            </strong>
+                        </p>
+
+
+                        <div class="goal-progress-container">
+
+                            <div
+                                class="goal-progress-bar"
+                                style="
+                                    width:
+                                    ${progress}%;
+                                "
+                            >
+                            </div>
+
+                        </div>
+
+
+                        <p class="goal-progress-text">
+                            ${percentage.toFixed(1)}%
+                            complete
+                        </p>
+
+
+                        ${completedMessage}
+
+
+                        <div class="goal-actions">
+
+                            <button
+                                class="secondary-button"
+                                onclick="startEditGoal(
+                                    ${goal.id}
+                                )"
+                            >
+                                Edit
+                            </button>
+
+
+                            <button
+                                class="delete-button"
+                                onclick="deleteGoal(
+                                    ${goal.id}
+                                )"
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+
+                    </div>
+                `;
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Savings goals load error:",
+            error
+        );
+
+
+        container.innerHTML =
+            "<p>Server connection failed.</p>";
+    }
+}
+
+
+// =========================================================
+// SAVE SAVINGS GOAL
+// =========================================================
+
+async function saveSavingsGoal(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const goal = {
+
+        name:
+            document.getElementById(
+                "goalName"
+            )
+            .value
+            .trim(),
+
+
+        target_amount:
+            Number(
+                document.getElementById(
+                    "goalTarget"
+                ).value
+            ),
+
+
+        saved_amount:
+            Number(
+                document.getElementById(
+                    "goalSaved"
+                ).value
+            ),
+
+
+        deadline:
+            document.getElementById(
+                "goalDeadline"
+            ).value
+            ||
+            null
+    };
+
+
+    const message =
+        document.getElementById(
+            "goalMessage"
+        );
+
+
+    if (
+        !goal.name
+        ||
+        goal.target_amount <= 0
+        ||
+        goal.saved_amount < 0
+    ) {
+
+        message.textContent =
+            "Please enter valid savings goal details.";
+
+        return;
+    }
+
+
+    let url =
+        "/savings-goals";
+
+
+    let method =
+        "POST";
+
+
+    const isEditing =
+        editingGoalId !== null;
+
+
+    if (isEditing) {
+
+        url =
+            `/savings-goals/${editingGoalId}`;
+
+
+        method =
+            "PUT";
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method:
+                        method,
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            goal
+                        )
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            message.textContent =
+                typeof data.detail === "string"
+                    ? data.detail
+                    : "Could not save savings goal.";
+
+            return;
+        }
+
+
+        message.textContent =
+            isEditing
+                ? "Savings goal updated successfully."
+                : "Savings goal created successfully.";
+
+
+        resetSavingsGoalForm();
+
+
+        await loadSavingsGoals();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Savings goal save error:",
+            error
+        );
+
+
+        message.textContent =
+            "Server connection failed.";
+    }
+}
+
+
+// =========================================================
+// EDIT SAVINGS GOAL
+// =========================================================
+
+async function startEditGoal(
+    goalId
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                `/savings-goals/${goalId}`
+            );
+
+
+        if (!response.ok) {
+
+            alert(
+                "Could not load savings goal."
+            );
+
+            return;
+        }
+
+
+        const goal =
+            await response.json();
+
+
+        editingGoalId =
+            goal.id;
+
+
+        document.getElementById(
+            "goalName"
+        ).value =
+            goal.name;
+
+
+        document.getElementById(
+            "goalTarget"
+        ).value =
+            goal.target_amount;
+
+
+        document.getElementById(
+            "goalSaved"
+        ).value =
+            goal.saved_amount;
+
+
+        document.getElementById(
+            "goalDeadline"
+        ).value =
+            goal.deadline || "";
+
+
+        document.getElementById(
+            "goalSubmitButton"
+        ).textContent =
+            "Update Goal";
+
+
+        document.getElementById(
+            "cancelGoalEditButton"
+        ).style.display =
+            "inline-block";
+
+
+        document.getElementById(
+            "goalMessage"
+        ).textContent =
+            `Editing savings goal #${goal.id}`;
+
+
+        document.getElementById(
+            "savingsGoalForm"
+        ).scrollIntoView({
+            behavior:
+                "smooth"
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Savings goal edit error:",
+            error
+        );
+    }
+}
+
+
+// =========================================================
+// DELETE SAVINGS GOAL
+// =========================================================
+
+async function deleteGoal(
+    goalId
+) {
+
+    const confirmed =
+        confirm(
+            `Delete savings goal #${goalId}?`
+        );
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/savings-goals/${goalId}`,
+                {
+                    method:
+                        "DELETE"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            alert(
+                "Could not delete savings goal."
+            );
+
+            return;
+        }
+
+
+        if (
+            editingGoalId
+            === goalId
+        ) {
+
+            resetSavingsGoalForm();
+        }
+
+
+        await loadSavingsGoals();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Savings goal delete error:",
+            error
+        );
+    }
+}
+
+
+// =========================================================
+// RESET SAVINGS GOAL FORM
+// =========================================================
+
+function resetSavingsGoalForm() {
+
+    editingGoalId =
+        null;
+
+
+    document.getElementById(
+        "savingsGoalForm"
+    ).reset();
+
+
+    document.getElementById(
+        "goalSaved"
+    ).value =
+        "0";
+
+
+    document.getElementById(
+        "goalSubmitButton"
+    ).textContent =
+        "Create Goal";
+
+
+    document.getElementById(
+        "cancelGoalEditButton"
+    ).style.display =
+        "none";
+}
+
+
+// =========================================================
+// CANCEL SAVINGS GOAL EDIT
+// =========================================================
+
+function cancelGoalEdit() {
+
+    resetSavingsGoalForm();
+
+
+    document.getElementById(
+        "goalMessage"
+    ).textContent =
+        "Edit cancelled.";
+}
+
+
+// =========================================================
+// TODAY DATE
 // =========================================================
 
 function setTodayDate() {
 
     const today =
         new Date()
-            .toISOString()
-            .split("T")[0];
+        .toISOString()
+        .split("T")[0];
 
 
     document.getElementById(
@@ -1310,6 +2276,10 @@ function setTodayDate() {
         today;
 }
 
+
+// =========================================================
+// DEFAULT YEAR / MONTH
+// =========================================================
 
 function setDefaultDates() {
 
@@ -1351,20 +2321,21 @@ function setDefaultDates() {
 
 
 // =========================================================
-// REFRESH
+// REFRESH DASHBOARD
 // =========================================================
 
 async function refreshDashboard() {
 
     await Promise.all([
         loadBalance(),
-        loadTransactions()
+        loadTransactions(),
+        loadSavingsGoals()
     ]);
 }
 
 
 // =========================================================
-// EVENTS
+// EVENT LISTENERS
 // =========================================================
 
 document
@@ -1437,8 +2408,38 @@ document
     );
 
 
+document
+    .getElementById(
+        "trendMonths"
+    )
+    .addEventListener(
+        "change",
+        loadTrendAnalytics
+    );
+
+
+document
+    .getElementById(
+        "savingsGoalForm"
+    )
+    .addEventListener(
+        "submit",
+        saveSavingsGoal
+    );
+
+
+document
+    .getElementById(
+        "cancelGoalEditButton"
+    )
+    .addEventListener(
+        "click",
+        cancelGoalEdit
+    );
+
+
 // =========================================================
-// INITIALIZE
+// INITIALIZE DASHBOARD
 // =========================================================
 
 updateCategoryOptions();
@@ -1450,3 +2451,5 @@ setTodayDate();
 setDefaultDates();
 
 refreshDashboard();
+
+loadTrendAnalytics();
