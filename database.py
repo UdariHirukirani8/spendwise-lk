@@ -442,3 +442,54 @@ def get_category_expense(year, month, category):
     connection.close()
 
     return result[0]
+
+def get_monthly_trends(months=6):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            substr(transaction_date, 1, 7) AS month,
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN type = 'income'
+                        THEN amount
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS income,
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN type = 'expense'
+                        THEN amount
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS expense
+        FROM transactions
+        GROUP BY substr(transaction_date, 1, 7)
+        ORDER BY month DESC
+        LIMIT ?
+    """, (months,))
+
+    rows = cursor.fetchall()
+
+    connection.close()
+
+    rows.reverse()
+
+    results = []
+
+    for month_value, income, expense in rows:
+        results.append({
+            "month": month_value,
+            "income": income,
+            "expense": expense,
+            "savings": income - expense
+        })
+
+    return results

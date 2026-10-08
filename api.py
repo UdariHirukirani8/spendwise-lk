@@ -18,7 +18,8 @@ from database import (
     get_category_spending,
     set_budget,
     get_budgets,
-    get_category_expense
+    get_category_expense,
+    get_monthly_trends
 )
 
 
@@ -508,3 +509,19 @@ def read_budgets(
         "month": month,
         "budgets": results
     }
+
+@app.get("/analytics/trends")
+def read_monthly_trends(
+    months: int = Query(
+        default=6,
+        ge=1,
+        le=24
+    )
+):
+    trends = get_monthly_trends(months)
+
+    return {
+        "months_requested": months,
+        "count": len(trends),
+        "trends": trends
+    }    
