@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -16,17 +17,27 @@
         href="/static/style.css"
     >
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+    ></script>
+
 </head>
+
 
 <body>
 
 <header class="topbar">
 
     <div>
+
         <h1>SpendWise LK</h1>
-        <p>Personal Finance Dashboard</p>
+
+        <p>
+            Personal Finance Dashboard
+        </p>
+
     </div>
+
 
     <div class="topbar-actions">
 
@@ -36,6 +47,7 @@
         >
             Export CSV
         </button>
+
 
         <button
             id="refreshButton"
@@ -51,34 +63,148 @@
 
 <main class="container">
 
+
     <!-- SUMMARY -->
 
     <section class="summary-grid">
 
         <div class="summary-card">
+
             <p>Total Income</p>
 
             <h2 id="totalIncome">
                 Rs. 0.00
             </h2>
+
         </div>
 
 
         <div class="summary-card">
+
             <p>Total Expenses</p>
 
             <h2 id="totalExpense">
                 Rs. 0.00
             </h2>
+
         </div>
 
 
         <div class="summary-card">
+
             <p>Current Balance</p>
 
             <h2 id="balance">
                 Rs. 0.00
             </h2>
+
+        </div>
+
+    </section>
+
+
+    <!-- SMART INSIGHTS -->
+
+    <section class="panel insights-panel">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Smart Spending Insights
+                </h2>
+
+                <p>
+                    Automatic analysis of your
+                    monthly financial behaviour.
+                </p>
+
+            </div>
+
+
+            <button
+                id="refreshInsightsButton"
+                class="secondary-button"
+            >
+                Refresh Insights
+            </button>
+
+        </div>
+
+
+        <div class="insights-grid">
+
+            <div class="insight-stat-card">
+
+                <p>
+                    Savings Rate
+                </p>
+
+                <h3 id="insightSavingsRate">
+                    0.0%
+                </h3>
+
+            </div>
+
+
+            <div class="insight-stat-card">
+
+                <p>
+                    Highest Spending Category
+                </p>
+
+                <h3 id="insightTopCategory">
+                    -
+                </h3>
+
+            </div>
+
+
+            <div class="insight-stat-card">
+
+                <p>
+                    Monthly Expense Change
+                </p>
+
+                <h3 id="insightExpenseChange">
+                    -
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="insight-section">
+
+            <h3>
+                Recommendations
+            </h3>
+
+            <div id="insightRecommendations">
+                <p>
+                    Loading insights...
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="insight-section">
+
+            <h3>
+                Budget Alerts
+            </h3>
+
+            <div id="insightBudgetAlerts">
+
+                <p>
+                    No alerts.
+                </p>
+
+            </div>
+
         </div>
 
     </section>
@@ -88,7 +214,10 @@
 
     <section class="panel">
 
-        <h2>Add / Edit Transaction</h2>
+        <h2>
+            Add / Edit Transaction
+        </h2>
+
 
         <form id="transactionForm">
 
@@ -104,6 +233,7 @@
                         id="type"
                         required
                     >
+
                         <option value="expense">
                             Expense
                         </option>
@@ -111,6 +241,7 @@
                         <option value="income">
                             Income
                         </option>
+
                     </select>
 
                 </div>
@@ -210,11 +341,14 @@
     </section>
 
 
-    <!-- TRANSACTION HISTORY -->
+    <!-- TRANSACTIONS -->
 
     <section class="panel">
 
-        <h2>Transaction History</h2>
+        <h2>
+            Transaction History
+        </h2>
+
 
         <div class="table-wrapper">
 
@@ -223,16 +357,25 @@
                 <thead>
 
                 <tr>
+
                     <th>ID</th>
+
                     <th>Date</th>
+
                     <th>Type</th>
+
                     <th>Category</th>
+
                     <th>Description</th>
+
                     <th>Amount</th>
+
                     <th>Actions</th>
+
                 </tr>
 
                 </thead>
+
 
                 <tbody id="transactionTableBody">
                 </tbody>
@@ -244,11 +387,14 @@
     </section>
 
 
-    <!-- MONTHLY ANALYTICS -->
+    <!-- ANALYTICS CONTROLS -->
 
     <section class="panel">
 
-        <h2>Monthly Analytics</h2>
+        <h2>
+            Monthly Analytics
+        </h2>
+
 
         <div class="analytics-controls">
 
@@ -258,6 +404,7 @@
                 placeholder="Year"
             >
 
+
             <input
                 type="number"
                 id="analyticsMonth"
@@ -265,6 +412,7 @@
                 max="12"
                 placeholder="Month"
             >
+
 
             <button
                 id="analyticsButton"
@@ -284,7 +432,9 @@
 
         <div class="panel chart-panel">
 
-            <h2>Spending by Category</h2>
+            <h2>
+                Spending by Category
+            </h2>
 
             <canvas id="categoryChart"></canvas>
 
@@ -293,7 +443,9 @@
 
         <div class="panel chart-panel">
 
-            <h2>Income vs Expense</h2>
+            <h2>
+                Income vs Expense
+            </h2>
 
             <canvas id="monthlyChart"></canvas>
 
@@ -302,16 +454,20 @@
     </section>
 
 
-    <!-- CATEGORY BREAKDOWN -->
+    <!-- CATEGORY -->
 
     <section class="panel">
 
-        <h2>Category Breakdown</h2>
+        <h2>
+            Category Breakdown
+        </h2>
+
 
         <div id="categoryAnalytics">
 
             <p>
-                Select a year and month to analyze spending.
+                Select a year and month
+                to analyze spending.
             </p>
 
         </div>
@@ -319,7 +475,7 @@
     </section>
 
 
-    <!-- FINANCIAL TREND -->
+    <!-- TREND -->
 
     <section class="panel trend-panel">
 
@@ -327,10 +483,13 @@
 
             <div>
 
-                <h2>Financial Trend</h2>
+                <h2>
+                    Financial Trend
+                </h2>
 
                 <p>
-                    Income, expenses and savings over time.
+                    Income, expenses and
+                    savings over time.
                 </p>
 
             </div>
@@ -367,11 +526,13 @@
     </section>
 
 
-    <!-- BUDGET FORM -->
+    <!-- BUDGET -->
 
     <section class="panel">
 
-        <h2>Set Monthly Budget</h2>
+        <h2>
+            Set Monthly Budget
+        </h2>
 
         <p class="section-description">
             Create or update a monthly expense limit.
@@ -384,13 +545,13 @@
 
                 <div class="form-group">
 
-                    <label for="budgetYear">
+                    <label>
                         Year
                     </label>
 
                     <input
-                        type="number"
                         id="budgetYear"
+                        type="number"
                         required
                     >
 
@@ -399,13 +560,13 @@
 
                 <div class="form-group">
 
-                    <label for="budgetMonth">
+                    <label>
                         Month
                     </label>
 
                     <input
-                        type="number"
                         id="budgetMonth"
+                        type="number"
                         min="1"
                         max="12"
                         required
@@ -416,7 +577,7 @@
 
                 <div class="form-group">
 
-                    <label for="budgetCategory">
+                    <label>
                         Category
                     </label>
 
@@ -431,13 +592,13 @@
 
                 <div class="form-group">
 
-                    <label for="budgetAmount">
+                    <label>
                         Budget Amount
                     </label>
 
                     <input
-                        type="number"
                         id="budgetAmount"
+                        type="number"
                         min="0.01"
                         step="0.01"
                         required
@@ -449,8 +610,8 @@
 
 
             <button
-                type="submit"
                 class="primary-button"
+                type="submit"
             >
                 Save Budget
             </button>
@@ -471,10 +632,13 @@
 
             <div>
 
-                <h2>Monthly Budgets</h2>
+                <h2>
+                    Monthly Budgets
+                </h2>
 
                 <p>
-                    Monitor spending limits and budget usage.
+                    Monitor spending limits
+                    and budget usage.
                 </p>
 
             </div>
@@ -500,10 +664,13 @@
 
     <section class="panel">
 
-        <h2>Savings Goals</h2>
+        <h2>
+            Savings Goals
+        </h2>
 
         <p class="section-description">
-            Create a financial target and track progress.
+            Create a financial target
+            and track progress.
         </p>
 
 
@@ -513,13 +680,13 @@
 
                 <div class="form-group">
 
-                    <label for="goalName">
+                    <label>
                         Goal Name
                     </label>
 
                     <input
-                        type="text"
                         id="goalName"
+                        type="text"
                         placeholder="Example: New Laptop"
                         required
                     >
@@ -529,13 +696,13 @@
 
                 <div class="form-group">
 
-                    <label for="goalTarget">
+                    <label>
                         Target Amount
                     </label>
 
                     <input
-                        type="number"
                         id="goalTarget"
+                        type="number"
                         min="0.01"
                         step="0.01"
                         required
@@ -546,13 +713,13 @@
 
                 <div class="form-group">
 
-                    <label for="goalSaved">
+                    <label>
                         Saved Amount
                     </label>
 
                     <input
-                        type="number"
                         id="goalSaved"
+                        type="number"
                         min="0"
                         step="0.01"
                         value="0"
@@ -564,13 +731,13 @@
 
                 <div class="form-group">
 
-                    <label for="goalDeadline">
+                    <label>
                         Deadline
                     </label>
 
                     <input
-                        type="date"
                         id="goalDeadline"
+                        type="date"
                     >
 
                 </div>
@@ -581,18 +748,18 @@
             <div class="form-actions">
 
                 <button
-                    type="submit"
                     id="goalSubmitButton"
                     class="primary-button"
+                    type="submit"
                 >
                     Create Goal
                 </button>
 
 
                 <button
-                    type="button"
                     id="cancelGoalEditButton"
                     class="secondary-button"
+                    type="button"
                     style="display:none;"
                 >
                     Cancel Edit
@@ -612,7 +779,9 @@
 
     <section class="panel">
 
-        <h2>Goal Progress</h2>
+        <h2>
+            Goal Progress
+        </h2>
 
         <p class="section-description">
             Track all your savings targets.
@@ -625,15 +794,17 @@
     </section>
 
 
-    <!-- RECURRING TRANSACTIONS -->
+    <!-- RECURRING FORM -->
 
     <section class="panel">
 
-        <h2>Recurring Transactions</h2>
+        <h2>
+            Recurring Transactions
+        </h2>
 
         <p class="section-description">
-            Add regular monthly income or expenses such as salary,
-            rent, subscriptions and bills.
+            Add regular monthly income or expenses
+            such as salary, rent, subscriptions and bills.
         </p>
 
 
@@ -643,7 +814,7 @@
 
                 <div class="form-group">
 
-                    <label for="recurringType">
+                    <label>
                         Type
                     </label>
 
@@ -651,6 +822,7 @@
                         id="recurringType"
                         required
                     >
+
                         <option value="expense">
                             Expense
                         </option>
@@ -658,6 +830,7 @@
                         <option value="income">
                             Income
                         </option>
+
                     </select>
 
                 </div>
@@ -665,13 +838,13 @@
 
                 <div class="form-group">
 
-                    <label for="recurringAmount">
+                    <label>
                         Amount
                     </label>
 
                     <input
-                        type="number"
                         id="recurringAmount"
+                        type="number"
                         min="0.01"
                         step="0.01"
                         required
@@ -682,7 +855,7 @@
 
                 <div class="form-group">
 
-                    <label for="recurringCategory">
+                    <label>
                         Category
                     </label>
 
@@ -697,13 +870,13 @@
 
                 <div class="form-group">
 
-                    <label for="recurringDay">
+                    <label>
                         Day of Month
                     </label>
 
                     <input
-                        type="number"
                         id="recurringDay"
+                        type="number"
                         min="1"
                         max="31"
                         required
@@ -716,13 +889,13 @@
 
             <div class="form-group">
 
-                <label for="recurringDescription">
+                <label>
                     Description
                 </label>
 
                 <input
-                    type="text"
                     id="recurringDescription"
+                    type="text"
                     placeholder="Example: Monthly internet bill"
                 >
 
@@ -732,12 +905,12 @@
             <div class="checkbox-group">
 
                 <input
-                    type="checkbox"
                     id="recurringActive"
+                    type="checkbox"
                     checked
                 >
 
-                <label for="recurringActive">
+                <label>
                     Active
                 </label>
 
@@ -747,18 +920,18 @@
             <div class="form-actions">
 
                 <button
-                    type="submit"
                     id="recurringSubmitButton"
                     class="primary-button"
+                    type="submit"
                 >
                     Add Recurring Transaction
                 </button>
 
 
                 <button
-                    type="button"
                     id="cancelRecurringEditButton"
                     class="secondary-button"
+                    type="button"
                     style="display:none;"
                 >
                     Cancel Edit
@@ -778,7 +951,9 @@
 
     <section class="panel">
 
-        <h2>Recurring Transaction List</h2>
+        <h2>
+            Recurring Transaction List
+        </h2>
 
         <p class="section-description">
             Manage your regular monthly transactions.
@@ -789,6 +964,7 @@
         </div>
 
     </section>
+
 
 </main>
 

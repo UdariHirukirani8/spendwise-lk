@@ -12,6 +12,10 @@ body {
 }
 
 
+/* =========================================
+   TOP BAR
+========================================= */
+
 .topbar {
     display: flex;
     justify-content: space-between;
@@ -28,6 +32,7 @@ body {
 
 .topbar h1 {
     font-size: 30px;
+    font-weight: 700;
 }
 
 
@@ -43,6 +48,10 @@ body {
 }
 
 
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
 .container {
     max-width: 1250px;
     margin: 0 auto;
@@ -50,7 +59,9 @@ body {
 }
 
 
-/* SUMMARY */
+/* =========================================
+   SUMMARY CARDS
+========================================= */
 
 .summary-grid {
     display: grid;
@@ -81,15 +92,20 @@ body {
     color: #6b7280;
 
     margin-bottom: 12px;
+
+    font-size: 16px;
 }
 
 
 .summary-card h2 {
     font-size: 28px;
+    font-weight: 700;
 }
 
 
-/* PANEL */
+/* =========================================
+   GENERAL PANEL
+========================================= */
 
 .panel {
     background: #ffffff;
@@ -120,7 +136,31 @@ body {
 }
 
 
-/* FORM */
+/* =========================================
+   SECTION HEADER
+========================================= */
+
+.section-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 15px;
+}
+
+
+.section-header p {
+    color: #6b7280;
+}
+
+
+/* =========================================
+   FORMS
+========================================= */
 
 .form-grid {
     display: grid;
@@ -161,6 +201,8 @@ select {
     font-size: 15px;
 
     background: #ffffff;
+
+    color: #1f2937;
 }
 
 
@@ -169,6 +211,10 @@ select:focus {
     outline: none;
 
     border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(37, 99, 235, 0.08);
 }
 
 
@@ -181,7 +227,9 @@ select:focus {
 }
 
 
-/* BUTTONS */
+/* =========================================
+   BUTTONS
+========================================= */
 
 .primary-button,
 .secondary-button,
@@ -195,6 +243,8 @@ select:focus {
     cursor: pointer;
 
     font-size: 14px;
+
+    font-weight: 600;
 
     transition: 0.2s;
 }
@@ -236,7 +286,9 @@ select:focus {
 }
 
 
-/* TABLE */
+/* =========================================
+   TABLE
+========================================= */
 
 .table-wrapper {
     overflow-x: auto;
@@ -263,6 +315,13 @@ td {
 
 th {
     background: #f9fafb;
+
+    font-weight: 700;
+}
+
+
+td {
+    vertical-align: middle;
 }
 
 
@@ -274,12 +333,16 @@ td .delete-button {
 }
 
 
-/* ANALYTICS */
+/* =========================================
+   ANALYTICS CONTROLS
+========================================= */
 
 .analytics-controls {
     display: flex;
 
     gap: 10px;
+
+    align-items: center;
 }
 
 
@@ -293,6 +356,8 @@ td .delete-button {
 
     justify-content: space-between;
 
+    gap: 20px;
+
     padding: 13px 0;
 
     border-bottom:
@@ -300,7 +365,9 @@ td .delete-button {
 }
 
 
-/* CHARTS */
+/* =========================================
+   CHARTS
+========================================= */
 
 .chart-grid {
     display: grid;
@@ -341,27 +408,9 @@ td .delete-button {
 }
 
 
-/* SECTION HEADER */
-
-.section-header {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 15px;
-
-    margin-bottom: 15px;
-}
-
-
-.section-header p {
-    color: #6b7280;
-}
-
-
-/* BUDGET */
+/* =========================================
+   BUDGET
+========================================= */
 
 .budget-card {
     margin-bottom: 18px;
@@ -380,6 +429,8 @@ td .delete-button {
     display: flex;
 
     justify-content: space-between;
+
+    gap: 15px;
 
     margin-bottom: 12px;
 }
@@ -437,7 +488,9 @@ td .delete-button {
 }
 
 
-/* SAVINGS */
+/* =========================================
+   SAVINGS GOALS
+========================================= */
 
 .savings-goal-card {
     padding: 20px;
@@ -486,6 +539,11 @@ td .delete-button {
     gap: 15px;
 
     margin-bottom: 15px;
+}
+
+
+.goal-details p {
+    color: #4b5563;
 }
 
 
@@ -539,7 +597,9 @@ td .delete-button {
 }
 
 
-/* RECURRING */
+/* =========================================
+   RECURRING TRANSACTIONS
+========================================= */
 
 .checkbox-group {
     display: flex;
@@ -554,11 +614,15 @@ td .delete-button {
 
 .checkbox-group input {
     width: auto;
+
+    cursor: pointer;
 }
 
 
 .checkbox-group label {
     font-weight: 600;
+
+    cursor: pointer;
 }
 
 
@@ -594,6 +658,11 @@ td .delete-button {
     align-items: center;
 
     gap: 10px;
+}
+
+
+.recurring-title h3 {
+    font-size: 18px;
 }
 
 
@@ -636,6 +705,11 @@ td .delete-button {
 }
 
 
+.recurring-details p {
+    color: #4b5563;
+}
+
+
 .recurring-description {
     margin-bottom: 14px;
 
@@ -648,7 +722,124 @@ td .delete-button {
 }
 
 
-/* MESSAGES */
+/* =========================================
+   SMART SPENDING INSIGHTS
+========================================= */
+
+.insights-panel {
+    overflow: hidden;
+}
+
+
+.insights-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 25px;
+}
+
+
+.insight-stat-card {
+    padding: 20px;
+
+    border-radius: 12px;
+
+    border: 1px solid #e5e7eb;
+
+    background: #f9fafb;
+}
+
+
+.insight-stat-card p {
+    color: #6b7280;
+
+    margin-bottom: 9px;
+}
+
+
+.insight-stat-card h3 {
+    font-size: 23px;
+}
+
+
+.insight-section {
+    margin-top: 25px;
+}
+
+
+.insight-section h3 {
+    margin-bottom: 12px;
+}
+
+
+.insight-item {
+    padding: 13px 15px;
+
+    margin-bottom: 10px;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    border-left:
+        4px solid #2563eb;
+}
+
+
+.insight-alert-warning {
+    padding: 13px 15px;
+
+    margin-bottom: 10px;
+
+    border-radius: 9px;
+
+    background: #fffbeb;
+
+    color: #92400e;
+
+    border-left:
+        4px solid #f59e0b;
+}
+
+
+.insight-alert-danger {
+    padding: 13px 15px;
+
+    margin-bottom: 10px;
+
+    border-radius: 9px;
+
+    background: #fef2f2;
+
+    color: #991b1b;
+
+    border-left:
+        4px solid #dc2626;
+}
+
+
+.insight-positive {
+    color: #047857;
+}
+
+
+.insight-negative {
+    color: #b91c1c;
+}
+
+
+.insight-neutral {
+    color: #374151;
+}
+
+
+/* =========================================
+   MESSAGES
+========================================= */
 
 #formMessage,
 #budgetMessage,
@@ -662,19 +853,24 @@ td .delete-button {
 }
 
 
-/* RESPONSIVE */
+/* =========================================
+   RESPONSIVE
+========================================= */
 
 @media (max-width: 850px) {
 
     .summary-grid,
     .chart-grid,
-    .form-grid {
+    .form-grid,
+    .insights-grid {
         grid-template-columns: 1fr;
     }
 
 
     .analytics-controls {
         flex-direction: column;
+
+        align-items: stretch;
     }
 
 

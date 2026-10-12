@@ -62,7 +62,7 @@ from database import (
 app = FastAPI(
     title="SpendWise LK API",
     description="Personal finance and expense tracking API",
-    version="1.0.0"
+    version="1.1.0"
 )
 
 
@@ -174,9 +174,7 @@ class RecurringTransactionData(BaseModel):
         "expense"
     ]
 
-    amount: float = Field(
-        gt=0
-    )
+    amount: float = Field(gt=0)
 
     category: str = Field(
         min_length=1
@@ -239,7 +237,9 @@ def savings_goal_to_dict(goal):
     }
 
 
-def recurring_transaction_to_dict(recurring):
+def recurring_transaction_to_dict(
+    recurring
+):
     return {
         "id": recurring[0],
         "type": recurring[1],
@@ -260,8 +260,9 @@ def recurring_transaction_to_dict(recurring):
 def root():
     return {
         "name": "SpendWise LK API",
-        "version": "1.0.0",
-        "message": "Welcome to SpendWise LK API"
+        "version": "1.1.0",
+        "message":
+            "Welcome to SpendWise LK API"
     }
 
 
@@ -284,7 +285,8 @@ def dashboard():
 def health():
     return {
         "status": "ok",
-        "message": "SpendWise LK API is running"
+        "message":
+            "SpendWise LK API is running"
     }
 
 
@@ -349,7 +351,8 @@ def create_transaction(
     )
 
     return {
-        "message": "Transaction added successfully",
+        "message":
+            "Transaction added successfully",
 
         "transaction":
             transaction_to_dict(
@@ -389,7 +392,8 @@ def edit_transaction(
     )
 
     return {
-        "message": "Transaction updated successfully",
+        "message":
+            "Transaction updated successfully",
 
         "transaction":
             transaction_to_dict(
@@ -419,8 +423,11 @@ def remove_transaction(
     )
 
     return {
-        "message": "Transaction deleted successfully",
-        "deleted_id": transaction_id
+        "message":
+            "Transaction deleted successfully",
+
+        "deleted_id":
+            transaction_id
     }
 
 
@@ -484,9 +491,14 @@ def read_balance():
     ) = get_balance_summary()
 
     return {
-        "total_income": total_income,
-        "total_expense": total_expense,
-        "balance": balance
+        "total_income":
+            total_income,
+
+        "total_expense":
+            total_expense,
+
+        "balance":
+            balance
     }
 
 
@@ -552,19 +564,31 @@ def category_analytics(
         )
 
         categories.append({
-            "category": category,
-            "amount": amount,
-            "percentage": round(
-                percentage,
-                2
-            )
+            "category":
+                category,
+
+            "amount":
+                amount,
+
+            "percentage":
+                round(
+                    percentage,
+                    2
+                )
         })
 
     return {
-        "year": year,
-        "month": month,
-        "total_expense": total_expense,
-        "categories": categories
+        "year":
+            year,
+
+        "month":
+            month,
+
+        "total_expense":
+            total_expense,
+
+        "categories":
+            categories
     }
 
 
@@ -585,9 +609,317 @@ def monthly_trends(
     )
 
     return {
-        "months_requested": months,
-        "count": len(trends),
-        "trends": trends
+        "months_requested":
+            months,
+
+        "count":
+            len(trends),
+
+        "trends":
+            trends
+    }
+
+
+# =========================================================
+# SMART SPENDING INSIGHTS
+# =========================================================
+
+@app.get("/analytics/insights")
+def smart_spending_insights(
+    year: int | None = None,
+    month: int | None = Query(
+        default=None,
+        ge=1,
+        le=12
+    )
+):
+    now = datetime.now()
+
+    if year is None:
+        year = now.year
+
+    if month is None:
+        month = now.month
+
+
+    # Current month
+    (
+        current_income,
+        current_expense,
+        current_balance
+    ) = get_monthly_summary(
+        year,
+        month
+    )
+
+
+    # Previous month
+    if month == 1:
+        previous_month = 12
+        previous_year = year - 1
+
+    else:
+        previous_month = month - 1
+        previous_year = year
+
+
+    (
+        previous_income,
+        previous_expense,
+        previous_balance
+    ) = get_monthly_summary(
+        previous_year,
+        previous_month
+    )
+
+
+    # Savings rate
+    if current_income > 0:
+        savings_rate = (
+            current_balance
+            / current_income
+        ) * 100
+
+    else:
+        savings_rate = 0
+
+
+    # Expense comparison
+    if previous_expense > 0:
+        expense_change_percentage = (
+            (
+                current_expense
+                - previous_expense
+            )
+            / previous_expense
+        ) * 100
+
+    else:
+        expense_change_percentage = None
+
+
+    # Highest spending category
+    category_spending = (
+        get_category_spending(
+            year,
+            month
+        )
+    )
+
+    if category_spending:
+        top_category = (
+            category_spending[0][0]
+        )
+
+        top_category_amount = (
+            category_spending[0][1]
+        )
+
+    else:
+        top_category = None
+        top_category_amount = 0
+
+
+    # Budget warnings
+    budgets = get_budgets(
+        year,
+        month
+    )
+
+    budget_alerts = []
+
+    for category, budget_amount in budgets:
+
+        spent = get_category_expense(
+            year,
+            month,
+            category
+        )
+
+        if budget_amount <= 0:
+            continue
+
+        percentage_used = (
+            spent / budget_amount
+        ) * 100
+
+
+        if spent > budget_amount:
+
+            budget_alerts.append({
+                "category":
+                    category,
+
+                "type":
+                    "danger",
+
+                "message":
+                    (
+                        f"{category} budget exceeded "
+                        f"by Rs. {spent - budget_amount:.2f}."
+                    )
+            })
+
+
+        elif percentage_used >= 80:
+
+            budget_alerts.append({
+                "category":
+                    category,
+
+                "type":
+                    "warning",
+
+                "message":
+                    (
+                        f"{category} has used "
+                        f"{percentage_used:.1f}% "
+                        f"of its monthly budget."
+                    )
+            })
+
+
+    # Automatic recommendations
+    recommendations = []
+
+
+    if current_income == 0:
+
+        recommendations.append(
+            "No income has been recorded for this month."
+        )
+
+
+    elif savings_rate < 10:
+
+        recommendations.append(
+            "Your savings rate is below 10%. "
+            "Consider reducing non-essential expenses."
+        )
+
+
+    elif savings_rate < 20:
+
+        recommendations.append(
+            "Your savings rate is moderate. "
+            "Try to move toward saving at least 20% of income."
+        )
+
+
+    else:
+
+        recommendations.append(
+            "Your savings rate is healthy this month."
+        )
+
+
+    if top_category:
+
+        recommendations.append(
+            f"Your highest spending category is "
+            f"{top_category} at "
+            f"Rs. {top_category_amount:.2f}."
+        )
+
+
+    if (
+        expense_change_percentage
+        is not None
+    ):
+
+        if expense_change_percentage > 10:
+
+            recommendations.append(
+                f"Expenses increased by "
+                f"{expense_change_percentage:.1f}% "
+                f"compared with the previous month."
+            )
+
+
+        elif expense_change_percentage < -10:
+
+            recommendations.append(
+                f"Expenses decreased by "
+                f"{abs(expense_change_percentage):.1f}% "
+                f"compared with the previous month."
+            )
+
+
+        else:
+
+            recommendations.append(
+                "Monthly expenses are relatively stable "
+                "compared with the previous month."
+            )
+
+
+    return {
+        "year":
+            year,
+
+        "month":
+            month,
+
+        "current_month": {
+            "income":
+                current_income,
+
+            "expense":
+                current_expense,
+
+            "balance":
+                current_balance,
+
+            "savings_rate":
+                round(
+                    savings_rate,
+                    2
+                )
+        },
+
+        "previous_month": {
+            "year":
+                previous_year,
+
+            "month":
+                previous_month,
+
+            "income":
+                previous_income,
+
+            "expense":
+                previous_expense,
+
+            "balance":
+                previous_balance
+        },
+
+        "expense_change_percentage":
+            (
+                round(
+                    expense_change_percentage,
+                    2
+                )
+
+                if expense_change_percentage
+                is not None
+
+                else None
+            ),
+
+        "highest_spending_category": {
+            "category":
+                top_category,
+
+            "amount":
+                top_category_amount
+        },
+
+        "budget_alerts":
+            budget_alerts,
+
+        "recommendations":
+            recommendations
     }
 
 
@@ -607,8 +939,11 @@ def create_budget(
     )
 
     return {
-        "message": "Budget saved successfully",
-        "budget": budget
+        "message":
+            "Budget saved successfully",
+
+        "budget":
+            budget
     }
 
 
@@ -628,6 +963,7 @@ def read_budgets(
     results = []
 
     for category, budget_amount in budgets:
+
         spent = get_category_expense(
             year,
             month,
@@ -645,10 +981,17 @@ def read_budgets(
         )
 
         results.append({
-            "category": category,
-            "budget": budget_amount,
-            "spent": spent,
-            "remaining": remaining,
+            "category":
+                category,
+
+            "budget":
+                budget_amount,
+
+            "spent":
+                spent,
+
+            "remaining":
+                remaining,
 
             "percentage_used":
                 round(
@@ -661,9 +1004,14 @@ def read_budgets(
         })
 
     return {
-        "year": year,
-        "month": month,
-        "budgets": results
+        "year":
+            year,
+
+        "month":
+            month,
+
+        "budgets":
+            results
     }
 
 
@@ -690,7 +1038,8 @@ def create_savings_goal(
     )
 
     return {
-        "message": "Savings goal created successfully",
+        "message":
+            "Savings goal created successfully",
 
         "goal":
             savings_goal_to_dict(
@@ -704,7 +1053,8 @@ def read_savings_goals():
     goals = get_savings_goals()
 
     return {
-        "count": len(goals),
+        "count":
+            len(goals),
 
         "goals": [
             savings_goal_to_dict(
@@ -766,7 +1116,8 @@ def edit_savings_goal(
     )
 
     return {
-        "message": "Savings goal updated successfully",
+        "message":
+            "Savings goal updated successfully",
 
         "goal":
             savings_goal_to_dict(
@@ -796,8 +1147,11 @@ def remove_savings_goal(
     )
 
     return {
-        "message": "Savings goal deleted successfully",
-        "deleted_id": goal_id
+        "message":
+            "Savings goal deleted successfully",
+
+        "deleted_id":
+            goal_id
     }
 
 
@@ -840,7 +1194,8 @@ def read_recurring_transactions():
     items = get_recurring_transactions()
 
     return {
-        "count": len(items),
+        "count":
+            len(items),
 
         "recurring_transactions": [
             recurring_transaction_to_dict(
@@ -864,7 +1219,8 @@ def read_recurring_transaction(
     if item is None:
         raise HTTPException(
             status_code=404,
-            detail="Recurring transaction not found"
+            detail=
+                "Recurring transaction not found"
         )
 
     return recurring_transaction_to_dict(
@@ -886,7 +1242,8 @@ def edit_recurring_transaction(
     if existing is None:
         raise HTTPException(
             status_code=404,
-            detail="Recurring transaction not found"
+            detail=
+                "Recurring transaction not found"
         )
 
     update_recurring_transaction(
@@ -927,7 +1284,8 @@ def remove_recurring_transaction(
     if existing is None:
         raise HTTPException(
             status_code=404,
-            detail="Recurring transaction not found"
+            detail=
+                "Recurring transaction not found"
         )
 
     delete_recurring_transaction(
