@@ -1,3 +1,6 @@
+import csv
+import io
+
 from datetime import datetime
 from typing import Literal
 
@@ -7,7 +10,11 @@ from fastapi import (
     Query
 )
 
-from fastapi.responses import FileResponse
+from fastapi.responses import (
+    FileResponse,
+    StreamingResponse
+)
+
 from fastapi.staticfiles import StaticFiles
 
 from pydantic import (
@@ -84,13 +91,9 @@ create_tables()
 class TransactionData(BaseModel):
     type: Literal["income", "expense"]
 
-    amount: float = Field(
-        gt=0
-    )
+    amount: float = Field(gt=0)
 
-    category: str = Field(
-        min_length=1
-    )
+    category: str = Field(min_length=1)
 
     description: str = ""
 
@@ -295,12 +298,12 @@ def read_transactions():
 
     return {
         "count": len(transactions),
+
         "transactions": [
             transaction_to_dict(
                 transaction
             )
-            for transaction
-            in transactions
+            for transaction in transactions
         ]
     }
 
@@ -347,9 +350,11 @@ def create_transaction(
 
     return {
         "message": "Transaction added successfully",
-        "transaction": transaction_to_dict(
-            created
-        )
+
+        "transaction":
+            transaction_to_dict(
+                created
+            )
     }
 
 
@@ -385,9 +390,11 @@ def edit_transaction(
 
     return {
         "message": "Transaction updated successfully",
-        "transaction": transaction_to_dict(
-            updated
-        )
+
+        "transaction":
+            transaction_to_dict(
+                updated
+            )
     }
 
 
@@ -415,6 +422,53 @@ def remove_transaction(
         "message": "Transaction deleted successfully",
         "deleted_id": transaction_id
     }
+
+
+# =========================================================
+# CSV EXPORT
+# =========================================================
+
+@app.get("/export/transactions")
+def export_transactions():
+    transactions = get_transactions()
+
+    output = io.StringIO()
+
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "ID",
+        "Type",
+        "Amount",
+        "Category",
+        "Description",
+        "Transaction Date",
+        "Created At"
+    ])
+
+    for transaction in transactions:
+        writer.writerow([
+            transaction[0],
+            transaction[1],
+            transaction[2],
+            transaction[3],
+            transaction[4],
+            transaction[5],
+            transaction[6]
+        ])
+
+    csv_data = output.getvalue()
+
+    output.close()
+
+    return StreamingResponse(
+        iter([csv_data]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=spendwise_transactions.csv"
+        }
+    )
 
 
 # =========================================================
@@ -485,8 +539,7 @@ def category_analytics(
 
     total_expense = sum(
         amount
-        for _, amount
-        in spending
+        for _, amount in spending
     )
 
     categories = []
@@ -596,11 +649,15 @@ def read_budgets(
             "budget": budget_amount,
             "spent": spent,
             "remaining": remaining,
-            "percentage_used": round(
-                percentage,
-                2
-            ),
-            "exceeded": spent > budget_amount
+
+            "percentage_used":
+                round(
+                    percentage,
+                    2
+                ),
+
+            "exceeded":
+                spent > budget_amount
         })
 
     return {
@@ -634,9 +691,11 @@ def create_savings_goal(
 
     return {
         "message": "Savings goal created successfully",
-        "goal": savings_goal_to_dict(
-            created
-        )
+
+        "goal":
+            savings_goal_to_dict(
+                created
+            )
     }
 
 
@@ -646,6 +705,7 @@ def read_savings_goals():
 
     return {
         "count": len(goals),
+
         "goals": [
             savings_goal_to_dict(
                 goal
@@ -707,9 +767,11 @@ def edit_savings_goal(
 
     return {
         "message": "Savings goal updated successfully",
-        "goal": savings_goal_to_dict(
-            updated
-        )
+
+        "goal":
+            savings_goal_to_dict(
+                updated
+            )
     }
 
 

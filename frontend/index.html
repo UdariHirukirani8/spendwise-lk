@@ -28,21 +28,30 @@
         <p>Personal Finance Dashboard</p>
     </div>
 
-    <button
-        id="refreshButton"
-        class="secondary-button"
-    >
-        Refresh
-    </button>
+    <div class="topbar-actions">
+
+        <button
+            id="exportButton"
+            class="primary-button"
+        >
+            Export CSV
+        </button>
+
+        <button
+            id="refreshButton"
+            class="secondary-button"
+        >
+            Refresh
+        </button>
+
+    </div>
 
 </header>
 
 
 <main class="container">
 
-    <!-- ================================= -->
     <!-- SUMMARY -->
-    <!-- ================================= -->
 
     <section class="summary-grid">
 
@@ -75,9 +84,7 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- TRANSACTION FORM -->
-    <!-- ================================= -->
 
     <section class="panel">
 
@@ -177,8 +184,8 @@
 
                 <button
                     type="submit"
-                    class="primary-button"
                     id="submitButton"
+                    class="primary-button"
                 >
                     Add Transaction
                 </button>
@@ -186,8 +193,8 @@
 
                 <button
                     type="button"
-                    class="secondary-button"
                     id="cancelEditButton"
+                    class="secondary-button"
                     style="display:none;"
                 >
                     Cancel Edit
@@ -197,14 +204,13 @@
 
         </form>
 
+
         <p id="formMessage"></p>
 
     </section>
 
 
-    <!-- ================================= -->
     <!-- TRANSACTION HISTORY -->
-    <!-- ================================= -->
 
     <section class="panel">
 
@@ -238,9 +244,7 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- MONTHLY ANALYTICS -->
-    <!-- ================================= -->
 
     <section class="panel">
 
@@ -274,9 +278,7 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- CHARTS -->
-    <!-- ================================= -->
 
     <section class="chart-grid">
 
@@ -300,9 +302,7 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- CATEGORY BREAKDOWN -->
-    <!-- ================================= -->
 
     <section class="panel">
 
@@ -319,9 +319,7 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- FINANCIAL TREND -->
-    <!-- ================================= -->
 
     <section class="panel trend-panel">
 
@@ -369,9 +367,7 @@
     </section>
 
 
-    <!-- ================================= -->
-    <!-- SET BUDGET -->
-    <!-- ================================= -->
+    <!-- BUDGET FORM -->
 
     <section class="panel">
 
@@ -467,9 +463,7 @@
     </section>
 
 
-    <!-- ================================= -->
     <!-- BUDGET STATUS -->
-    <!-- ================================= -->
 
     <section class="panel">
 
@@ -502,9 +496,7 @@
     </section>
 
 
-    <!-- ================================= -->
-    <!-- SAVINGS GOAL FORM -->
-    <!-- ================================= -->
+    <!-- SAVINGS GOALS -->
 
     <section class="panel">
 
@@ -616,9 +608,7 @@
     </section>
 
 
-    <!-- ================================= -->
-    <!-- SAVINGS GOAL STATUS -->
-    <!-- ================================= -->
+    <!-- GOAL PROGRESS -->
 
     <section class="panel">
 
@@ -635,9 +625,7 @@
     </section>
 
 
-    <!-- ================================= -->
-    <!-- RECURRING TRANSACTION FORM -->
-    <!-- ================================= -->
+    <!-- RECURRING TRANSACTIONS -->
 
     <section class="panel">
 
@@ -663,7 +651,6 @@
                         id="recurringType"
                         required
                     >
-
                         <option value="expense">
                             Expense
                         </option>
@@ -671,7 +658,6 @@
                         <option value="income">
                             Income
                         </option>
-
                     </select>
 
                 </div>
@@ -737,7 +723,7 @@
                 <input
                     type="text"
                     id="recurringDescription"
-                    placeholder="Example: Monthly Netflix subscription"
+                    placeholder="Example: Monthly internet bill"
                 >
 
             </div>
@@ -758,7 +744,7 @@
             </div>
 
 
-            <div class="form-actions recurring-form-actions">
+            <div class="form-actions">
 
                 <button
                     type="submit"
@@ -788,25 +774,15 @@
     </section>
 
 
-    <!-- ================================= -->
-    <!-- RECURRING TRANSACTION LIST -->
-    <!-- ================================= -->
+    <!-- RECURRING LIST -->
 
     <section class="panel">
 
-        <div class="section-header">
+        <h2>Recurring Transaction List</h2>
 
-            <div>
-
-                <h2>Recurring Transaction List</h2>
-
-                <p>
-                    Manage your regular monthly transactions.
-                </p>
-
-            </div>
-
-        </div>
+        <p class="section-description">
+            Manage your regular monthly transactions.
+        </p>
 
 
         <div id="recurringContainer">

@@ -16,6 +16,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
 
     padding: 24px 40px;
 
@@ -36,6 +37,12 @@ body {
 }
 
 
+.topbar-actions {
+    display: flex;
+    gap: 10px;
+}
+
+
 .container {
     max-width: 1250px;
     margin: 0 auto;
@@ -43,9 +50,7 @@ body {
 }
 
 
-/* =========================================
-   SUMMARY
-========================================= */
+/* SUMMARY */
 
 .summary-grid {
     display: grid;
@@ -84,9 +89,7 @@ body {
 }
 
 
-/* =========================================
-   PANEL
-========================================= */
+/* PANEL */
 
 .panel {
     background: #ffffff;
@@ -117,9 +120,7 @@ body {
 }
 
 
-/* =========================================
-   FORM
-========================================= */
+/* FORM */
 
 .form-grid {
     display: grid;
@@ -180,9 +181,7 @@ select:focus {
 }
 
 
-/* =========================================
-   BUTTONS
-========================================= */
+/* BUTTONS */
 
 .primary-button,
 .secondary-button,
@@ -237,9 +236,7 @@ select:focus {
 }
 
 
-/* =========================================
-   TABLE
-========================================= */
+/* TABLE */
 
 .table-wrapper {
     overflow-x: auto;
@@ -277,9 +274,7 @@ td .delete-button {
 }
 
 
-/* =========================================
-   ANALYTICS
-========================================= */
+/* ANALYTICS */
 
 .analytics-controls {
     display: flex;
@@ -305,9 +300,7 @@ td .delete-button {
 }
 
 
-/* =========================================
-   CHARTS
-========================================= */
+/* CHARTS */
 
 .chart-grid {
     display: grid;
@@ -348,9 +341,7 @@ td .delete-button {
 }
 
 
-/* =========================================
-   SECTION HEADER
-========================================= */
+/* SECTION HEADER */
 
 .section-header {
     display: flex;
@@ -370,9 +361,7 @@ td .delete-button {
 }
 
 
-/* =========================================
-   BUDGET
-========================================= */
+/* BUDGET */
 
 .budget-card {
     margin-bottom: 18px;
@@ -448,9 +437,7 @@ td .delete-button {
 }
 
 
-/* =========================================
-   SAVINGS GOALS
-========================================= */
+/* SAVINGS */
 
 .savings-goal-card {
     padding: 20px;
@@ -552,9 +539,7 @@ td .delete-button {
 }
 
 
-/* =========================================
-   RECURRING TRANSACTIONS
-========================================= */
+/* RECURRING */
 
 .checkbox-group {
     display: flex;
@@ -569,20 +554,11 @@ td .delete-button {
 
 .checkbox-group input {
     width: auto;
-
-    cursor: pointer;
 }
 
 
 .checkbox-group label {
     font-weight: 600;
-
-    cursor: pointer;
-}
-
-
-.recurring-form-actions {
-    margin-top: 5px;
 }
 
 
@@ -618,11 +594,6 @@ td .delete-button {
     align-items: center;
 
     gap: 10px;
-}
-
-
-.recurring-title h3 {
-    font-size: 18px;
 }
 
 
@@ -665,11 +636,6 @@ td .delete-button {
 }
 
 
-.recurring-details p {
-    color: #4b5563;
-}
-
-
 .recurring-description {
     margin-bottom: 14px;
 
@@ -682,9 +648,7 @@ td .delete-button {
 }
 
 
-/* =========================================
-   MESSAGES
-========================================= */
+/* MESSAGES */
 
 #formMessage,
 #budgetMessage,
@@ -698,9 +662,7 @@ td .delete-button {
 }
 
 
-/* =========================================
-   RESPONSIVE
-========================================= */
+/* RESPONSIVE */
 
 @media (max-width: 850px) {
 
@@ -722,7 +684,21 @@ td .delete-button {
 
 
     .topbar {
+        flex-direction: column;
+
+        align-items: flex-start;
+
         padding: 20px;
+    }
+
+
+    .topbar-actions {
+        width: 100%;
+    }
+
+
+    .topbar-actions button {
+        flex: 1;
     }
 
 
