@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -17,12 +16,8 @@
         href="/static/style.css"
     >
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/chart.js"
-    ></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 
 <body>
 
@@ -45,26 +40,33 @@
 
 <main class="container">
 
+    <!-- ================================= -->
     <!-- SUMMARY -->
+    <!-- ================================= -->
 
     <section class="summary-grid">
 
         <div class="summary-card">
             <p>Total Income</p>
+
             <h2 id="totalIncome">
                 Rs. 0.00
             </h2>
         </div>
 
+
         <div class="summary-card">
             <p>Total Expenses</p>
+
             <h2 id="totalExpense">
                 Rs. 0.00
             </h2>
         </div>
 
+
         <div class="summary-card">
             <p>Current Balance</p>
+
             <h2 id="balance">
                 Rs. 0.00
             </h2>
@@ -73,13 +75,13 @@
     </section>
 
 
+    <!-- ================================= -->
     <!-- TRANSACTION FORM -->
+    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>
-            Add / Edit Transaction
-        </h2>
+        <h2>Add / Edit Transaction</h2>
 
         <form id="transactionForm">
 
@@ -95,7 +97,6 @@
                         id="type"
                         required
                     >
-
                         <option value="expense">
                             Expense
                         </option>
@@ -103,7 +104,6 @@
                         <option value="income">
                             Income
                         </option>
-
                     </select>
 
                 </div>
@@ -116,8 +116,8 @@
                     </label>
 
                     <input
-                        id="amount"
                         type="number"
+                        id="amount"
                         min="0.01"
                         step="0.01"
                         required
@@ -148,8 +148,8 @@
                     </label>
 
                     <input
-                        id="transactionDate"
                         type="date"
+                        id="transactionDate"
                         required
                     >
 
@@ -165,8 +165,8 @@
                 </label>
 
                 <input
-                    id="description"
                     type="text"
+                    id="description"
                     placeholder="Optional description"
                 >
 
@@ -176,17 +176,18 @@
             <div class="form-actions">
 
                 <button
-                    id="submitButton"
                     type="submit"
                     class="primary-button"
+                    id="submitButton"
                 >
                     Add Transaction
                 </button>
 
+
                 <button
-                    id="cancelEditButton"
                     type="button"
                     class="secondary-button"
+                    id="cancelEditButton"
                     style="display:none;"
                 >
                     Cancel Edit
@@ -201,13 +202,13 @@
     </section>
 
 
-    <!-- TRANSACTIONS -->
+    <!-- ================================= -->
+    <!-- TRANSACTION HISTORY -->
+    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>
-            Transaction History
-        </h2>
+        <h2>Transaction History</h2>
 
         <div class="table-wrapper">
 
@@ -227,9 +228,7 @@
 
                 </thead>
 
-                <tbody
-                    id="transactionTableBody"
-                >
+                <tbody id="transactionTableBody">
                 </tbody>
 
             </table>
@@ -239,25 +238,25 @@
     </section>
 
 
+    <!-- ================================= -->
     <!-- MONTHLY ANALYTICS -->
+    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>
-            Monthly Analytics
-        </h2>
+        <h2>Monthly Analytics</h2>
 
         <div class="analytics-controls">
 
             <input
-                id="analyticsYear"
                 type="number"
+                id="analyticsYear"
                 placeholder="Year"
             >
 
             <input
-                id="analyticsMonth"
                 type="number"
+                id="analyticsMonth"
                 min="1"
                 max="12"
                 placeholder="Month"
@@ -275,51 +274,44 @@
     </section>
 
 
+    <!-- ================================= -->
     <!-- CHARTS -->
+    <!-- ================================= -->
 
     <section class="chart-grid">
 
         <div class="panel chart-panel">
 
-            <h2>
-                Spending by Category
-            </h2>
+            <h2>Spending by Category</h2>
 
-            <canvas
-                id="categoryChart"
-            ></canvas>
+            <canvas id="categoryChart"></canvas>
 
         </div>
 
 
         <div class="panel chart-panel">
 
-            <h2>
-                Income vs Expense
-            </h2>
+            <h2>Income vs Expense</h2>
 
-            <canvas
-                id="monthlyChart"
-            ></canvas>
+            <canvas id="monthlyChart"></canvas>
 
         </div>
 
     </section>
 
 
+    <!-- ================================= -->
     <!-- CATEGORY BREAKDOWN -->
+    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>
-            Category Breakdown
-        </h2>
+        <h2>Category Breakdown</h2>
 
         <div id="categoryAnalytics">
 
             <p>
-                Select a year and month
-                to analyze spending.
+                Select a year and month to analyze spending.
             </p>
 
         </div>
@@ -327,7 +319,9 @@
     </section>
 
 
-    <!-- TREND -->
+    <!-- ================================= -->
+    <!-- FINANCIAL TREND -->
+    <!-- ================================= -->
 
     <section class="panel trend-panel">
 
@@ -335,16 +329,14 @@
 
             <div>
 
-                <h2>
-                    Financial Trend
-                </h2>
+                <h2>Financial Trend</h2>
 
                 <p>
-                    Income, expenses
-                    and savings over time.
+                    Income, expenses and savings over time.
                 </p>
 
             </div>
+
 
             <select id="trendMonths">
 
@@ -370,22 +362,25 @@
 
         <div class="trend-chart-wrapper">
 
-            <canvas
-                id="trendChart"
-            ></canvas>
+            <canvas id="trendChart"></canvas>
 
         </div>
 
     </section>
 
 
-    <!-- BUDGET FORM -->
+    <!-- ================================= -->
+    <!-- SET BUDGET -->
+    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>
-            Set Monthly Budget
-        </h2>
+        <h2>Set Monthly Budget</h2>
+
+        <p class="section-description">
+            Create or update a monthly expense limit.
+        </p>
+
 
         <form id="budgetForm">
 
@@ -393,13 +388,13 @@
 
                 <div class="form-group">
 
-                    <label>
+                    <label for="budgetYear">
                         Year
                     </label>
 
                     <input
-                        id="budgetYear"
                         type="number"
+                        id="budgetYear"
                         required
                     >
 
@@ -408,13 +403,13 @@
 
                 <div class="form-group">
 
-                    <label>
+                    <label for="budgetMonth">
                         Month
                     </label>
 
                     <input
-                        id="budgetMonth"
                         type="number"
+                        id="budgetMonth"
                         min="1"
                         max="12"
                         required
@@ -425,7 +420,7 @@
 
                 <div class="form-group">
 
-                    <label>
+                    <label for="budgetCategory">
                         Category
                     </label>
 
@@ -440,13 +435,13 @@
 
                 <div class="form-group">
 
-                    <label>
+                    <label for="budgetAmount">
                         Budget Amount
                     </label>
 
                     <input
-                        id="budgetAmount"
                         type="number"
+                        id="budgetAmount"
                         min="0.01"
                         step="0.01"
                         required
@@ -458,34 +453,38 @@
 
 
             <button
-                class="primary-button"
                 type="submit"
+                class="primary-button"
             >
                 Save Budget
             </button>
 
         </form>
 
+
         <p id="budgetMessage"></p>
 
     </section>
 
 
+    <!-- ================================= -->
     <!-- BUDGET STATUS -->
+    <!-- ================================= -->
 
     <section class="panel">
 
         <div class="section-header">
 
             <div>
-                <h2>
-                    Monthly Budgets
-                </h2>
+
+                <h2>Monthly Budgets</h2>
 
                 <p>
-                    Monitor spending limits.
+                    Monitor spending limits and budget usage.
                 </p>
+
             </div>
+
 
             <button
                 id="loadBudgetsButton"
@@ -496,23 +495,23 @@
 
         </div>
 
+
         <div id="budgetContainer">
         </div>
 
     </section>
 
 
+    <!-- ================================= -->
     <!-- SAVINGS GOAL FORM -->
+    <!-- ================================= -->
 
     <section class="panel">
 
-        <h2>
-            Savings Goals
-        </h2>
+        <h2>Savings Goals</h2>
 
         <p class="section-description">
-            Create a financial target
-            and track your progress.
+            Create a financial target and track progress.
         </p>
 
 
@@ -522,13 +521,13 @@
 
                 <div class="form-group">
 
-                    <label>
+                    <label for="goalName">
                         Goal Name
                     </label>
 
                     <input
-                        id="goalName"
                         type="text"
+                        id="goalName"
                         placeholder="Example: New Laptop"
                         required
                     >
@@ -538,13 +537,13 @@
 
                 <div class="form-group">
 
-                    <label>
+                    <label for="goalTarget">
                         Target Amount
                     </label>
 
                     <input
-                        id="goalTarget"
                         type="number"
+                        id="goalTarget"
                         min="0.01"
                         step="0.01"
                         required
@@ -555,13 +554,13 @@
 
                 <div class="form-group">
 
-                    <label>
+                    <label for="goalSaved">
                         Saved Amount
                     </label>
 
                     <input
-                        id="goalSaved"
                         type="number"
+                        id="goalSaved"
                         min="0"
                         step="0.01"
                         value="0"
@@ -573,13 +572,13 @@
 
                 <div class="form-group">
 
-                    <label>
+                    <label for="goalDeadline">
                         Deadline
                     </label>
 
                     <input
-                        id="goalDeadline"
                         type="date"
+                        id="goalDeadline"
                     >
 
                 </div>
@@ -590,8 +589,8 @@
             <div class="form-actions">
 
                 <button
-                    id="goalSubmitButton"
                     type="submit"
+                    id="goalSubmitButton"
                     class="primary-button"
                 >
                     Create Goal
@@ -599,8 +598,8 @@
 
 
                 <button
-                    id="cancelGoalEditButton"
                     type="button"
+                    id="cancelGoalEditButton"
                     class="secondary-button"
                     style="display:none;"
                 >
@@ -617,7 +616,181 @@
     </section>
 
 
-    <!-- SAVINGS GOAL CARDS -->
+    <!-- ================================= -->
+    <!-- SAVINGS GOAL STATUS -->
+    <!-- ================================= -->
+
+    <section class="panel">
+
+        <h2>Goal Progress</h2>
+
+        <p class="section-description">
+            Track all your savings targets.
+        </p>
+
+
+        <div id="savingsGoalsContainer">
+        </div>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- RECURRING TRANSACTION FORM -->
+    <!-- ================================= -->
+
+    <section class="panel">
+
+        <h2>Recurring Transactions</h2>
+
+        <p class="section-description">
+            Add regular monthly income or expenses such as salary,
+            rent, subscriptions and bills.
+        </p>
+
+
+        <form id="recurringForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="recurringType">
+                        Type
+                    </label>
+
+                    <select
+                        id="recurringType"
+                        required
+                    >
+
+                        <option value="expense">
+                            Expense
+                        </option>
+
+                        <option value="income">
+                            Income
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="recurringAmount">
+                        Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="recurringAmount"
+                        min="0.01"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="recurringCategory">
+                        Category
+                    </label>
+
+                    <select
+                        id="recurringCategory"
+                        required
+                    >
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="recurringDay">
+                        Day of Month
+                    </label>
+
+                    <input
+                        type="number"
+                        id="recurringDay"
+                        min="1"
+                        max="31"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="recurringDescription">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="recurringDescription"
+                    placeholder="Example: Monthly Netflix subscription"
+                >
+
+            </div>
+
+
+            <div class="checkbox-group">
+
+                <input
+                    type="checkbox"
+                    id="recurringActive"
+                    checked
+                >
+
+                <label for="recurringActive">
+                    Active
+                </label>
+
+            </div>
+
+
+            <div class="form-actions recurring-form-actions">
+
+                <button
+                    type="submit"
+                    id="recurringSubmitButton"
+                    class="primary-button"
+                >
+                    Add Recurring Transaction
+                </button>
+
+
+                <button
+                    type="button"
+                    id="cancelRecurringEditButton"
+                    class="secondary-button"
+                    style="display:none;"
+                >
+                    Cancel Edit
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <p id="recurringMessage"></p>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- RECURRING TRANSACTION LIST -->
+    <!-- ================================= -->
 
     <section class="panel">
 
@@ -625,19 +798,18 @@
 
             <div>
 
-                <h2>
-                    Goal Progress
-                </h2>
+                <h2>Recurring Transaction List</h2>
 
                 <p>
-                    Track all your savings targets.
+                    Manage your regular monthly transactions.
                 </p>
 
             </div>
 
         </div>
 
-        <div id="savingsGoalsContainer">
+
+        <div id="recurringContainer">
         </div>
 
     </section>

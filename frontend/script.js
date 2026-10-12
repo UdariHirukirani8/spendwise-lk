@@ -33,6 +33,8 @@ let editingTransactionId = null;
 
 let editingGoalId = null;
 
+let editingRecurringId = null;
+
 let categoryChart = null;
 
 let monthlyChart = null;
@@ -41,8 +43,40 @@ let trendChart = null;
 
 
 // =========================================================
-// TRANSACTION CATEGORY DROPDOWN
+// CATEGORY HELPERS
 // =========================================================
+
+function fillCategorySelect(
+    selectElement,
+    categories
+) {
+
+    selectElement.innerHTML =
+        '<option value="">Select category</option>';
+
+
+    categories.forEach(category => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            category;
+
+
+        option.textContent =
+            category;
+
+
+        selectElement.appendChild(
+            option
+        );
+    });
+}
+
 
 function updateCategoryOptions() {
 
@@ -64,38 +98,12 @@ function updateCategoryOptions() {
             : expenseCategories;
 
 
-    categorySelect.innerHTML =
-        '<option value="">Select category</option>';
-
-
-    categories.forEach(
-        category => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                category;
-
-
-            option.textContent =
-                category;
-
-
-            categorySelect.appendChild(
-                option
-            );
-        }
+    fillCategorySelect(
+        categorySelect,
+        categories
     );
 }
 
-
-// =========================================================
-// BUDGET CATEGORY DROPDOWN
-// =========================================================
 
 function loadBudgetCategories() {
 
@@ -105,37 +113,42 @@ function loadBudgetCategories() {
         );
 
 
-    select.innerHTML =
-        '<option value="">Select category</option>';
+    fillCategorySelect(
+        select,
+        expenseCategories
+    );
+}
 
 
-    expenseCategories.forEach(
-        category => {
+function updateRecurringCategoryOptions() {
 
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                category;
+    const type =
+        document.getElementById(
+            "recurringType"
+        ).value;
 
 
-            option.textContent =
-                category;
+    const categorySelect =
+        document.getElementById(
+            "recurringCategory"
+        );
 
 
-            select.appendChild(
-                option
-            );
-        }
+    const categories =
+        type === "income"
+            ? incomeCategories
+            : expenseCategories;
+
+
+    fillCategorySelect(
+        categorySelect,
+        categories
     );
 }
 
 
 // =========================================================
-// LOAD BALANCE
+// BALANCE
 // =========================================================
 
 async function loadBalance() {
@@ -149,7 +162,6 @@ async function loadBalance() {
 
 
         if (!response.ok) {
-
             throw new Error(
                 "Could not load balance."
             );
@@ -207,14 +219,6 @@ async function loadTransactions() {
             await fetch(
                 "/transactions"
             );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Could not load transactions."
-            );
-        }
 
 
         const data =
@@ -319,7 +323,7 @@ async function loadTransactions() {
     catch (error) {
 
         console.error(
-            "Transaction loading error:",
+            "Transactions error:",
             error
         );
     }
@@ -328,12 +332,9 @@ async function loadTransactions() {
 
 // =========================================================
 // SAVE TRANSACTION
-// CREATE OR UPDATE
 // =========================================================
 
-async function saveTransaction(
-    event
-) {
+async function saveTransaction(event) {
 
     event.preventDefault();
 
@@ -345,7 +346,6 @@ async function saveTransaction(
                 "type"
             ).value,
 
-
         amount:
             Number(
                 document.getElementById(
@@ -353,20 +353,15 @@ async function saveTransaction(
                 ).value
             ),
 
-
         category:
             document.getElementById(
                 "category"
             ).value,
 
-
         description:
             document.getElementById(
                 "description"
-            )
-            .value
-            .trim(),
-
+            ).value.trim(),
 
         transaction_date:
             document.getElementById(
@@ -473,10 +468,7 @@ async function saveTransaction(
 
     catch (error) {
 
-        console.error(
-            "Transaction save error:",
-            error
-        );
+        console.error(error);
 
 
         message.textContent =
@@ -486,7 +478,7 @@ async function saveTransaction(
 
 
 // =========================================================
-// START EDIT TRANSACTION
+// EDIT TRANSACTION
 // =========================================================
 
 async function startEditTransaction(
@@ -573,17 +565,15 @@ async function startEditTransaction(
         document.getElementById(
             "transactionForm"
         ).scrollIntoView({
-            behavior: "smooth"
+            behavior:
+                "smooth"
         });
 
     }
 
     catch (error) {
 
-        console.error(
-            "Edit transaction error:",
-            error
-        );
+        console.error(error);
     }
 }
 
@@ -596,14 +586,11 @@ async function deleteTransaction(
     transactionId
 ) {
 
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             `Delete transaction #${transactionId}?`
-        );
-
-
-    if (!confirmed) {
-
+        )
+    ) {
         return;
     }
 
@@ -630,15 +617,6 @@ async function deleteTransaction(
         }
 
 
-        if (
-            editingTransactionId
-            === transactionId
-        ) {
-
-            resetTransactionForm();
-        }
-
-
         await refreshDashboard();
 
 
@@ -648,10 +626,7 @@ async function deleteTransaction(
 
     catch (error) {
 
-        console.error(
-            "Delete transaction error:",
-            error
-        );
+        console.error(error);
     }
 }
 
@@ -696,10 +671,6 @@ function resetTransactionForm() {
 }
 
 
-// =========================================================
-// CANCEL TRANSACTION EDIT
-// =========================================================
-
 function cancelEdit() {
 
     resetTransactionForm();
@@ -713,7 +684,7 @@ function cancelEdit() {
 
 
 // =========================================================
-// MONTHLY ANALYTICS
+// ANALYTICS
 // =========================================================
 
 async function loadAnalytics() {
@@ -734,20 +705,6 @@ async function loadAnalytics() {
 
         alert(
             "Please enter year and month."
-        );
-
-        return;
-    }
-
-
-    if (
-        Number(month) < 1
-        ||
-        Number(month) > 12
-    ) {
-
-        alert(
-            "Month must be between 1 and 12."
         );
 
         return;
@@ -806,15 +763,6 @@ async function loadCategoryAnalytics(
             await response.json();
 
 
-        if (!response.ok) {
-
-            output.innerHTML =
-                "<p>Could not load category analytics.</p>";
-
-            return;
-        }
-
-
         if (
             !data.categories
             ||
@@ -832,7 +780,6 @@ async function loadCategoryAnalytics(
                 categoryChart =
                     null;
             }
-
 
             return;
         }
@@ -888,10 +835,7 @@ async function loadCategoryAnalytics(
 
     catch (error) {
 
-        console.error(
-            "Category analytics error:",
-            error
-        );
+        console.error(error);
 
 
         output.innerHTML =
@@ -912,12 +856,6 @@ function drawCategoryChart(
         document.getElementById(
             "categoryChart"
         );
-
-
-    if (!canvas) {
-
-        return;
-    }
 
 
     if (categoryChart) {
@@ -966,7 +904,7 @@ function drawCategoryChart(
 
 
 // =========================================================
-// MONTHLY INCOME VS EXPENSE
+// MONTHLY ANALYTICS
 // =========================================================
 
 async function loadMonthlyAnalytics(
@@ -986,12 +924,6 @@ async function loadMonthlyAnalytics(
             await response.json();
 
 
-        if (!response.ok) {
-
-            return;
-        }
-
-
         drawMonthlyChart(
             data.total_income,
             data.total_expense
@@ -1001,10 +933,7 @@ async function loadMonthlyAnalytics(
 
     catch (error) {
 
-        console.error(
-            "Monthly analytics error:",
-            error
-        );
+        console.error(error);
     }
 }
 
@@ -1022,12 +951,6 @@ function drawMonthlyChart(
         document.getElementById(
             "monthlyChart"
         );
-
-
-    if (!canvas) {
-
-        return;
-    }
 
 
     if (monthlyChart) {
@@ -1085,25 +1008,15 @@ function drawMonthlyChart(
 
 
 // =========================================================
-// FINANCIAL TREND
+// TREND ANALYTICS
 // =========================================================
 
 async function loadTrendAnalytics() {
 
-    const trendSelect =
+    const months =
         document.getElementById(
             "trendMonths"
-        );
-
-
-    if (!trendSelect) {
-
-        return;
-    }
-
-
-    const months =
-        trendSelect.value;
+        ).value;
 
 
     try {
@@ -1118,17 +1031,6 @@ async function loadTrendAnalytics() {
             await response.json();
 
 
-        if (!response.ok) {
-
-            console.error(
-                "Trend endpoint error:",
-                data
-            );
-
-            return;
-        }
-
-
         drawTrendChart(
             data.trends
         );
@@ -1137,10 +1039,7 @@ async function loadTrendAnalytics() {
 
     catch (error) {
 
-        console.error(
-            "Trend analytics error:",
-            error
-        );
+        console.error(error);
     }
 }
 
@@ -1149,20 +1048,12 @@ async function loadTrendAnalytics() {
 // TREND CHART
 // =========================================================
 
-function drawTrendChart(
-    trends
-) {
+function drawTrendChart(trends) {
 
     const canvas =
         document.getElementById(
             "trendChart"
         );
-
-
-    if (!canvas) {
-
-        return;
-    }
 
 
     if (trendChart) {
@@ -1279,9 +1170,7 @@ function drawTrendChart(
 // SAVE BUDGET
 // =========================================================
 
-async function saveBudget(
-    event
-) {
+async function saveBudget(event) {
 
     event.preventDefault();
 
@@ -1357,17 +1246,10 @@ async function saveBudget(
 
                     body:
                         JSON.stringify({
-                            year:
-                                year,
-
-                            month:
-                                month,
-
-                            category:
-                                category,
-
-                            amount:
-                                amount
+                            year,
+                            month,
+                            category,
+                            amount
                         })
                 }
             );
@@ -1380,9 +1262,9 @@ async function saveBudget(
         if (!response.ok) {
 
             message.textContent =
-                typeof data.detail === "string"
-                    ? data.detail
-                    : "Could not save budget.";
+                data.detail
+                ||
+                "Could not save budget.";
 
             return;
         }
@@ -1398,18 +1280,6 @@ async function saveBudget(
             "";
 
 
-        document.getElementById(
-            "analyticsYear"
-        ).value =
-            year;
-
-
-        document.getElementById(
-            "analyticsMonth"
-        ).value =
-            month;
-
-
         await loadBudgets(
             year,
             month
@@ -1419,10 +1289,7 @@ async function saveBudget(
 
     catch (error) {
 
-        console.error(
-            "Save budget error:",
-            error
-        );
+        console.error(error);
 
 
         message.textContent =
@@ -1489,15 +1356,6 @@ async function loadBudgets(
             await response.json();
 
 
-        if (!response.ok) {
-
-            container.innerHTML =
-                "<p>Could not load budgets.</p>";
-
-            return;
-        }
-
-
         if (
             !data.budgets
             ||
@@ -1534,9 +1392,7 @@ async function loadBudgets(
                     "";
 
 
-                if (
-                    budget.exceeded
-                ) {
+                if (budget.exceeded) {
 
                     warning = `
                         <p class="budget-danger">
@@ -1644,14 +1500,11 @@ async function loadBudgets(
 
     catch (error) {
 
-        console.error(
-            "Load budgets error:",
-            error
-        );
+        console.error(error);
 
 
         container.innerHTML =
-            "<p>Server connection failed.</p>";
+            "<p>Could not load budgets.</p>";
     }
 }
 
@@ -1679,7 +1532,7 @@ function syncBudgetDate(
 
 
 // =========================================================
-// LOAD SAVINGS GOALS
+// SAVINGS GOALS
 // =========================================================
 
 async function loadSavingsGoals() {
@@ -1688,12 +1541,6 @@ async function loadSavingsGoals() {
         document.getElementById(
             "savingsGoalsContainer"
         );
-
-
-    if (!container) {
-
-        return;
-    }
 
 
     try {
@@ -1706,15 +1553,6 @@ async function loadSavingsGoals() {
 
         const data =
             await response.json();
-
-
-        if (!response.ok) {
-
-            container.innerHTML =
-                "<p>Could not load savings goals.</p>";
-
-            return;
-        }
 
 
         if (
@@ -1730,8 +1568,7 @@ async function loadSavingsGoals() {
         }
 
 
-        container.innerHTML =
-            "";
+        container.innerHTML = "";
 
 
         data.goals.forEach(
@@ -1756,7 +1593,7 @@ async function loadSavingsGoals() {
                     "No deadline";
 
 
-                const completedMessage =
+                const completed =
                     goal.completed
                     ? `
                         <p class="goal-completed">
@@ -1847,7 +1684,7 @@ async function loadSavingsGoals() {
                         </p>
 
 
-                        ${completedMessage}
+                        ${completed}
 
 
                         <div class="goal-actions">
@@ -1882,14 +1719,11 @@ async function loadSavingsGoals() {
 
     catch (error) {
 
-        console.error(
-            "Savings goals load error:",
-            error
-        );
+        console.error(error);
 
 
         container.innerHTML =
-            "<p>Server connection failed.</p>";
+            "<p>Could not load savings goals.</p>";
     }
 }
 
@@ -1898,9 +1732,7 @@ async function loadSavingsGoals() {
 // SAVE SAVINGS GOAL
 // =========================================================
 
-async function saveSavingsGoal(
-    event
-) {
+async function saveSavingsGoal(event) {
 
     event.preventDefault();
 
@@ -1910,10 +1742,7 @@ async function saveSavingsGoal(
         name:
             document.getElementById(
                 "goalName"
-            )
-            .value
-            .trim(),
-
+            ).value.trim(),
 
         target_amount:
             Number(
@@ -1922,7 +1751,6 @@ async function saveSavingsGoal(
                 ).value
             ),
 
-
         saved_amount:
             Number(
                 document.getElementById(
@@ -1930,13 +1758,10 @@ async function saveSavingsGoal(
                 ).value
             ),
 
-
         deadline:
             document.getElementById(
                 "goalDeadline"
-            ).value
-            ||
-            null
+            ).value || null
     };
 
 
@@ -1944,21 +1769,6 @@ async function saveSavingsGoal(
         document.getElementById(
             "goalMessage"
         );
-
-
-    if (
-        !goal.name
-        ||
-        goal.target_amount <= 0
-        ||
-        goal.saved_amount < 0
-    ) {
-
-        message.textContent =
-            "Please enter valid savings goal details.";
-
-        return;
-    }
 
 
     let url =
@@ -1969,11 +1779,11 @@ async function saveSavingsGoal(
         "POST";
 
 
-    const isEditing =
+    const editing =
         editingGoalId !== null;
 
 
-    if (isEditing) {
+    if (editing) {
 
         url =
             `/savings-goals/${editingGoalId}`;
@@ -1990,8 +1800,7 @@ async function saveSavingsGoal(
             await fetch(
                 url,
                 {
-                    method:
-                        method,
+                    method,
 
                     headers: {
                         "Content-Type":
@@ -2013,16 +1822,16 @@ async function saveSavingsGoal(
         if (!response.ok) {
 
             message.textContent =
-                typeof data.detail === "string"
-                    ? data.detail
-                    : "Could not save savings goal.";
+                data.detail
+                ||
+                "Could not save goal.";
 
             return;
         }
 
 
         message.textContent =
-            isEditing
+            editing
                 ? "Savings goal updated successfully."
                 : "Savings goal created successfully.";
 
@@ -2036,14 +1845,7 @@ async function saveSavingsGoal(
 
     catch (error) {
 
-        console.error(
-            "Savings goal save error:",
-            error
-        );
-
-
-        message.textContent =
-            "Server connection failed.";
+        console.error(error);
     }
 }
 
@@ -2052,94 +1854,64 @@ async function saveSavingsGoal(
 // EDIT SAVINGS GOAL
 // =========================================================
 
-async function startEditGoal(
-    goalId
-) {
+async function startEditGoal(goalId) {
 
-    try {
-
-        const response =
-            await fetch(
-                `/savings-goals/${goalId}`
-            );
-
-
-        if (!response.ok) {
-
-            alert(
-                "Could not load savings goal."
-            );
-
-            return;
-        }
-
-
-        const goal =
-            await response.json();
-
-
-        editingGoalId =
-            goal.id;
-
-
-        document.getElementById(
-            "goalName"
-        ).value =
-            goal.name;
-
-
-        document.getElementById(
-            "goalTarget"
-        ).value =
-            goal.target_amount;
-
-
-        document.getElementById(
-            "goalSaved"
-        ).value =
-            goal.saved_amount;
-
-
-        document.getElementById(
-            "goalDeadline"
-        ).value =
-            goal.deadline || "";
-
-
-        document.getElementById(
-            "goalSubmitButton"
-        ).textContent =
-            "Update Goal";
-
-
-        document.getElementById(
-            "cancelGoalEditButton"
-        ).style.display =
-            "inline-block";
-
-
-        document.getElementById(
-            "goalMessage"
-        ).textContent =
-            `Editing savings goal #${goal.id}`;
-
-
-        document.getElementById(
-            "savingsGoalForm"
-        ).scrollIntoView({
-            behavior:
-                "smooth"
-        });
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Savings goal edit error:",
-            error
+    const response =
+        await fetch(
+            `/savings-goals/${goalId}`
         );
-    }
+
+
+    const goal =
+        await response.json();
+
+
+    editingGoalId =
+        goal.id;
+
+
+    document.getElementById(
+        "goalName"
+    ).value =
+        goal.name;
+
+
+    document.getElementById(
+        "goalTarget"
+    ).value =
+        goal.target_amount;
+
+
+    document.getElementById(
+        "goalSaved"
+    ).value =
+        goal.saved_amount;
+
+
+    document.getElementById(
+        "goalDeadline"
+    ).value =
+        goal.deadline || "";
+
+
+    document.getElementById(
+        "goalSubmitButton"
+    ).textContent =
+        "Update Goal";
+
+
+    document.getElementById(
+        "cancelGoalEditButton"
+    ).style.display =
+        "inline-block";
+
+
+    document.getElementById(
+        "savingsGoalForm"
+    ).scrollIntoView({
+        behavior:
+            "smooth"
+    });
 }
 
 
@@ -2147,64 +1919,27 @@ async function startEditGoal(
 // DELETE SAVINGS GOAL
 // =========================================================
 
-async function deleteGoal(
-    goalId
-) {
+async function deleteGoal(goalId) {
 
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             `Delete savings goal #${goalId}?`
-        );
-
-
-    if (!confirmed) {
-
+        )
+    ) {
         return;
     }
 
 
-    try {
-
-        const response =
-            await fetch(
-                `/savings-goals/${goalId}`,
-                {
-                    method:
-                        "DELETE"
-                }
-            );
-
-
-        if (!response.ok) {
-
-            alert(
-                "Could not delete savings goal."
-            );
-
-            return;
+    await fetch(
+        `/savings-goals/${goalId}`,
+        {
+            method:
+                "DELETE"
         }
+    );
 
 
-        if (
-            editingGoalId
-            === goalId
-        ) {
-
-            resetSavingsGoalForm();
-        }
-
-
-        await loadSavingsGoals();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Savings goal delete error:",
-            error
-        );
-    }
+    await loadSavingsGoals();
 }
 
 
@@ -2242,10 +1977,6 @@ function resetSavingsGoalForm() {
 }
 
 
-// =========================================================
-// CANCEL SAVINGS GOAL EDIT
-// =========================================================
-
 function cancelGoalEdit() {
 
     resetSavingsGoalForm();
@@ -2259,7 +1990,561 @@ function cancelGoalEdit() {
 
 
 // =========================================================
-// TODAY DATE
+// RECURRING TRANSACTIONS
+// =========================================================
+
+async function loadRecurringTransactions() {
+
+    const container =
+        document.getElementById(
+            "recurringContainer"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/recurring-transactions"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !data.recurring_transactions
+            ||
+            data.recurring_transactions.length === 0
+        ) {
+
+            container.innerHTML =
+                "<p>No recurring transactions yet.</p>";
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        data.recurring_transactions.forEach(
+            item => {
+
+                const statusClass =
+                    item.active
+                        ? "status-active"
+                        : "status-inactive";
+
+
+                const statusText =
+                    item.active
+                        ? "Active"
+                        : "Inactive";
+
+
+                container.innerHTML += `
+                    <div class="recurring-card">
+
+                        <div class="recurring-header">
+
+                            <div class="recurring-title">
+
+                                <h3>
+                                    ${item.category}
+                                </h3>
+
+                                <span
+                                    class="
+                                        status-badge
+                                        ${statusClass}
+                                    "
+                                >
+                                    ${statusText}
+                                </span>
+
+                            </div>
+
+
+                            <strong>
+                                Rs.
+                                ${Number(
+                                    item.amount
+                                ).toFixed(2)}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="recurring-details">
+
+                            <p>
+                                Type:
+                                <strong>
+                                    ${item.type}
+                                </strong>
+                            </p>
+
+
+                            <p>
+                                Day:
+                                <strong>
+                                    ${item.day_of_month}
+                                </strong>
+                            </p>
+
+
+                            <p>
+                                Category:
+                                <strong>
+                                    ${item.category}
+                                </strong>
+                            </p>
+
+
+                            <p>
+                                Status:
+                                <strong>
+                                    ${statusText}
+                                </strong>
+                            </p>
+
+                        </div>
+
+
+                        <p class="recurring-description">
+                            ${
+                                item.description
+                                ||
+                                "No description"
+                            }
+                        </p>
+
+
+                        <div class="recurring-actions">
+
+                            <button
+                                class="secondary-button"
+                                onclick="startEditRecurring(
+                                    ${item.id}
+                                )"
+                            >
+                                Edit
+                            </button>
+
+
+                            <button
+                                class="delete-button"
+                                onclick="deleteRecurring(
+                                    ${item.id}
+                                )"
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+
+                    </div>
+                `;
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Recurring transaction error:",
+            error
+        );
+
+
+        container.innerHTML =
+            "<p>Could not load recurring transactions.</p>";
+    }
+}
+
+
+// =========================================================
+// SAVE RECURRING TRANSACTION
+// =========================================================
+
+async function saveRecurringTransaction(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const recurring = {
+
+        type:
+            document.getElementById(
+                "recurringType"
+            ).value,
+
+        amount:
+            Number(
+                document.getElementById(
+                    "recurringAmount"
+                ).value
+            ),
+
+        category:
+            document.getElementById(
+                "recurringCategory"
+            ).value,
+
+        description:
+            document.getElementById(
+                "recurringDescription"
+            ).value.trim(),
+
+        day_of_month:
+            Number(
+                document.getElementById(
+                    "recurringDay"
+                ).value
+            ),
+
+        active:
+            document.getElementById(
+                "recurringActive"
+            ).checked
+    };
+
+
+    const message =
+        document.getElementById(
+            "recurringMessage"
+        );
+
+
+    if (
+        !recurring.category
+        ||
+        recurring.amount <= 0
+        ||
+        recurring.day_of_month < 1
+        ||
+        recurring.day_of_month > 31
+    ) {
+
+        message.textContent =
+            "Please enter valid recurring transaction details.";
+
+        return;
+    }
+
+
+    let url =
+        "/recurring-transactions";
+
+
+    let method =
+        "POST";
+
+
+    const editing =
+        editingRecurringId !== null;
+
+
+    if (editing) {
+
+        url =
+            `/recurring-transactions/${editingRecurringId}`;
+
+
+        method =
+            "PUT";
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method,
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            recurring
+                        )
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            message.textContent =
+                typeof data.detail === "string"
+                    ? data.detail
+                    : "Could not save recurring transaction.";
+
+            return;
+        }
+
+
+        message.textContent =
+            editing
+                ? "Recurring transaction updated successfully."
+                : "Recurring transaction created successfully.";
+
+
+        resetRecurringForm();
+
+
+        await loadRecurringTransactions();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        message.textContent =
+            "Server connection failed.";
+    }
+}
+
+
+// =========================================================
+// EDIT RECURRING TRANSACTION
+// =========================================================
+
+async function startEditRecurring(
+    recurringId
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                `/recurring-transactions/${recurringId}`
+            );
+
+
+        if (!response.ok) {
+
+            alert(
+                "Could not load recurring transaction."
+            );
+
+            return;
+        }
+
+
+        const recurring =
+            await response.json();
+
+
+        editingRecurringId =
+            recurring.id;
+
+
+        document.getElementById(
+            "recurringType"
+        ).value =
+            recurring.type;
+
+
+        updateRecurringCategoryOptions();
+
+
+        document.getElementById(
+            "recurringCategory"
+        ).value =
+            recurring.category;
+
+
+        document.getElementById(
+            "recurringAmount"
+        ).value =
+            recurring.amount;
+
+
+        document.getElementById(
+            "recurringDescription"
+        ).value =
+            recurring.description || "";
+
+
+        document.getElementById(
+            "recurringDay"
+        ).value =
+            recurring.day_of_month;
+
+
+        document.getElementById(
+            "recurringActive"
+        ).checked =
+            recurring.active;
+
+
+        document.getElementById(
+            "recurringSubmitButton"
+        ).textContent =
+            "Update Recurring Transaction";
+
+
+        document.getElementById(
+            "cancelRecurringEditButton"
+        ).style.display =
+            "inline-block";
+
+
+        document.getElementById(
+            "recurringMessage"
+        ).textContent =
+            `Editing recurring transaction #${recurring.id}`;
+
+
+        document.getElementById(
+            "recurringForm"
+        ).scrollIntoView({
+            behavior:
+                "smooth"
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+// =========================================================
+// DELETE RECURRING TRANSACTION
+// =========================================================
+
+async function deleteRecurring(
+    recurringId
+) {
+
+    if (
+        !confirm(
+            `Delete recurring transaction #${recurringId}?`
+        )
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/recurring-transactions/${recurringId}`,
+                {
+                    method:
+                        "DELETE"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            alert(
+                "Could not delete recurring transaction."
+            );
+
+            return;
+        }
+
+
+        if (
+            editingRecurringId
+            === recurringId
+        ) {
+
+            resetRecurringForm();
+        }
+
+
+        await loadRecurringTransactions();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+// =========================================================
+// RESET RECURRING FORM
+// =========================================================
+
+function resetRecurringForm() {
+
+    editingRecurringId =
+        null;
+
+
+    document.getElementById(
+        "recurringForm"
+    ).reset();
+
+
+    document.getElementById(
+        "recurringType"
+    ).value =
+        "expense";
+
+
+    document.getElementById(
+        "recurringActive"
+    ).checked =
+        true;
+
+
+    updateRecurringCategoryOptions();
+
+
+    document.getElementById(
+        "recurringSubmitButton"
+    ).textContent =
+        "Add Recurring Transaction";
+
+
+    document.getElementById(
+        "cancelRecurringEditButton"
+    ).style.display =
+        "none";
+}
+
+
+function cancelRecurringEdit() {
+
+    resetRecurringForm();
+
+
+    document.getElementById(
+        "recurringMessage"
+    ).textContent =
+        "Edit cancelled.";
+}
+
+
+// =========================================================
+// DATE HELPERS
 // =========================================================
 
 function setTodayDate() {
@@ -2276,10 +2561,6 @@ function setTodayDate() {
         today;
 }
 
-
-// =========================================================
-// DEFAULT YEAR / MONTH
-// =========================================================
 
 function setDefaultDates() {
 
@@ -2321,7 +2602,7 @@ function setDefaultDates() {
 
 
 // =========================================================
-// REFRESH DASHBOARD
+// REFRESH
 // =========================================================
 
 async function refreshDashboard() {
@@ -2329,7 +2610,8 @@ async function refreshDashboard() {
     await Promise.all([
         loadBalance(),
         loadTransactions(),
-        loadSavingsGoals()
+        loadSavingsGoals(),
+        loadRecurringTransactions()
     ]);
 }
 
@@ -2438,13 +2720,45 @@ document
     );
 
 
+document
+    .getElementById(
+        "recurringType"
+    )
+    .addEventListener(
+        "change",
+        updateRecurringCategoryOptions
+    );
+
+
+document
+    .getElementById(
+        "recurringForm"
+    )
+    .addEventListener(
+        "submit",
+        saveRecurringTransaction
+    );
+
+
+document
+    .getElementById(
+        "cancelRecurringEditButton"
+    )
+    .addEventListener(
+        "click",
+        cancelRecurringEdit
+    );
+
+
 // =========================================================
-// INITIALIZE DASHBOARD
+// INITIALIZE
 // =========================================================
 
 updateCategoryOptions();
 
 loadBudgetCategories();
+
+updateRecurringCategoryOptions();
 
 setTodayDate();
 

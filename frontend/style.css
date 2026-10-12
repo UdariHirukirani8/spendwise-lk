@@ -30,8 +30,7 @@ body {
 }
 
 
-.topbar p,
-.section-description {
+.topbar p {
     margin-top: 5px;
     color: #6b7280;
 }
@@ -44,7 +43,9 @@ body {
 }
 
 
-/* SUMMARY */
+/* =========================================
+   SUMMARY
+========================================= */
 
 .summary-grid {
     display: grid;
@@ -73,6 +74,7 @@ body {
 
 .summary-card p {
     color: #6b7280;
+
     margin-bottom: 12px;
 }
 
@@ -82,7 +84,9 @@ body {
 }
 
 
-/* PANEL */
+/* =========================================
+   PANEL
+========================================= */
 
 .panel {
     background: #ffffff;
@@ -107,15 +111,21 @@ body {
 
 
 .section-description {
+    color: #6b7280;
+
     margin-bottom: 22px;
 }
 
 
-/* FORM */
+/* =========================================
+   FORM
+========================================= */
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+
+    grid-template-columns:
+        repeat(2, 1fr);
 
     gap: 20px;
 }
@@ -123,6 +133,7 @@ body {
 
 .form-group {
     display: flex;
+
     flex-direction: column;
 
     margin-bottom: 20px;
@@ -138,6 +149,8 @@ body {
 
 input,
 select {
+    width: 100%;
+
     padding: 11px 12px;
 
     border: 1px solid #d1d5db;
@@ -160,11 +173,16 @@ select:focus {
 
 .form-actions {
     display: flex;
+
     gap: 10px;
+
+    align-items: center;
 }
 
 
-/* BUTTONS */
+/* =========================================
+   BUTTONS
+========================================= */
 
 .primary-button,
 .secondary-button,
@@ -178,11 +196,14 @@ select:focus {
     cursor: pointer;
 
     font-size: 14px;
+
+    transition: 0.2s;
 }
 
 
 .primary-button {
     background: #2563eb;
+
     color: #ffffff;
 }
 
@@ -194,6 +215,7 @@ select:focus {
 
 .secondary-button {
     background: #111827;
+
     color: #ffffff;
 }
 
@@ -205,6 +227,7 @@ select:focus {
 
 .delete-button {
     background: #fee2e2;
+
     color: #b91c1c;
 }
 
@@ -214,7 +237,9 @@ select:focus {
 }
 
 
-/* TABLE */
+/* =========================================
+   TABLE
+========================================= */
 
 .table-wrapper {
     overflow-x: auto;
@@ -223,6 +248,7 @@ select:focus {
 
 table {
     width: 100%;
+
     border-collapse: collapse;
 }
 
@@ -246,14 +272,18 @@ th {
 td .secondary-button,
 td .delete-button {
     margin-right: 5px;
+
     margin-bottom: 5px;
 }
 
 
-/* ANALYTICS */
+/* =========================================
+   ANALYTICS
+========================================= */
 
 .analytics-controls {
     display: flex;
+
     gap: 10px;
 }
 
@@ -265,6 +295,7 @@ td .delete-button {
 
 .analytics-row {
     display: flex;
+
     justify-content: space-between;
 
     padding: 13px 0;
@@ -274,7 +305,9 @@ td .delete-button {
 }
 
 
-/* CHARTS */
+/* =========================================
+   CHARTS
+========================================= */
 
 .chart-grid {
     display: grid;
@@ -296,14 +329,50 @@ td .delete-button {
 }
 
 
-/* BUDGET */
+.trend-panel {
+    min-height: 450px;
+}
+
+
+.trend-chart-wrapper {
+    position: relative;
+
+    width: 100%;
+
+    height: 350px;
+}
+
+
+#trendMonths {
+    min-width: 140px;
+}
+
+
+/* =========================================
+   SECTION HEADER
+========================================= */
 
 .section-header {
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 15px;
 }
 
+
+.section-header p {
+    color: #6b7280;
+}
+
+
+/* =========================================
+   BUDGET
+========================================= */
 
 .budget-card {
     margin-bottom: 18px;
@@ -320,6 +389,7 @@ td .delete-button {
 
 .budget-header {
     display: flex;
+
     justify-content: space-between;
 
     margin-bottom: 12px;
@@ -340,6 +410,7 @@ td .delete-button {
 
 .progress-container {
     width: 100%;
+
     height: 13px;
 
     background: #e5e7eb;
@@ -376,56 +447,6 @@ td .delete-button {
     color: #b91c1c;
 }
 
-
-#formMessage,
-#budgetMessage {
-    margin-top: 15px;
-
-    font-weight: 600;
-
-    color: #2563eb;
-}
-
-
-/* RESPONSIVE */
-
-@media (max-width: 850px) {
-
-    .summary-grid,
-    .chart-grid,
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-
-    .analytics-controls {
-        flex-direction: column;
-    }
-
-
-    .analytics-controls input {
-        max-width: none;
-    }
-
-
-    .topbar {
-        padding: 20px;
-    }
-
-
-    .section-header {
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        gap: 12px;
-    }
-
-
-    .budget-details {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* =========================================
    SAVINGS GOALS
@@ -481,11 +502,6 @@ td .delete-button {
 }
 
 
-.goal-details p {
-    color: #4b5563;
-}
-
-
 .goal-progress-container {
     width: 100%;
 
@@ -531,10 +547,149 @@ td .delete-button {
     font-weight: 700;
 
     margin-top: 10px;
+
+    color: #047857;
 }
 
 
-#goalMessage {
+/* =========================================
+   RECURRING TRANSACTIONS
+========================================= */
+
+.checkbox-group {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+}
+
+
+.checkbox-group input {
+    width: auto;
+
+    cursor: pointer;
+}
+
+
+.checkbox-group label {
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.recurring-form-actions {
+    margin-top: 5px;
+}
+
+
+.recurring-card {
+    margin-bottom: 18px;
+
+    padding: 20px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    background: #f9fafb;
+}
+
+
+.recurring-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 15px;
+}
+
+
+.recurring-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.recurring-title h3 {
+    font-size: 18px;
+}
+
+
+.status-badge {
+    display: inline-block;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.status-active {
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+
+.status-inactive {
+    background: #e5e7eb;
+
+    color: #4b5563;
+}
+
+
+.recurring-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+    margin-bottom: 14px;
+}
+
+
+.recurring-details p {
+    color: #4b5563;
+}
+
+
+.recurring-description {
+    margin-bottom: 14px;
+
+    color: #4b5563;
+}
+
+
+.recurring-actions button {
+    margin-right: 6px;
+}
+
+
+/* =========================================
+   MESSAGES
+========================================= */
+
+#formMessage,
+#budgetMessage,
+#goalMessage,
+#recurringMessage {
     margin-top: 15px;
 
     font-weight: 600;
@@ -543,15 +698,59 @@ td .delete-button {
 }
 
 
+/* =========================================
+   RESPONSIVE
+========================================= */
+
 @media (max-width: 850px) {
 
-    .goal-details {
+    .summary-grid,
+    .chart-grid,
+    .form-grid {
         grid-template-columns: 1fr;
     }
 
-    .goal-header {
+
+    .analytics-controls {
+        flex-direction: column;
+    }
+
+
+    .analytics-controls input {
+        max-width: none;
+    }
+
+
+    .topbar {
+        padding: 20px;
+    }
+
+
+    .section-header {
         flex-direction: column;
 
         align-items: flex-start;
+    }
+
+
+    .budget-details,
+    .goal-details,
+    .recurring-details {
+        grid-template-columns: 1fr;
+    }
+
+
+    .goal-header,
+    .recurring-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .form-actions {
+        flex-direction: column;
+
+        align-items: stretch;
     }
 }
