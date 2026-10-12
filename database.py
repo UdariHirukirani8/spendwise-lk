@@ -20,6 +20,7 @@ def create_tables():
     connection = get_connection()
     cursor = connection.cursor()
 
+    # Transactions table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,6 +33,7 @@ def create_tables():
         )
     """)
 
+    # Budgets table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS budgets (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,6 +46,7 @@ def create_tables():
         )
     """)
 
+    # Savings goals table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS savings_goals (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,6 +54,20 @@ def create_tables():
             target_amount REAL NOT NULL,
             saved_amount REAL NOT NULL DEFAULT 0,
             deadline TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Recurring transactions table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS recurring_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            type TEXT NOT NULL,
+            amount REAL NOT NULL,
+            category TEXT NOT NULL,
+            description TEXT,
+            day_of_month INTEGER NOT NULL,
+            active INTEGER NOT NULL DEFAULT 1,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -205,7 +222,10 @@ def delete_transaction(transaction_id):
     cursor = connection.cursor()
 
     cursor.execute(
-        "DELETE FROM transactions WHERE id = ?",
+        """
+        DELETE FROM transactions
+        WHERE id = ?
+        """,
         (transaction_id,)
     )
 
@@ -537,19 +557,12 @@ def get_monthly_trends(months=6):
 
     results = []
 
-    for (
-        month_value,
-        income,
-        expense
-    ) in rows:
-
+    for month_value, income, expense in rows:
         results.append({
             "month": month_value,
             "income": income,
             "expense": expense,
-            "savings": (
-                income - expense
-            )
+            "savings": income - expense
         })
 
     return results
@@ -698,6 +711,173 @@ def delete_savings_goal(goal_id):
         WHERE id = ?
         """,
         (goal_id,)
+    )
+
+    connection.commit()
+
+    deleted_rows = cursor.rowcount
+
+    connection.close()
+
+    return deleted_rows > 0
+
+
+# =========================================================
+# ADD RECURRING TRANSACTION
+# =========================================================
+
+def add_recurring_transaction(
+    transaction_type,
+    amount,
+    category,
+    description,
+    day_of_month
+):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO recurring_transactions (
+            type,
+            amount,
+            category,
+            description,
+            day_of_month
+        )
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        transaction_type,
+        amount,
+        category,
+        description,
+        day_of_month
+    ))
+
+    recurring_id = cursor.lastrowid
+
+    connection.commit()
+    connection.close()
+
+    return recurring_id
+
+
+# =========================================================
+# GET ALL RECURRING TRANSACTIONS
+# =========================================================
+
+def get_recurring_transactions():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            type,
+            amount,
+            category,
+            description,
+            day_of_month,
+            active,
+            created_at
+        FROM recurring_transactions
+        ORDER BY id DESC
+    """)
+
+    results = cursor.fetchall()
+
+    connection.close()
+
+    return results
+
+
+# =========================================================
+# GET ONE RECURRING TRANSACTION
+# =========================================================
+
+def get_recurring_transaction_by_id(recurring_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            type,
+            amount,
+            category,
+            description,
+            day_of_month,
+            active,
+            created_at
+        FROM recurring_transactions
+        WHERE id = ?
+    """, (recurring_id,))
+
+    result = cursor.fetchone()
+
+    connection.close()
+
+    return result
+
+
+# =========================================================
+# UPDATE RECURRING TRANSACTION
+# =========================================================
+
+def update_recurring_transaction(
+    recurring_id,
+    transaction_type,
+    amount,
+    category,
+    description,
+    day_of_month,
+    active
+):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE recurring_transactions
+        SET
+            type = ?,
+            amount = ?,
+            category = ?,
+            description = ?,
+            day_of_month = ?,
+            active = ?
+        WHERE id = ?
+    """, (
+        transaction_type,
+        amount,
+        category,
+        description,
+        day_of_month,
+        active,
+        recurring_id
+    ))
+
+    connection.commit()
+
+    updated_rows = cursor.rowcount
+
+    connection.close()
+
+    return updated_rows > 0
+
+
+# =========================================================
+# DELETE RECURRING TRANSACTION
+# =========================================================
+
+def delete_recurring_transaction(recurring_id):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        DELETE FROM recurring_transactions
+        WHERE id = ?
+        """,
+        (recurring_id,)
     )
 
     connection.commit()
