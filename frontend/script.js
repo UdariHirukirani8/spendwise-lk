@@ -192,6 +192,7 @@ async function loadTransactions() {
 
         data.transactions.forEach(
             transaction => {
+
                 const row =
                     document.createElement("tr");
 
@@ -310,8 +311,11 @@ async function saveTransaction(event) {
         return;
     }
 
-    let url = "/transactions";
-    let method = "POST";
+    let url =
+        "/transactions";
+
+    let method =
+        "POST";
 
     const isEditing =
         editingTransactionId !== null;
@@ -320,7 +324,8 @@ async function saveTransaction(event) {
         url =
             `/transactions/${editingTransactionId}`;
 
-        method = "PUT";
+        method =
+            "PUT";
     }
 
     try {
@@ -328,7 +333,7 @@ async function saveTransaction(event) {
             await fetch(
                 url,
                 {
-                    method: method,
+                    method,
 
                     headers: {
                         "Content-Type":
@@ -364,8 +369,6 @@ async function saveTransaction(event) {
         await refreshDashboard();
 
         await loadTrendAnalytics();
-
-        await loadSmartInsights();
 
     } catch (error) {
         console.error(
@@ -508,8 +511,6 @@ async function deleteTransaction(
 
         await loadTrendAnalytics();
 
-        await loadSmartInsights();
-
     } catch (error) {
         console.error(
             "Delete transaction error:",
@@ -524,7 +525,8 @@ async function deleteTransaction(
 // =========================================================
 
 function resetTransactionForm() {
-    editingTransactionId = null;
+    editingTransactionId =
+        null;
 
     document.getElementById(
         "transactionForm"
@@ -661,7 +663,6 @@ async function loadCategoryAnalytics(
 
             if (categoryChart) {
                 categoryChart.destroy();
-
                 categoryChart = null;
             }
 
@@ -684,6 +685,7 @@ async function loadCategoryAnalytics(
 
         data.categories.forEach(
             item => {
+
                 output.innerHTML += `
                     <div class="analytics-row">
 
@@ -747,7 +749,8 @@ function drawCategoryChart(
         new Chart(
             canvas,
             {
-                type: "doughnut",
+                type:
+                    "doughnut",
 
                 data: {
                     labels:
@@ -768,8 +771,11 @@ function drawCategoryChart(
                 },
 
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false
                 }
             }
         );
@@ -836,7 +842,8 @@ function drawMonthlyChart(
         new Chart(
             canvas,
             {
-                type: "bar",
+                type:
+                    "bar",
 
                 data: {
                     labels: [
@@ -858,12 +865,16 @@ function drawMonthlyChart(
                 },
 
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
 
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero:
+                                true
                         }
                     }
                 }
@@ -950,7 +961,8 @@ function drawTrendChart(trends) {
         new Chart(
             canvas,
             {
-                type: "line",
+                type:
+                    "line",
 
                 data: {
                     labels:
@@ -961,7 +973,8 @@ function drawTrendChart(trends) {
 
                     datasets: [
                         {
-                            label: "Income",
+                            label:
+                                "Income",
 
                             data:
                                 trends.map(
@@ -969,11 +982,13 @@ function drawTrendChart(trends) {
                                         item.income
                                 ),
 
-                            tension: 0.3
+                            tension:
+                                0.3
                         },
 
                         {
-                            label: "Expenses",
+                            label:
+                                "Expenses",
 
                             data:
                                 trends.map(
@@ -981,11 +996,13 @@ function drawTrendChart(trends) {
                                         item.expense
                                 ),
 
-                            tension: 0.3
+                            tension:
+                                0.3
                         },
 
                         {
-                            label: "Savings",
+                            label:
+                                "Savings",
 
                             data:
                                 trends.map(
@@ -993,23 +1010,31 @@ function drawTrendChart(trends) {
                                         item.savings
                                 ),
 
-                            tension: 0.3
+                            tension:
+                                0.3
                         }
                     ]
                 },
 
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
 
                     interaction: {
-                        mode: "index",
-                        intersect: false
+                        mode:
+                            "index",
+
+                        intersect:
+                            false
                     },
 
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero:
+                                true
                         }
                     }
                 }
@@ -1078,7 +1103,8 @@ async function saveBudget(event) {
             await fetch(
                 "/budgets",
                 {
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
                         "Content-Type":
@@ -1112,15 +1138,18 @@ async function saveBudget(event) {
 
         document.getElementById(
             "budgetAmount"
-        ).value = "";
+        ).value =
+            "";
 
         document.getElementById(
             "analyticsYear"
-        ).value = year;
+        ).value =
+            year;
 
         document.getElementById(
             "analyticsMonth"
-        ).value = month;
+        ).value =
+            month;
 
         await loadBudgets(
             year,
@@ -1207,10 +1236,12 @@ async function loadBudgets(
             return;
         }
 
-        container.innerHTML = "";
+        container.innerHTML =
+            "";
 
         data.budgets.forEach(
             budget => {
+
                 const percentage =
                     Number(
                         budget.percentage_used
@@ -1222,7 +1253,8 @@ async function loadBudgets(
                         100
                     );
 
-                let warning = "";
+                let warning =
+                    "";
 
                 if (budget.exceeded) {
                     warning = `
@@ -1341,11 +1373,13 @@ function syncBudgetDate(
 ) {
     document.getElementById(
         "budgetYear"
-    ).value = year;
+    ).value =
+        year;
 
     document.getElementById(
         "budgetMonth"
-    ).value = month;
+    ).value =
+        month;
 }
 
 
@@ -1390,10 +1424,12 @@ async function loadSavingsGoals() {
             return;
         }
 
-        container.innerHTML = "";
+        container.innerHTML =
+            "";
 
         data.goals.forEach(
             goal => {
+
                 const percentage =
                     Number(
                         goal.progress_percentage
@@ -1719,7 +1755,8 @@ async function startEditGoal(goalId) {
         document.getElementById(
             "savingsGoalForm"
         ).scrollIntoView({
-            behavior: "smooth"
+            behavior:
+                "smooth"
         });
 
     } catch (error) {
@@ -1764,8 +1801,7 @@ async function deleteGoal(goalId) {
         }
 
         if (
-            editingGoalId
-            === goalId
+            editingGoalId === goalId
         ) {
             resetSavingsGoalForm();
         }
@@ -1782,7 +1818,7 @@ async function deleteGoal(goalId) {
 
 
 // =========================================================
-// RESET SAVINGS GOAL FORM
+// RESET SAVINGS GOAL
 // =========================================================
 
 function resetSavingsGoalForm() {
@@ -1795,7 +1831,8 @@ function resetSavingsGoalForm() {
 
     document.getElementById(
         "goalSaved"
-    ).value = "0";
+    ).value =
+        "0";
 
     document.getElementById(
         "goalSubmitButton"
@@ -1860,10 +1897,12 @@ async function loadRecurringTransactions() {
             return;
         }
 
-        container.innerHTML = "";
+        container.innerHTML =
+            "";
 
         data.recurring_transactions.forEach(
             item => {
+
                 const statusClass =
                     item.active
                         ? "status-active"
@@ -2195,7 +2234,8 @@ async function startEditRecurring(
         document.getElementById(
             "recurringForm"
         ).scrollIntoView({
-            behavior: "smooth"
+            behavior:
+                "smooth"
         });
 
     } catch (error) {
@@ -2264,7 +2304,8 @@ async function deleteRecurring(
 // =========================================================
 
 function resetRecurringForm() {
-    editingRecurringId = null;
+    editingRecurringId =
+        null;
 
     document.getElementById(
         "recurringForm"
@@ -2382,7 +2423,9 @@ async function loadSmartInsights() {
             return;
         }
 
-        // Savings Rate
+
+        // Savings rate
+
         const savingsRate =
             Number(
                 data.current_month
@@ -2392,28 +2435,36 @@ async function loadSmartInsights() {
         savingsRateElement.textContent =
             `${savingsRate.toFixed(1)}%`;
 
-        savingsRateElement.className = "";
+        savingsRateElement.className =
+            "";
 
         if (savingsRate >= 20) {
-            savingsRateElement.classList.add(
-                "insight-positive"
-            );
+            savingsRateElement
+                .classList
+                .add(
+                    "insight-positive"
+                );
         }
 
         else if (savingsRate < 10) {
-            savingsRateElement.classList.add(
-                "insight-negative"
-            );
+            savingsRateElement
+                .classList
+                .add(
+                    "insight-negative"
+                );
         }
 
         else {
-            savingsRateElement.classList.add(
-                "insight-neutral"
-            );
+            savingsRateElement
+                .classList
+                .add(
+                    "insight-neutral"
+                );
         }
 
 
-        // Top Category
+        // Top category
+
         const topCategory =
             data.highest_spending_category;
 
@@ -2434,19 +2485,23 @@ async function loadSmartInsights() {
         }
 
 
-        // Expense Change
+        // Expense change
+
         const expenseChange =
             data.expense_change_percentage;
 
-        expenseChangeElement.className = "";
+        expenseChangeElement.className =
+            "";
 
         if (expenseChange === null) {
             expenseChangeElement.textContent =
                 "No previous data";
 
-            expenseChangeElement.classList.add(
-                "insight-neutral"
-            );
+            expenseChangeElement
+                .classList
+                .add(
+                    "insight-neutral"
+                );
         }
 
         else if (expenseChange > 0) {
@@ -2455,9 +2510,11 @@ async function loadSmartInsights() {
                     expenseChange
                 ).toFixed(1)}%`;
 
-            expenseChangeElement.classList.add(
-                "insight-negative"
-            );
+            expenseChangeElement
+                .classList
+                .add(
+                    "insight-negative"
+                );
         }
 
         else if (expenseChange < 0) {
@@ -2466,22 +2523,27 @@ async function loadSmartInsights() {
                     expenseChange
                 ).toFixed(1)}%`;
 
-            expenseChangeElement.classList.add(
-                "insight-positive"
-            );
+            expenseChangeElement
+                .classList
+                .add(
+                    "insight-positive"
+                );
         }
 
         else {
             expenseChangeElement.textContent =
                 "0.0%";
 
-            expenseChangeElement.classList.add(
-                "insight-neutral"
-            );
+            expenseChangeElement
+                .classList
+                .add(
+                    "insight-neutral"
+                );
         }
 
 
         // Recommendations
+
         recommendationsContainer.innerHTML =
             "";
 
@@ -2497,18 +2559,22 @@ async function loadSmartInsights() {
         else {
             data.recommendations.forEach(
                 recommendation => {
-                    recommendationsContainer.innerHTML += `
-                        <div class="insight-item">
-                            ${recommendation}
-                        </div>
-                    `;
+
+                    recommendationsContainer
+                        .innerHTML += `
+                            <div class="insight-item">
+                                ${recommendation}
+                            </div>
+                        `;
                 }
             );
         }
 
 
-        // Budget Alerts
-        alertsContainer.innerHTML = "";
+        // Budget alerts
+
+        alertsContainer.innerHTML =
+            "";
 
         if (
             !data.budget_alerts
@@ -2525,6 +2591,7 @@ async function loadSmartInsights() {
         else {
             data.budget_alerts.forEach(
                 alert => {
+
                     const cssClass =
                         alert.type === "danger"
                             ? "insight-alert-danger"
@@ -2547,6 +2614,194 @@ async function loadSmartInsights() {
 
         recommendationsContainer.innerHTML =
             "<p>Could not load insights.</p>";
+    }
+}
+
+
+// =========================================================
+// EXPENSE FORECAST
+// =========================================================
+
+async function loadExpenseForecast() {
+    const forecastExpense =
+        document.getElementById(
+            "forecastExpense"
+        );
+
+    const forecastAverage =
+        document.getElementById(
+            "forecastAverage"
+        );
+
+    const forecastTrend =
+        document.getElementById(
+            "forecastTrend"
+        );
+
+    const forecastConfidence =
+        document.getElementById(
+            "forecastConfidence"
+        );
+
+    const forecastMessage =
+        document.getElementById(
+            "forecastMessage"
+        );
+
+    const forecastMonths =
+        document.getElementById(
+            "forecastMonths"
+        );
+
+
+    if (
+        !forecastExpense
+        ||
+        !forecastAverage
+        ||
+        !forecastTrend
+        ||
+        !forecastConfidence
+        ||
+        !forecastMessage
+        ||
+        !forecastMonths
+    ) {
+        return;
+    }
+
+
+    const months =
+        forecastMonths.value;
+
+
+    try {
+        const response =
+            await fetch(
+                `/analytics/forecast?months=${months}`
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+            forecastMessage.textContent =
+                "Could not load expense forecast.";
+
+            return;
+        }
+
+
+        forecastExpense.textContent =
+            `Rs. ${Number(
+                data.predicted_next_month_expense
+            ).toFixed(2)}`;
+
+
+        forecastAverage.textContent =
+            `Rs. ${Number(
+                data.average_monthly_expense
+            ).toFixed(2)}`;
+
+
+        // Trend
+
+        forecastTrend.className =
+            "";
+
+        if (
+            data.trend_percentage
+            === null
+        ) {
+            forecastTrend.textContent =
+                "Not enough data";
+
+            forecastTrend
+                .classList
+                .add(
+                    "forecast-neutral"
+                );
+        }
+
+        else {
+            const trend =
+                Number(
+                    data.trend_percentage
+                );
+
+            if (trend > 0) {
+                forecastTrend.textContent =
+                    `+${trend.toFixed(1)}%`;
+
+                forecastTrend
+                    .classList
+                    .add(
+                        "forecast-negative"
+                    );
+            }
+
+            else if (trend < 0) {
+                forecastTrend.textContent =
+                    `${trend.toFixed(1)}%`;
+
+                forecastTrend
+                    .classList
+                    .add(
+                        "forecast-positive"
+                    );
+            }
+
+            else {
+                forecastTrend.textContent =
+                    "0.0%";
+
+                forecastTrend
+                    .classList
+                    .add(
+                        "forecast-neutral"
+                    );
+            }
+        }
+
+
+        // Confidence
+
+        forecastConfidence.className =
+            "";
+
+        const confidence =
+            data.confidence
+            ||
+            "low";
+
+        forecastConfidence.textContent =
+            confidence
+                .charAt(0)
+                .toUpperCase()
+            +
+            confidence
+                .slice(1);
+
+        forecastConfidence
+            .classList
+            .add(
+                `forecast-confidence-${confidence}`
+            );
+
+
+        // Message
+
+        forecastMessage.textContent =
+            data.message;
+
+    } catch (error) {
+        console.error(
+            "Forecast error:",
+            error
+        );
+
+        forecastMessage.textContent =
+            "Server connection failed.";
     }
 }
 
@@ -2615,7 +2870,8 @@ async function refreshDashboard() {
         loadTransactions(),
         loadSavingsGoals(),
         loadRecurringTransactions(),
-        loadSmartInsights()
+        loadSmartInsights(),
+        loadExpenseForecast()
     ]);
 }
 
@@ -2635,7 +2891,9 @@ function exportTransactions() {
 // =========================================================
 
 document
-    .getElementById("type")
+    .getElementById(
+        "type"
+    )
     .addEventListener(
         "change",
         updateCategoryOptions
@@ -2668,7 +2926,10 @@ document
     )
     .addEventListener(
         "click",
-        refreshDashboard
+        async () => {
+            await refreshDashboard();
+            await loadTrendAnalytics();
+        }
     );
 
 
@@ -2779,6 +3040,26 @@ document
     .addEventListener(
         "click",
         loadSmartInsights
+    );
+
+
+document
+    .getElementById(
+        "refreshForecastButton"
+    )
+    .addEventListener(
+        "click",
+        loadExpenseForecast
+    );
+
+
+document
+    .getElementById(
+        "forecastMonths"
+    )
+    .addEventListener(
+        "change",
+        loadExpenseForecast
     );
 
 

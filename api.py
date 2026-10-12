@@ -923,6 +923,214 @@ def smart_spending_insights(
     }
 
 
+
+
+# =========================================================
+# EXPENSE FORECAST
+# =========================================================
+
+@app.get("/analytics/forecast")
+def expense_forecast(
+    months: int = Query(
+        default=6,
+        ge=1,
+        le=12
+    )
+):
+    trends = get_monthly_trends(months)
+
+    if not trends:
+        return {
+            "status": "insufficient_data",
+            "message":
+                "No historical monthly data is available for forecasting.",
+            "months_used": 0,
+            "predicted_next_month_expense": 0,
+            "average_monthly_expense": 0,
+            "trend_percentage": None,
+            "confidence": "low",
+            "method": "moving_average_with_trend",
+            "history": []
+        }
+
+    expenses = [
+        float(item["expense"])
+        for item in trends
+    ]
+
+    months_available = len(expenses)
+
+    # -----------------------------------------
+    # BASE AVERAGE
+    # -----------------------------------------
+
+    recent_expenses = expenses[-3:]
+
+    average_expense = (
+        sum(recent_expenses)
+        / len(recent_expenses)
+    )
+
+
+    # -----------------------------------------
+    # TREND
+    # -----------------------------------------
+
+    trend_percentage = None
+    trend_adjustment = 0
+
+    if months_available >= 2:
+
+        previous_expense = expenses[-2]
+        current_expense = expenses[-1]
+
+        if previous_expense > 0:
+
+            trend_percentage = (
+                (
+                    current_expense
+                    - previous_expense
+                )
+                / previous_expense
+            ) * 100
+
+            # Prevent one unusual month from creating
+            # an unrealistic forecast.
+            capped_trend = max(
+                min(
+                    trend_percentage,
+                    30
+                ),
+                -30
+            )
+
+            trend_adjustment = (
+                average_expense
+                * (
+                    capped_trend / 100
+                )
+                * 0.30
+            )
+
+
+    # -----------------------------------------
+    # FORECAST
+    # -----------------------------------------
+
+    predicted_expense = (
+        average_expense
+        + trend_adjustment
+    )
+
+    predicted_expense = max(
+        predicted_expense,
+        0
+    )
+
+
+    # -----------------------------------------
+    # CONFIDENCE
+    # -----------------------------------------
+
+    if months_available >= 6:
+        confidence = "high"
+
+    elif months_available >= 3:
+        confidence = "medium"
+
+    else:
+        confidence = "low"
+
+
+    # -----------------------------------------
+    # FORECAST MESSAGE
+    # -----------------------------------------
+
+    if months_available == 1:
+
+        message = (
+            "Only one month of historical data is available. "
+            "The forecast currently uses that month's expense "
+            "as a baseline."
+        )
+
+    elif trend_percentage is None:
+
+        message = (
+            "The forecast uses the average of recent monthly "
+            "expenses because there is not enough non-zero "
+            "expense history to calculate a trend."
+        )
+
+    elif trend_percentage > 5:
+
+        message = (
+            "Recent expenses are trending upward. "
+            "The forecast includes a small upward adjustment."
+        )
+
+    elif trend_percentage < -5:
+
+        message = (
+            "Recent expenses are trending downward. "
+            "The forecast includes a small downward adjustment."
+        )
+
+    else:
+
+        message = (
+            "Recent expenses are relatively stable. "
+            "The forecast is close to the recent monthly average."
+        )
+
+
+    return {
+        "status": "ok",
+
+        "months_requested":
+            months,
+
+        "months_used":
+            months_available,
+
+        "predicted_next_month_expense":
+            round(
+                predicted_expense,
+                2
+            ),
+
+        "average_monthly_expense":
+            round(
+                average_expense,
+                2
+            ),
+
+        "trend_percentage":
+            (
+                round(
+                    trend_percentage,
+                    2
+                )
+                if trend_percentage
+                is not None
+                else None
+            ),
+
+        "confidence":
+            confidence,
+
+        "method":
+            "moving_average_with_trend",
+
+        "message":
+            message,
+
+        "history":
+            trends
+    }
+
+
+    
 # =========================================================
 # BUDGETS
 # =========================================================

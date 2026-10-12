@@ -209,6 +209,137 @@
 
     </section>
 
+    <!-- ========================================= -->
+<!-- EXPENSE FORECAST -->
+<!-- ========================================= -->
+
+<section class="panel forecast-panel">
+
+    <div class="section-header">
+
+        <div>
+            <h2>
+                Next-Month Expense Forecast
+            </h2>
+
+            <p>
+                Estimate your next month's expenses
+                using recent spending history.
+            </p>
+        </div>
+
+
+        <div class="forecast-controls">
+
+            <select id="forecastMonths">
+
+                <option value="3">
+                    Use 3 Months
+                </option>
+
+                <option
+                    value="6"
+                    selected
+                >
+                    Use 6 Months
+                </option>
+
+                <option value="12">
+                    Use 12 Months
+                </option>
+
+            </select>
+
+
+            <button
+                id="refreshForecastButton"
+                class="secondary-button"
+            >
+                Refresh Forecast
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="forecast-grid">
+
+        <div class="forecast-main-card">
+
+            <p>
+                Predicted Next-Month Expense
+            </p>
+
+            <h2 id="forecastExpense">
+                Rs. 0.00
+            </h2>
+
+        </div>
+
+
+        <div class="forecast-stat-card">
+
+            <p>
+                Recent Monthly Average
+            </p>
+
+            <h3 id="forecastAverage">
+                Rs. 0.00
+            </h3>
+
+        </div>
+
+
+        <div class="forecast-stat-card">
+
+            <p>
+                Expense Trend
+            </p>
+
+            <h3 id="forecastTrend">
+                -
+            </h3>
+
+        </div>
+
+
+        <div class="forecast-stat-card">
+
+            <p>
+                Forecast Confidence
+            </p>
+
+            <h3 id="forecastConfidence">
+                -
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="forecast-message">
+
+        <h3>
+            Forecast Explanation
+        </h3>
+
+        <p id="forecastMessage">
+            Loading forecast...
+        </p>
+
+    </div>
+
+
+    <p class="forecast-note">
+        This is a simple statistical estimate based on
+        recorded spending history and is not financial advice.
+    </p>
+
+</section>
+
+
 
     <!-- TRANSACTION FORM -->
 
