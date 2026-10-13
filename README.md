@@ -119,7 +119,6 @@ SpendWise-LK/
 ### REST API Documentation
 
 ![Swagger API Documentation](docs/swagger-api.png)
-
 ## Main API Endpoints
 
 ### General
