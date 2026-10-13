@@ -96,3 +96,21 @@ SpendWise-LK/
 │   └── script.js
 │
 └── docs/
+
+## Screenshots
+
+### Dashboard Overview
+
+![SpendWise LK Dashboard](docs/dashboard-overview.png)
+
+### Smart Spending Insights
+
+![Smart Spending Insights](docs/smart-insights.png)
+
+### Expense Forecasting
+
+![Expense Forecasting](docs/expense-forecast.png)
+
+### REST API Documentation
+
+![Swagger API Documentation](docs/swagger-api.png)
