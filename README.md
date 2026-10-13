@@ -96,6 +96,11 @@ SpendWise-LK/
 │   └── script.js
 │
 └── docs/
+    ├── dashboard-overview.png
+    ├── smart-insights.png
+    ├── expense-forecast.png
+    └── swagger-api.png
+```
 
 ## Screenshots
 
@@ -114,3 +119,198 @@ SpendWise-LK/
 ### REST API Documentation
 
 ![Swagger API Documentation](docs/swagger-api.png)
+
+## Main API Endpoints
+
+### General
+
+```text
+GET /
+GET /health
+GET /dashboard
+```
+
+### Transactions
+
+```text
+GET    /transactions
+POST   /transactions
+GET    /transactions/{transaction_id}
+PUT    /transactions/{transaction_id}
+DELETE /transactions/{transaction_id}
+```
+
+### Financial Summary
+
+```text
+GET /balance
+```
+
+### Analytics
+
+```text
+GET /analytics/monthly
+GET /analytics/categories
+GET /analytics/trends
+GET /analytics/insights
+GET /analytics/forecast
+```
+
+### Budgets
+
+```text
+GET  /budgets
+POST /budgets
+```
+
+### Savings Goals
+
+```text
+GET    /savings-goals
+POST   /savings-goals
+GET    /savings-goals/{goal_id}
+PUT    /savings-goals/{goal_id}
+DELETE /savings-goals/{goal_id}
+```
+
+### Recurring Transactions
+
+```text
+GET    /recurring-transactions
+POST   /recurring-transactions
+GET    /recurring-transactions/{recurring_id}
+PUT    /recurring-transactions/{recurring_id}
+DELETE /recurring-transactions/{recurring_id}
+```
+
+### Export
+
+```text
+GET /export/transactions
+```
+
+## API Documentation
+
+When the application is running, Swagger API documentation is available at:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Dashboard
+
+The dashboard is available at:
+
+```text
+http://127.0.0.1:8000/dashboard
+```
+
+The dashboard includes:
+
+- Financial summary cards
+- Transaction management
+- Monthly analytics
+- Category analysis
+- Financial charts
+- Budget tracking
+- Savings goals
+- Recurring transactions
+- Smart spending insights
+- Expense forecasting
+- CSV export
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/UdariHirukirani8/spendwise-lk.git
+```
+
+### 2. Open the project folder
+
+```bash
+cd spendwise-lk
+```
+
+### 3. Create a virtual environment
+
+```bash
+python -m venv .venv
+```
+
+### 4. Activate the virtual environment
+
+PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+### 5. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 6. Start the FastAPI server
+
+```bash
+python -m uvicorn api:app --reload
+```
+
+### 7. Open the dashboard
+
+```text
+http://127.0.0.1:8000/dashboard
+```
+
+## Example Workflow
+
+A user can:
+
+1. Add monthly salary as income.
+2. Record expenses such as food, transport, bills, or education.
+3. Set monthly budgets.
+4. Analyze spending by category.
+5. View financial trends.
+6. Create savings goals.
+7. Manage recurring expenses such as rent or internet bills.
+8. View smart financial recommendations.
+9. Estimate next month's expenses.
+10. Export transaction records as CSV.
+
+## Future Improvements
+
+- User authentication
+- Multiple user accounts
+- Cloud database support
+- Advanced machine learning forecasting
+- Automated recurring transaction processing
+- PDF financial reports
+- Email notifications
+- Budget notifications
+- More advanced data visualizations
+- Mobile-friendly progressive web application
+- Cloud deployment
+
+## Project Goal
+
+The goal of SpendWise LK is to combine software engineering and data analytics concepts in a practical personal finance application.
+
+The project demonstrates:
+
+- Python backend development
+- REST API development
+- SQLite database management
+- CRUD operations
+- Frontend development
+- Data visualization
+- Financial analytics
+- Rule-based insight generation
+- Simple statistical forecasting
+- Git and GitHub version control
+
+## Author
+
+Developed by Udari as a personal software engineering and data science portfolio project.
